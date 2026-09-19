@@ -31,3 +31,6 @@ next-env.d.ts
 
 # prisma
 apps/api/prisma/migrations/dev.db
+
+# artefacts de vérification manuelle (Playwright MCP)
+.playwright-mcp/

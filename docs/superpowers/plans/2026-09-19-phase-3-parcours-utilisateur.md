@@ -1364,7 +1364,7 @@ git commit -m "feat(web): StepResults"
 - Consumes: tout ce qui précède (Tasks 7-10).
 - Produces: route `/commencer` fonctionnelle, cible déjà utilisée par les CTA de la landing (`apps/web/src/components/landing/Hero.tsx`, `Pricing.tsx`).
 
-- [ ] **Step 1: Implémenter la page**
+- [x] **Step 1: Implémenter la page**
 
 Créer `apps/web/src/app/commencer/page.tsx` :
 
@@ -1445,12 +1445,12 @@ export default function CommencerPage() {
 }
 ```
 
-- [ ] **Step 2: Vérifier lint + build**
+- [x] **Step 2: Vérifier lint + build**
 
 Run: `pnpm --filter web lint && pnpm --filter web build`
 Expected: succès.
 
-- [ ] **Step 3: Vérification manuelle bout en bout**
+- [x] **Step 3: Vérification manuelle bout en bout**
 
 Prérequis : `docker compose up -d`, `pnpm --filter api start:dev &`, `pnpm --filter web dev &` (attendre que les deux répondent : `curl -sf http://localhost:3001/ideas -o /dev/null -w "%{http_code}"` refuse en GET sans id donc tester plutôt `curl -sf http://localhost:3000 -o /dev/null -w "%{http_code}"` doit renvoyer `200`).
 
@@ -1462,12 +1462,12 @@ Avec un navigateur piloté (Playwright/chromium-cli) :
 5. Capturer un screenshot de l'écran résultats : vérifier CA, marge, résultat, seuil de rentabilité affichés et cohérents avec le moteur (250 000 / 150 000 / 50 000 XOF, seuil 34 unités).
 6. Vérifier `console --errors` : 0 erreur.
 
-- [ ] **Step 4: Vérifier la persistance en base**
+- [x] **Step 4: Vérifier la persistance en base**
 
 Run: `docker compose exec postgres psql -U user -d ca_tient -c 'SELECT "businessModel", "currency" FROM "Idea" ORDER BY "createdAt" DESC LIMIT 1;'`
 Expected: une ligne `ECOMMERCE | XOF` correspondant au test manuel.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/web/src/app/commencer/page.tsx
