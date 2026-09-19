@@ -35,7 +35,7 @@ export function wizardReducer(state: WizardState, action: WizardAction): WizardS
     case "SET_DESCRIPTION":
       return { ...state, rawDescription: action.rawDescription };
     case "SET_CURRENCY":
-      return { ...state, currency: action.currency };
+      return { ...state, currency: action.currency, wasSuggested: false };
     case "SET_HYPOTHESIS":
       return { ...state, hypotheses: { ...state.hypotheses, [action.key]: action.value }, wasSuggested: false };
     case "SET_HYPOTHESES":

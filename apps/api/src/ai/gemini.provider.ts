@@ -4,7 +4,6 @@ import type { BusinessModel } from "@prisma/client";
 import type { CurrencyCode } from "../financial-engine/financial-engine.types.js";
 import type { AiProvider, AiSuggestionInput, SuggestedHypotheses } from "./ai-provider.port.js";
 
-const MODEL_NAME = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
 const REQUEST_TIMEOUT_MS = 8_000;
 
 const BUSINESS_MODEL_LABELS: Record<BusinessModel, string> = {
@@ -74,6 +73,7 @@ function parseSuggestedHypotheses(text: string | undefined): SuggestedHypotheses
 export class GeminiProvider implements AiProvider {
   private readonly logger = new Logger(GeminiProvider.name);
   private readonly client: GoogleGenAI;
+  private readonly modelName = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
 
   constructor() {
     this.client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
@@ -82,7 +82,7 @@ export class GeminiProvider implements AiProvider {
   async suggestHypotheses(input: AiSuggestionInput): Promise<SuggestedHypotheses | null> {
     try {
       const response = await this.client.models.generateContent({
-        model: MODEL_NAME,
+        model: this.modelName,
         contents: buildPrompt(input),
         config: {
           responseMimeType: "application/json",
@@ -102,7 +102,8 @@ export class GeminiProvider implements AiProvider {
 
       return parseSuggestedHypotheses(response.text);
     } catch (error) {
-      this.logger.warn(`Suggestion Gemini indisponible : ${(error as Error).message}`);
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.warn(`Suggestion Gemini indisponible : ${message}`);
       return null;
     }
   }
