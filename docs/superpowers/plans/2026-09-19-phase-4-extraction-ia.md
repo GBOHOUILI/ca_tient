@@ -218,9 +218,9 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const generateContentMock = vi.fn();
 
 vi.mock("@google/genai", () => ({
-  GoogleGenAI: vi.fn().mockImplementation(() => ({
-    models: { generateContent: generateContentMock },
-  })),
+  GoogleGenAI: vi.fn().mockImplementation(function () {
+    return { models: { generateContent: generateContentMock } };
+  }),
   Type: { OBJECT: "OBJECT", INTEGER: "INTEGER" },
 }));
 
@@ -282,6 +282,8 @@ describe("GeminiProvider.suggestHypotheses", () => {
 ```
 
 Note : le mock du module est déclaré avant l'import de `GeminiProvider` via un `import()` dynamique (`vi.mock` doit être évalué avant que le module testé importe `@google/genai`) — pattern requis ici car c'est le seul fichier du projet qui mocke une dépendance externe (voir Global Constraints).
+
+Note : `mockImplementation` utilise une expression `function`, pas une fonction fléchée — `gemini.provider.ts` instancie le SDK avec `new GoogleGenAI(...)`, et une fonction fléchée n'a pas de `[[Construct]]` ; vitest 4.1.11 lève `TypeError: ... is not a constructor` si l'implémentation mockée est une flèche.
 
 - [ ] **Step 2: Vérifier l'échec (RED)**
 
