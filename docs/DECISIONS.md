@@ -16,4 +16,6 @@ Format : `[Date] Décision — Raison — Alternatives écartées`
 
 - **[2026-09-19] Postgres local (Docker Compose) exposé sur le port hôte 5433** (au lieu de 5432 prévu au plan Phase 3), le 5432 était déjà occupé localement. Le conteneur écoute toujours en 5432 en interne ; seul le mapping hôte et `DATABASE_URL` (`apps/api/.env.example`) changent. Aucun impact en dehors de l'environnement local.
 
+- **[2026-09-19] Fournisseur IA (Phase 4) : Google Gemini (famille Flash), SDK officiel `@google/genai`.** Choisi pour son mode structured output natif (`responseSchema`), qui force une réponse JSON conforme à un schéma et réduit le risque d'extraction mal formée par rapport à un parsing de texte libre. Free-tier généreux (`docs/AI_ENGINE.md` : « privilégier une API économique / free-tier »). Groq écarté : modèles open-source moins fiables pour du JSON strict sans validation additionnelle. Modèle exact configurable via `GEMINI_MODEL` (défaut `gemini-2.5-flash`), pour pouvoir suivre les mises à jour de la famille Flash sans redéploiement de code.
+
 *(À compléter au fil du projet — toute décision structurante doit être ajoutée ici avant d'être considérée comme actée, conformément à `CLAUDE.md`.)*
