@@ -256,12 +256,12 @@ git commit -m "feat(api): PrismaService avec driver adapter pg"
 - Consumes: `SUPPORTED_CURRENCIES`, `CurrencyCode` depuis `apps/api/src/financial-engine/financial-engine.types.ts` (déjà livré Phase 2) ; `BusinessModel` généré par Prisma (`@prisma/client`, disponible depuis Task 1).
 - Produces: classes `HypothesesDto` (`price`, `volume`, `variableCostPerUnit`, `fixedCosts: number`) et `CreateIdeaDto` (`businessModel: BusinessModel`, `rawDescription: string`, `currency: CurrencyCode`, `hypotheses: HypothesesDto`), consommées par `IdeasService`/`IdeasController` (Tasks 4-6).
 
-- [ ] **Step 1: Installer class-validator et class-transformer**
+- [x] **Step 1: Installer class-validator et class-transformer**
 
 Run: `cd apps/api && pnpm add class-validator class-transformer`
 Expected: ajoutés aux dependencies de `apps/api/package.json`.
 
-- [ ] **Step 2: Écrire le test (RED)**
+- [x] **Step 2: Écrire le test (RED)**
 
 Créer `apps/api/src/ideas/dto/create-idea.dto.spec.ts` :
 
@@ -320,12 +320,12 @@ describe("CreateIdeaDto", () => {
 });
 ```
 
-- [ ] **Step 3: Vérifier l'échec (RED)**
+- [x] **Step 3: Vérifier l'échec (RED)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/dto/create-idea.dto.spec.ts`
 Expected: FAIL, `Cannot find module './create-idea.dto.js'`.
 
-- [ ] **Step 4: Implémenter `HypothesesDto`**
+- [x] **Step 4: Implémenter `HypothesesDto`**
 
 Créer `apps/api/src/ideas/dto/hypotheses.dto.ts` :
 
@@ -351,7 +351,7 @@ export class HypothesesDto {
 }
 ```
 
-- [ ] **Step 5: Implémenter `CreateIdeaDto`**
+- [x] **Step 5: Implémenter `CreateIdeaDto`**
 
 Créer `apps/api/src/ideas/dto/create-idea.dto.ts` :
 
@@ -380,12 +380,12 @@ export class CreateIdeaDto {
 }
 ```
 
-- [ ] **Step 6: Vérifier le succès (GREEN)**
+- [x] **Step 6: Vérifier le succès (GREEN)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/dto/create-idea.dto.spec.ts`
 Expected: PASS, 5 tests.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add apps/api/package.json apps/api/pnpm-lock.yaml apps/api/src/ideas
