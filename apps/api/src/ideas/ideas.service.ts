@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import type { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { FinancialEngineService } from "../financial-engine/financial-engine.service.js";
 import type { CreateIdeaDto } from "./dto/create-idea.dto.js";
@@ -53,9 +54,9 @@ export class IdeasService {
         simulations: {
           create: {
             type: "apercu",
-            inputsSnapshot: hypotheses,
-            result,
-            breakEven,
+            inputsSnapshot: hypotheses as unknown as Prisma.InputJsonValue,
+            result: result as unknown as Prisma.InputJsonValue,
+            breakEven: breakEven as unknown as Prisma.InputJsonValue,
           },
         },
       },

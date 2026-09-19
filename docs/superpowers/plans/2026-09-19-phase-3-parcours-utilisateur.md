@@ -690,7 +690,7 @@ git commit -m "feat(api): IdeasService.findOne"
 - Consumes: `IdeasService` (Tasks 4-5), `PrismaModule` (Task 2), `FinancialEngineModule` (Phase 2).
 - Produces: `POST /ideas` (201, body `CreateIdeaDto`, réponse `{ ideaId, result, breakEven }` ; 400 si DTO invalide), `GET /ideas/:id` (200 avec `IdeaDetail` ; 404 si absent). Consommé par le frontend (Task 7).
 
-- [ ] **Step 1: Activer la validation globale**
+- [x] **Step 1: Activer la validation globale**
 
 Modifier `apps/api/src/main.ts` :
 
@@ -707,7 +707,7 @@ async function bootstrap() {
 await bootstrap();
 ```
 
-- [ ] **Step 2: Écrire le test HTTP (RED)**
+- [x] **Step 2: Écrire le test HTTP (RED)**
 
 Créer `apps/api/src/ideas/ideas.controller.spec.ts` :
 
@@ -776,12 +776,12 @@ describe("IdeasController (HTTP)", () => {
 });
 ```
 
-- [ ] **Step 3: Vérifier l'échec (RED)**
+- [x] **Step 3: Vérifier l'échec (RED)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/ideas.controller.spec.ts`
 Expected: FAIL, `Cannot find module './ideas.module.js'`.
 
-- [ ] **Step 4: Implémenter `IdeasController`**
+- [x] **Step 4: Implémenter `IdeasController`**
 
 Créer `apps/api/src/ideas/ideas.controller.ts` :
 
@@ -810,7 +810,7 @@ export class IdeasController {
 }
 ```
 
-- [ ] **Step 5: Implémenter `IdeasModule`**
+- [x] **Step 5: Implémenter `IdeasModule`**
 
 Créer `apps/api/src/ideas/ideas.module.ts` :
 
@@ -829,12 +829,12 @@ import { FinancialEngineModule } from "../financial-engine/financial-engine.modu
 export class IdeasModule {}
 ```
 
-- [ ] **Step 6: Vérifier le succès (GREEN)**
+- [x] **Step 6: Vérifier le succès (GREEN)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/ideas.controller.spec.ts`
 Expected: PASS, 4 tests.
 
-- [ ] **Step 7: Câbler `IdeasModule` dans `AppModule`**
+- [x] **Step 7: Câbler `IdeasModule` dans `AppModule`**
 
 Modifier `apps/api/src/app.module.ts` :
 
@@ -853,12 +853,12 @@ import { IdeasModule } from './ideas/ideas.module.js';
 export class AppModule {}
 ```
 
-- [ ] **Step 8: Lancer toute la suite, build, lint**
+- [x] **Step 8: Lancer toute la suite, build, lint**
 
 Run: `pnpm --filter api test && pnpm --filter api build && pnpm --filter api lint`
 Expected: tous les tests passent, build et lint sans erreur.
 
-- [ ] **Step 9: Smoke test manuel**
+- [x] **Step 9: Smoke test manuel**
 
 Run (deux terminaux, ou `pnpm --filter api start:dev &` puis attendre le démarrage) :
 ```bash
@@ -866,7 +866,7 @@ curl -s -X POST http://localhost:3001/ideas -H "Content-Type: application/json" 
 ```
 Expected: réponse JSON 201 avec `ideaId`, `result`, `breakEven`.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 git add apps/api/src
