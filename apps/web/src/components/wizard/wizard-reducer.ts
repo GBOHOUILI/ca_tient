@@ -8,6 +8,7 @@ export interface WizardState {
   rawDescription: string;
   currency: CurrencyCode;
   hypotheses: HypothesesInput;
+  wasSuggested: boolean;
 }
 
 export type WizardAction =
@@ -15,6 +16,7 @@ export type WizardAction =
   | { type: "SET_DESCRIPTION"; rawDescription: string }
   | { type: "SET_CURRENCY"; currency: CurrencyCode }
   | { type: "SET_HYPOTHESIS"; key: keyof HypothesesInput; value: number }
+  | { type: "SET_HYPOTHESES"; hypotheses: HypothesesInput }
   | { type: "GO_TO_STEP"; step: WizardStep };
 
 export const initialWizardState: WizardState = {
@@ -23,6 +25,7 @@ export const initialWizardState: WizardState = {
   rawDescription: "",
   currency: "XOF",
   hypotheses: { price: 0, volume: 0, variableCostPerUnit: 0, fixedCosts: 0 },
+  wasSuggested: false,
 };
 
 export function wizardReducer(state: WizardState, action: WizardAction): WizardState {
@@ -32,9 +35,11 @@ export function wizardReducer(state: WizardState, action: WizardAction): WizardS
     case "SET_DESCRIPTION":
       return { ...state, rawDescription: action.rawDescription };
     case "SET_CURRENCY":
-      return { ...state, currency: action.currency };
+      return { ...state, currency: action.currency, wasSuggested: false };
     case "SET_HYPOTHESIS":
-      return { ...state, hypotheses: { ...state.hypotheses, [action.key]: action.value } };
+      return { ...state, hypotheses: { ...state.hypotheses, [action.key]: action.value }, wasSuggested: false };
+    case "SET_HYPOTHESES":
+      return { ...state, hypotheses: action.hypotheses, wasSuggested: true };
     case "GO_TO_STEP":
       return { ...state, step: action.step };
     default:

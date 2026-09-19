@@ -21,9 +21,12 @@
 - [x] `POST /ideas` / `GET /ideas/:id` (`IdeasModule`, DTOs validés, orchestration du moteur financier Phase 2)
 - [x] Formulaire guidé (`docs/USER_FLOWS.md`, `docs/SPECIFICATIONS.md`) : wizard `/commencer` (type -> description -> hypothèses -> résultats), saisie manuelle uniquement (extraction IA en Phase 4)
 - [x] Écran de résultats/aperçu
+- [ ] **Dette UX à corriger** : le libellé des champs de l'écran Hypothèses (`StepHypotheses.tsx`) est trop jargonneux/imprécis pour un utilisateur sans bagage financier (ex. "coût variable par unité", "coûts fixes"), contrairement à `design/UX_PRINCIPLES.md` ("le vocabulaire est simple, jamais jargonneux"). À revoir après la Phase 4 (copie + précision des questions), signalé par l'utilisateur le 2026-09-19.
 
 ## Phase 4 — IA
-- [ ] Extraction des hypothèses depuis la description libre (`docs/AI_ENGINE.md`)
+- [x] Extraction des hypothèses depuis la description libre (`docs/AI_ENGINE.md`) : `AiModule` (`apps/api/src/ai/`), Google Gemini via `@google/genai` en mode structured output, `POST /ideas/suggest-hypotheses` (stateless, rate-limité 10 req/min/IP), préremplissage automatique de l'écran Hypothèses du wizard avec repli silencieux si l'IA échoue. Voir `docs/superpowers/specs/2026-09-19-phase-4-extraction-ia-design.md` et `docs/DECISIONS.md`.
+- [ ] **Dette pré-déploiement notée pendant la revue finale** : `ThrottlerGuard` suit `req.ip`, qui se réduit à une seule IP derrière un reverse proxy sans `app.set('trust proxy', ...)` — à corriger une fois la cible d'hébergement choisie (profondeur de proxy dépendante de l'infra).
+- [ ] Dette UX pré-existante (Phase 3) : `<textarea>` de description sans `maxLength` côté client (le serveur plafonne à 2000 caractères) — au-delà, l'échec ne remonte que sur l'écran Hypothèses avec un message générique.
 
 ## Phase 5 — Scénarios
 - [ ] Module "Et si… ?" + scénarios prudent/réaliste/ambitieux/crise

@@ -48,3 +48,31 @@ export async function createIdea(input: CreateIdeaInput): Promise<CreateIdeaResp
 
   return (await response.json()) as CreateIdeaResponse;
 }
+
+export interface SuggestHypothesesInput {
+  businessModel: BusinessModel;
+  rawDescription: string;
+  currency: CurrencyCode;
+}
+
+export type SuggestHypothesesResponse =
+  | { available: true; hypotheses: HypothesesInput }
+  | { available: false };
+
+export async function suggestHypotheses(input: SuggestHypothesesInput): Promise<SuggestHypothesesResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/ideas/suggest-hypotheses`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+
+    if (!response.ok) {
+      return { available: false };
+    }
+
+    return (await response.json()) as SuggestHypothesesResponse;
+  } catch {
+    return { available: false };
+  }
+}

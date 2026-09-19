@@ -7,13 +7,32 @@ import { StepDescription } from "@/components/wizard/StepDescription";
 import { StepHypotheses } from "@/components/wizard/StepHypotheses";
 import { StepResults } from "@/components/wizard/StepResults";
 import { initialWizardState, wizardReducer } from "@/components/wizard/wizard-reducer";
-import { createIdea, type CreateIdeaResponse } from "@/lib/ideas-api";
+import { createIdea, suggestHypotheses, type CreateIdeaResponse } from "@/lib/ideas-api";
 
 export default function CommencerPage() {
   const [state, dispatch] = useReducer(wizardReducer, initialWizardState);
+  const [suggesting, setSuggesting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [response, setResponse] = useState<CreateIdeaResponse | null>(null);
+
+  async function handleDescriptionNext() {
+    if (!state.businessModel) return;
+    setSuggesting(true);
+    try {
+      const suggestion = await suggestHypotheses({
+        businessModel: state.businessModel,
+        rawDescription: state.rawDescription,
+        currency: state.currency,
+      });
+      if (suggestion.available) {
+        dispatch({ type: "SET_HYPOTHESES", hypotheses: suggestion.hypotheses });
+      }
+    } finally {
+      setSuggesting(false);
+      dispatch({ type: "GO_TO_STEP", step: "hypotheses" });
+    }
+  }
 
   async function handleSubmit() {
     if (!state.businessModel) return;
@@ -47,8 +66,9 @@ export default function CommencerPage() {
         <StepDescription
           value={state.rawDescription}
           onChange={(rawDescription) => dispatch({ type: "SET_DESCRIPTION", rawDescription })}
-          onNext={() => dispatch({ type: "GO_TO_STEP", step: "hypotheses" })}
+          onNext={handleDescriptionNext}
           onBack={() => dispatch({ type: "GO_TO_STEP", step: "business-type" })}
+          loading={suggesting}
         />
       )}
 
@@ -57,6 +77,7 @@ export default function CommencerPage() {
           businessModel={state.businessModel}
           hypotheses={state.hypotheses}
           currency={state.currency}
+          wasSuggested={state.wasSuggested}
           onHypothesisChange={(key, value) => dispatch({ type: "SET_HYPOTHESIS", key, value })}
           onCurrencyChange={(currency) => dispatch({ type: "SET_CURRENCY", currency })}
           onSubmit={handleSubmit}
