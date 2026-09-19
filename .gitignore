@@ -34,3 +34,6 @@ apps/api/prisma/migrations/dev.db
 
 # artefacts de vérification manuelle (Playwright MCP)
 .playwright-mcp/
+
+# git worktrees locaux (superpowers subagent-driven-development)
+.worktrees/
