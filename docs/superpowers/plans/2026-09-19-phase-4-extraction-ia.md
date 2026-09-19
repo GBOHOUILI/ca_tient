@@ -548,7 +548,7 @@ Expected: FAIL, `Cannot find module './ai.module.js'`.
 Créer `apps/api/src/ai/ai.controller.ts` :
 
 ```typescript
-import { Body, Controller, Inject, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, HttpCode, HttpStatus, Inject, Post, UseGuards } from "@nestjs/common";
 import { ThrottlerGuard } from "@nestjs/throttler";
 import { AI_PROVIDER, type AiProvider } from "./ai-provider.port.js";
 import { SuggestHypothesesDto } from "./dto/suggest-hypotheses.dto.js";
@@ -558,6 +558,7 @@ export class AiController {
   constructor(@Inject(AI_PROVIDER) private readonly aiProvider: AiProvider) {}
 
   @Post("suggest-hypotheses")
+  @HttpCode(HttpStatus.OK)
   @UseGuards(ThrottlerGuard)
   async suggestHypotheses(@Body() dto: SuggestHypothesesDto) {
     const hypotheses = await this.aiProvider.suggestHypotheses(dto);
@@ -570,6 +571,8 @@ export class AiController {
   }
 }
 ```
+
+Note : `@HttpCode(HttpStatus.OK)` est nécessaire car NestJS renvoie 201 par défaut sur un `@Post` — la spec exige explicitement une réponse 200 pour cet endpoint (jamais 500 non plus, y compris en cas d'échec IA), et le test de l'étape suivante attend `.expect(200)`.
 
 - [ ] **Step 4: Implémenter `AiModule`**
 
