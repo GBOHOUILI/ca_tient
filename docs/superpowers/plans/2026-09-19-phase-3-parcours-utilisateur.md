@@ -1117,7 +1117,7 @@ git commit -m "feat(web): WizardProgress et StepBusinessType"
 - Consumes: `BusinessModel`, `CurrencyCode`, `CURRENCIES`, `HypothesesInput` (Task 7).
 - Produces: `StepDescription({ value, onChange, onNext, onBack }: { value: string; onChange: (v: string) => void; onNext: () => void; onBack: () => void })`, `StepHypotheses({ businessModel, hypotheses, currency, onHypothesisChange, onCurrencyChange, onSubmit, onBack, submitting, error }: {...})`. Consommés par la page wizard (Task 11).
 
-- [ ] **Step 1: `StepDescription`**
+- [x] **Step 1: `StepDescription`**
 
 Créer `apps/web/src/components/wizard/StepDescription.tsx` :
 
@@ -1164,7 +1164,7 @@ export function StepDescription({
 }
 ```
 
-- [ ] **Step 2: `StepHypotheses`**
+- [x] **Step 2: `StepHypotheses`**
 
 Créer `apps/web/src/components/wizard/StepHypotheses.tsx` :
 
@@ -1259,12 +1259,12 @@ export function StepHypotheses({
 }
 ```
 
-- [ ] **Step 3: Vérifier lint + build**
+- [x] **Step 3: Vérifier lint + build**
 
 Run: `pnpm --filter web lint && pnpm --filter web build`
 Expected: succès.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/web/src/components/wizard/StepDescription.tsx apps/web/src/components/wizard/StepHypotheses.tsx
