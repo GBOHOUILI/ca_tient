@@ -12,8 +12,9 @@
 - [ ] Déploiement (hébergement front/back + PostgreSQL free-tier, voir `docs/ROADMAP.md` "Budget minimal")
 
 ## Phase 2 — Moteur financier
-- [ ] Implémenter les formules (`docs/FINANCIAL_ENGINE.md`)
-- [ ] Tests unitaires cas nominal / cas limites (`skills/testing.md`)
+- [x] Implémenter les formules (`docs/FINANCIAL_ENGINE.md`) : `apps/api/src/financial-engine/` (CA, marge brute, résultat estimé, seuil de rentabilité, scénarios prudent/réaliste/ambitieux/crise). Montants en devise choisie par l'utilisateur (XOF par défaut du marché), voir `docs/DECISIONS.md`.
+- [x] Tests unitaires cas nominal / cas limites (`skills/testing.md`) : 31 tests (vitest), TDD, cas nominal/limite/extrême couverts.
+- [ ] Câbler l'API `/ideas/:id/simulate` (`docs/API.md`), reporté à la Phase 3+ (nécessite la persistance des idées/hypothèses).
 
 ## Phase 3 — Parcours utilisateur
 - [ ] Formulaire guidé (`docs/USER_FLOWS.md`, `docs/SPECIFICATIONS.md`)

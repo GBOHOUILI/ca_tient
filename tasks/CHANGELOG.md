@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## [Non versionné], Phase 2 : moteur financier
+- Module pur `apps/api/src/financial-engine/` (aucune dépendance HTTP/IA) : `computeResult` (CA, marge brute, résultat estimé), `computeBreakEven` (seuil de rentabilité, gère explicitement marge unitaire nulle/négative sans division par zéro), `applyScenario`/`applyDelta` (prudent, réaliste, ambitieux, crise, et deltas personnalisés pour "Et si… ?").
+- Montants en entiers dans la plus petite unité de la devise choisie par l'utilisateur (`XOF`, `EUR`, `USD`, `GBP`, `NGN`, `GHS`), aucune arithmétique flottante, aucune dépendance de calcul décimal, voir `docs/DECISIONS.md`.
+- 31 tests unitaires (vitest, TDD) : cas nominal, cas limite (marge nulle, coûts fixes nuls, division par zéro évitée), cas extrême (montant au-delà de `Number.MAX_SAFE_INTEGER`, valeurs négatives/non entières rejetées).
+- `FinancialEngineModule` câblé dans `AppModule`, sans controller pour l'instant (route `/ideas/:id/simulate` reportée, dépend de la persistance des idées en Phase 3+).
+
 ## [Non versionné], Phase 1 : landing page + hero Three.js
 - Landing page (`apps/web/src/app/page.tsx`) : hero avec promesse/CTA/prix visible, types de business, étapes du parcours, rappel tarif.
 - Hero 3D (`components/landing/HeroScene.tsx`) : nuage de particules `@react-three/fiber`/`drei`, dégradé emerald→cyan, parallax doux au pointeur, chargé en dynamique (`ssr:false`) avec fallback CSS si WebGL absent ou `prefers-reduced-motion` actif. Positions générées par un PRNG déterministe (pas de `Math.random()` pendant le render, conforme aux règles de pureté React 19 activées par `eslint-config-next` 16).
