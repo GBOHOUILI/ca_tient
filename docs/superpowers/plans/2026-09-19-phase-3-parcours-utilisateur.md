@@ -35,7 +35,7 @@
 
 Config, pas de cycle TDD (exception explicite de la skill test-driven-development).
 
-- [ ] **Step 1: Écrire `docker-compose.yml`**
+- [x] **Step 1: Écrire `docker-compose.yml`**
 
 ```yaml
 services:
@@ -55,17 +55,17 @@ volumes:
   postgres_data:
 ```
 
-- [ ] **Step 2: Démarrer Postgres et vérifier qu'il accepte les connexions**
+- [x] **Step 2: Démarrer Postgres et vérifier qu'il accepte les connexions**
 
 Run: `docker compose up -d && docker compose exec postgres pg_isready -U user -d ca_tient`
 Expected: `/var/run/postgresql:5432 - accepting connections`
 
-- [ ] **Step 3: Copier `.env.example` en `.env` si absent**
+- [x] **Step 3: Copier `.env.example` en `.env` si absent**
 
 Run: `cd apps/api && [ -f .env ] || cp .env.example .env`
 Expected: `apps/api/.env` existe avec `DATABASE_URL="postgresql://user:password@localhost:5432/ca_tient?schema=public"` (déjà le cas depuis la Phase 1, ne rien écraser si le fichier existe déjà).
 
-- [ ] **Step 4: Ajouter les modèles au schéma Prisma**
+- [x] **Step 4: Ajouter les modèles au schéma Prisma**
 
 Remplacer le contenu de `apps/api/prisma/schema.prisma` par :
 
@@ -122,17 +122,17 @@ model Simulation {
 }
 ```
 
-- [ ] **Step 5: Générer et appliquer la migration**
+- [x] **Step 5: Générer et appliquer la migration**
 
 Run: `cd apps/api && pnpm exec prisma migrate dev --name add_ideas_hypotheses_simulations`
 Expected: la commande crée `apps/api/prisma/migrations/<timestamp>_add_ideas_hypotheses_simulations/migration.sql`, l'applique, régénère le client Prisma, se termine sans erreur.
 
-- [ ] **Step 6: Vérifier que les tables existent**
+- [x] **Step 6: Vérifier que les tables existent**
 
 Run: `docker compose exec postgres psql -U user -d ca_tient -c '\dt'`
 Expected: la liste inclut `Idea`, `Hypothesis`, `Simulation`, `_prisma_migrations`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add docker-compose.yml apps/api/prisma/schema.prisma apps/api/prisma/migrations
@@ -152,12 +152,12 @@ git commit -m "feat(api): schema Prisma Idea/Hypothesis/Simulation + Postgres lo
 - Consumes: tables créées en Task 1 (base `ca_tient` locale accessible via `DATABASE_URL`).
 - Produces: `PrismaService` (`apps/api/src/prisma/prisma.service.ts`, étend `PrismaClient`, expose toutes les méthodes Prisma standard comme `idea.create`, `idea.findUnique`, etc.), `PrismaModule` (`@Global()`, exporte `PrismaService`), consommés par toutes les tâches suivantes via `import { PrismaService } from "../prisma/prisma.service.js"`.
 
-- [ ] **Step 1: Installer les dépendances**
+- [x] **Step 1: Installer les dépendances**
 
 Run: `cd apps/api && pnpm add @prisma/adapter-pg pg && pnpm add -D @types/pg`
 Expected: `apps/api/package.json` liste `@prisma/adapter-pg` et `pg` en dependencies, `@types/pg` en devDependencies.
 
-- [ ] **Step 2: Écrire le test (RED)**
+- [x] **Step 2: Écrire le test (RED)**
 
 Créer `apps/api/src/prisma/prisma.service.spec.ts` :
 
@@ -178,12 +178,12 @@ describe("PrismaService", () => {
 });
 ```
 
-- [ ] **Step 3: Vérifier l'échec (RED)**
+- [x] **Step 3: Vérifier l'échec (RED)**
 
 Run: `pnpm --filter api exec vitest run src/prisma/prisma.service.spec.ts`
 Expected: FAIL, `Cannot find module './prisma.service.js'`.
 
-- [ ] **Step 4: Implémenter `PrismaService`**
+- [x] **Step 4: Implémenter `PrismaService`**
 
 Créer `apps/api/src/prisma/prisma.service.ts` :
 
@@ -210,12 +210,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
 Note : si `PrismaPg` n'accepte pas `{ connectionString }` tel quel, vérifier la signature exacte dans `apps/api/node_modules/@prisma/adapter-pg/dist/index.d.ts` et ajuster (l'API du driver adapter est encore jeune sur Prisma 7.10.0).
 
-- [ ] **Step 5: Vérifier le succès (GREEN)**
+- [x] **Step 5: Vérifier le succès (GREEN)**
 
 Run: `pnpm --filter api exec vitest run src/prisma/prisma.service.spec.ts`
 Expected: PASS, 1 test.
 
-- [ ] **Step 6: Créer `PrismaModule`**
+- [x] **Step 6: Créer `PrismaModule`**
 
 Créer `apps/api/src/prisma/prisma.module.ts` :
 
@@ -231,12 +231,12 @@ import { PrismaService } from "./prisma.service.js";
 export class PrismaModule {}
 ```
 
-- [ ] **Step 7: Lancer toute la suite pour confirmer l'absence de régression**
+- [x] **Step 7: Lancer toute la suite pour confirmer l'absence de régression**
 
 Run: `pnpm --filter api test`
 Expected: tous les tests passent (ceux du moteur financier + le nouveau).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add apps/api/package.json apps/api/pnpm-lock.yaml apps/api/src/prisma
