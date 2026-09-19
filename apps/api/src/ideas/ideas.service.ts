@@ -4,6 +4,15 @@ import { FinancialEngineService } from "../financial-engine/financial-engine.ser
 import type { CreateIdeaDto } from "./dto/create-idea.dto.js";
 import type { Hypotheses } from "../financial-engine/financial-engine.types.js";
 
+export interface IdeaDetail {
+  id: string;
+  businessModel: string;
+  rawDescription: string;
+  currency: string;
+  hypotheses: { key: string; label: string; value: number; unit: string | null }[];
+  simulation: { type: string; inputsSnapshot: unknown; result: unknown; breakEven: unknown; createdAt: Date } | null;
+}
+
 @Injectable()
 export class IdeasService {
   constructor(
@@ -53,5 +62,34 @@ export class IdeasService {
     });
 
     return { ideaId: idea.id, result, breakEven };
+  }
+
+  async findOne(id: string): Promise<IdeaDetail | null> {
+    const idea = await this.prisma.idea.findUnique({
+      where: { id },
+      include: {
+        hypotheses: true,
+        simulations: { orderBy: { createdAt: "desc" }, take: 1 },
+      },
+    });
+
+    if (!idea) return null;
+
+    return {
+      id: idea.id,
+      businessModel: idea.businessModel,
+      rawDescription: idea.rawDescription,
+      currency: idea.currency,
+      hypotheses: idea.hypotheses.map((h) => ({ key: h.key, label: h.label, value: h.value, unit: h.unit })),
+      simulation: idea.simulations[0]
+        ? {
+            type: idea.simulations[0].type,
+            inputsSnapshot: idea.simulations[0].inputsSnapshot,
+            result: idea.simulations[0].result,
+            breakEven: idea.simulations[0].breakEven,
+            createdAt: idea.simulations[0].createdAt,
+          }
+        : null,
+    };
   }
 }

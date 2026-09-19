@@ -62,3 +62,37 @@ describe("IdeasService.create", () => {
     });
   });
 });
+
+describe("IdeasService.findOne", () => {
+  const prisma = new PrismaService();
+  const service = new IdeasService(prisma, new FinancialEngineService());
+
+  beforeAll(async () => {
+    await prisma.onModuleInit();
+  });
+
+  afterEach(async () => {
+    await prisma.idea.deleteMany();
+  });
+
+  afterAll(async () => {
+    await prisma.onModuleDestroy();
+  });
+
+  it("returns the idea with its hypotheses and latest simulation", async () => {
+    const { ideaId } = await service.create(payload());
+
+    const idea = await service.findOne(ideaId);
+
+    expect(idea?.id).toBe(ideaId);
+    expect(idea?.businessModel).toBe("ECOMMERCE");
+    expect(idea?.hypotheses).toHaveLength(4);
+    expect(idea?.simulation?.type).toBe("apercu");
+  });
+
+  it("returns null for an unknown id", async () => {
+    const idea = await service.findOne("does-not-exist");
+
+    expect(idea).toBeNull();
+  });
+});

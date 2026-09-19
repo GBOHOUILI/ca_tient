@@ -570,7 +570,7 @@ git commit -m "feat(api): IdeasService.create, persistance + orchestration du mo
 - Consumes: `PrismaService` (Task 2), le résultat de `create()` (Task 4).
 - Produces: `IdeasService.findOne(id: string): Promise<IdeaDetail | null>`, où `IdeaDetail` est exporté depuis `apps/api/src/ideas/ideas.service.ts` avec la forme `{ id: string; businessModel: string; rawDescription: string; currency: string; hypotheses: { key: string; label: string; value: number; unit: string | null }[]; simulation: { type: string; inputsSnapshot: unknown; result: unknown; breakEven: unknown; createdAt: Date } | null }`. Consommé par `IdeasController` (Task 6).
 
-- [ ] **Step 1: Ajouter les tests (RED)**
+- [x] **Step 1: Ajouter les tests (RED)**
 
 Ajouter à `apps/api/src/ideas/ideas.service.spec.ts`, dans un nouveau bloc `describe` :
 
@@ -610,12 +610,12 @@ describe("IdeasService.findOne", () => {
 });
 ```
 
-- [ ] **Step 2: Vérifier l'échec (RED)**
+- [x] **Step 2: Vérifier l'échec (RED)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/ideas.service.spec.ts`
 Expected: FAIL sur les 2 nouveaux tests, `service.findOne is not a function`.
 
-- [ ] **Step 3: Implémenter `findOne()`**
+- [x] **Step 3: Implémenter `findOne()`**
 
 Ajouter à `apps/api/src/ideas/ideas.service.ts` (après la classe, ou dans la classe : ajouter la méthode et le type exporté en haut du fichier) :
 
@@ -663,12 +663,12 @@ Puis ajouter la méthode dans la classe `IdeasService` (après `create`) :
   }
 ```
 
-- [ ] **Step 4: Vérifier le succès (GREEN)**
+- [x] **Step 4: Vérifier le succès (GREEN)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/ideas.service.spec.ts`
 Expected: PASS, 4 tests au total.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/api/src/ideas/ideas.service.ts apps/api/src/ideas/ideas.service.spec.ts
