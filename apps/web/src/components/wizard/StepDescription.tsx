@@ -3,11 +3,13 @@ export function StepDescription({
   onChange,
   onNext,
   onBack,
+  loading,
 }: {
   value: string;
   onChange: (value: string) => void;
   onNext: () => void;
   onBack: () => void;
+  loading: boolean;
 }) {
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
@@ -29,10 +31,10 @@ export function StepDescription({
         <button
           type="button"
           onClick={onNext}
-          disabled={value.trim().length === 0}
+          disabled={value.trim().length === 0 || loading}
           className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white disabled:opacity-40"
         >
-          Continuer
+          {loading ? "Analyse en cours..." : "Continuer"}
         </button>
       </div>
     </div>

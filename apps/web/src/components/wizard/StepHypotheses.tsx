@@ -20,6 +20,7 @@ export function StepHypotheses({
   businessModel,
   hypotheses,
   currency,
+  wasSuggested,
   onHypothesisChange,
   onCurrencyChange,
   onSubmit,
@@ -30,6 +31,7 @@ export function StepHypotheses({
   businessModel: BusinessModel;
   hypotheses: HypothesesInput;
   currency: CurrencyCode;
+  wasSuggested: boolean;
   onHypothesisChange: (key: keyof HypothesesInput, value: number) => void;
   onCurrencyChange: (currency: CurrencyCode) => void;
   onSubmit: () => void;
@@ -40,6 +42,11 @@ export function StepHypotheses({
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-6">
       <h1 className="text-center text-h2-mobile font-semibold md:text-h2">Tes hypotheses</h1>
+      {wasSuggested ? (
+        <p className="text-center text-small text-accent-emerald">
+          Suggere par l&apos;IA a partir de ta description : verifie et corrige si besoin.
+        </p>
+      ) : null}
       <label className="flex flex-col gap-2 text-small text-text-secondary">
         Devise
         <select
