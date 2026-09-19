@@ -6,7 +6,7 @@ const steps = [
   {
     title: "Valide les hypothèses",
     description:
-      "L'IA propose les variables clés (prix, volumes, coûts) à partir de ta description — tu les corriges si besoin.",
+      "L'IA propose les variables clés (prix, volumes, coûts) à partir de ta description, tu les corriges si besoin.",
   },
   {
     title: "Teste tes scénarios",

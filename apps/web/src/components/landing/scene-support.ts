@@ -14,7 +14,7 @@ function getSnapshot(): boolean {
 }
 
 function getServerSnapshot(): boolean {
-  return false; // pas de rendu 3D côté serveur — chargé dynamiquement après le montage client
+  return false; // pas de rendu 3D côté serveur, chargé dynamiquement après le montage client
 }
 
 function subscribe(callback: () => void) {

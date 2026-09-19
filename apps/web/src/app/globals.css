@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 /*
- * Design tokens — source de vérité : design/COLORS.md et design/TYPOGRAPHY.md.
+ * Design tokens, source de vérité : design/COLORS.md et design/TYPOGRAPHY.md.
  * Dark/light via une classe `dark` sur <html> (skills/frontend.md) : :root porte les
  * valeurs claires, .dark les surcharge. Le mode sombre reste la référence produit par
- * défaut — c'est apps/web/src/app/layout.tsx (rendu serveur + script anti-flash) qui
+ * défaut, c'est apps/web/src/app/layout.tsx (rendu serveur + script anti-flash) qui
  * pose la classe `dark` par défaut, pas ce fichier.
  */
 :root {
@@ -14,8 +14,8 @@
   --color-text-primary: #18181b;
   --color-text-secondary: #71717a;
 
-  --color-accent-emerald: #059669;
-  --color-accent-emerald-hover: #047857;
+  --color-accent-emerald: #008558;
+  --color-accent-emerald-hover: #00693f;
   --color-accent-emerald-soft: #34d399;
   --color-accent-cyan: #0fa890;
 
@@ -56,7 +56,7 @@
 
   --font-sans: var(--font-inter);
 
-  /* Échelle typographique — design/TYPOGRAPHY.md (valeurs desktop ; variantes -mobile pour les breakpoints < md) */
+  /* Échelle typographique, design/TYPOGRAPHY.md (valeurs desktop ; variantes -mobile pour les breakpoints < md) */
   --text-display: 4rem;
   --text-display--line-height: 1.05;
   --text-display-mobile: 2.5rem;

@@ -11,10 +11,13 @@ export function Pricing() {
       </p>
       <Link
         href="/commencer"
-        className="mt-8 inline-block rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white shadow-[0_8px_32px_rgba(5,150,105,0.18)] transition-transform hover:scale-[1.02]"
+        className="mt-8 inline-block rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white shadow-[0_8px_32px_rgba(0,133,88,0.25)] transition-transform hover:scale-[1.02]"
       >
         Tester mon idée
       </Link>
+      <p className="mt-4 text-micro text-text-secondary">
+        Paiement vérifié côté serveur (FedaPay). Aucune analyse débloquée sans confirmation.
+      </p>
     </section>
   );
 }

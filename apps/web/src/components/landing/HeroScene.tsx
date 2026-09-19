@@ -33,7 +33,7 @@ function ParticleField() {
     const count = particleCount();
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
-    const emerald = new THREE.Color("#059669");
+    const emerald = new THREE.Color("#008558");
     const cyan = new THREE.Color("#22e5c9");
     const rng = createRng(1337);
 
