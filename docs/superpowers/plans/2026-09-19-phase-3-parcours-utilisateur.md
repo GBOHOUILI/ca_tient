@@ -1282,7 +1282,7 @@ git commit -m "feat(web): StepDescription et StepHypotheses"
 - Consumes: `FinancialResult`, `BreakEvenResult` (Task 7).
 - Produces: `StepResults({ result, breakEven }: { result: FinancialResult; breakEven: BreakEvenResult })`. Consommé par la page wizard (Task 11).
 
-- [ ] **Step 1: Implémenter `StepResults`**
+- [x] **Step 1: Implémenter `StepResults`**
 
 Créer `apps/web/src/components/wizard/StepResults.tsx` :
 
@@ -1341,12 +1341,12 @@ export function StepResults({ result, breakEven }: { result: FinancialResult; br
 }
 ```
 
-- [ ] **Step 2: Vérifier lint + build**
+- [x] **Step 2: Vérifier lint + build**
 
 Run: `pnpm --filter web lint && pnpm --filter web build`
 Expected: succès.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add apps/web/src/components/wizard/StepResults.tsx
