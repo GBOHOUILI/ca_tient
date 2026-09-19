@@ -21,6 +21,7 @@
 - [x] `POST /ideas` / `GET /ideas/:id` (`IdeasModule`, DTOs validés, orchestration du moteur financier Phase 2)
 - [x] Formulaire guidé (`docs/USER_FLOWS.md`, `docs/SPECIFICATIONS.md`) : wizard `/commencer` (type -> description -> hypothèses -> résultats), saisie manuelle uniquement (extraction IA en Phase 4)
 - [x] Écran de résultats/aperçu
+- [ ] **Dette UX à corriger** : le libellé des champs de l'écran Hypothèses (`StepHypotheses.tsx`) est trop jargonneux/imprécis pour un utilisateur sans bagage financier (ex. "coût variable par unité", "coûts fixes"), contrairement à `design/UX_PRINCIPLES.md` ("le vocabulaire est simple, jamais jargonneux"). À revoir après la Phase 4 (copie + précision des questions), signalé par l'utilisateur le 2026-09-19.
 
 ## Phase 4 — IA
 - [ ] Extraction des hypothèses depuis la description libre (`docs/AI_ENGINE.md`)
