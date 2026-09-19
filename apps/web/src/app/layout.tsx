@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { cookies } from "next/headers";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { themeInitScript } from "@/components/theme/theme-script";
 import "./globals.css";
 
 const inter = Inter({
@@ -13,11 +17,21 @@ export const metadata: Metadata = {
   description: "Teste les chiffres de ton idée de business avant d'investir ton argent.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const cookieStore = await cookies();
+  const isDark = cookieStore.get("theme")?.value !== "light";
+
   return (
-    <html lang="fr" className={`${inter.variable} h-full antialiased`}>
+    <html
+      lang="fr"
+      className={`${inter.variable} ${isDark ? "dark" : ""} h-full antialiased`}
+      suppressHydrationWarning
+    >
       <body className="min-h-full flex flex-col bg-bg text-text-primary font-sans">
-        {children}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <Header />
+        <main className="flex-1">{children}</main>
+        <Footer />
       </body>
     </html>
   );

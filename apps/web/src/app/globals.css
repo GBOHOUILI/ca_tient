@@ -2,55 +2,40 @@
 
 /*
  * Design tokens — source de vérité : design/COLORS.md et design/TYPOGRAPHY.md.
- * Mode sombre = référence par défaut du produit (voir design/DESIGN_SYSTEM.md).
- * Le mode clair est appliqué soit via la préférence système (prefers-color-scheme),
- * soit via un futur toggle qui posera l'attribut data-theme sur <html>.
+ * Dark/light via une classe `dark` sur <html> (skills/frontend.md) : :root porte les
+ * valeurs claires, .dark les surcharge. Le mode sombre reste la référence produit par
+ * défaut — c'est apps/web/src/app/layout.tsx (rendu serveur + script anti-flash) qui
+ * pose la classe `dark` par défaut, pas ce fichier.
  */
 :root {
-  --color-bg: #0a0a0b;
-  --color-surface: #131316;
-  --color-border: #1f1f23;
-  --color-text-primary: #fafafa;
-  --color-text-secondary: #a1a1aa;
-
-  --color-accent-emerald: #059669;
-  --color-accent-emerald-hover: #047857;
-  --color-accent-emerald-soft: #34d399;
-  --color-accent-cyan: #22e5c9;
-
-  --color-success: #22c55e;
-  --color-warning: #f5a623;
-  --color-error: #ef4444;
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --color-bg: #fafafa;
-    --color-surface: #f4f4f5;
-    --color-border: #e4e4e7;
-    --color-text-primary: #18181b;
-    --color-text-secondary: #71717a;
-
-    --color-accent-cyan: #0fa890;
-
-    --color-success: #16a34a;
-    --color-warning: #d97706;
-    --color-error: #dc2626;
-  }
-}
-
-:root[data-theme="light"] {
   --color-bg: #fafafa;
   --color-surface: #f4f4f5;
   --color-border: #e4e4e7;
   --color-text-primary: #18181b;
   --color-text-secondary: #71717a;
 
+  --color-accent-emerald: #059669;
+  --color-accent-emerald-hover: #047857;
+  --color-accent-emerald-soft: #34d399;
   --color-accent-cyan: #0fa890;
 
   --color-success: #16a34a;
   --color-warning: #d97706;
   --color-error: #dc2626;
+}
+
+.dark {
+  --color-bg: #0a0a0b;
+  --color-surface: #131316;
+  --color-border: #1f1f23;
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #a1a1aa;
+
+  --color-accent-cyan: #22e5c9;
+
+  --color-success: #22c55e;
+  --color-warning: #f5a623;
+  --color-error: #ef4444;
 }
 
 @theme inline {
