@@ -886,7 +886,7 @@ git commit -m "feat(api): IdeasController, IdeasModule et route POST/GET /ideas"
 
 Pas de suite de tests automatisée sur `apps/web` (contrainte globale du plan). Vérification à la Task 11.
 
-- [ ] **Step 1: Écrire le client API**
+- [x] **Step 1: Écrire le client API**
 
 Créer `apps/web/src/lib/ideas-api.ts` :
 
@@ -943,7 +943,7 @@ export async function createIdea(input: CreateIdeaInput): Promise<CreateIdeaResp
 }
 ```
 
-- [ ] **Step 2: Écrire la machine à états du wizard**
+- [x] **Step 2: Écrire la machine à états du wizard**
 
 Créer `apps/web/src/components/wizard/wizard-reducer.ts` :
 
@@ -993,12 +993,12 @@ export function wizardReducer(state: WizardState, action: WizardAction): WizardS
 }
 ```
 
-- [ ] **Step 3: Vérifier que le projet compile toujours**
+- [x] **Step 3: Vérifier que le projet compile toujours**
 
 Run: `pnpm --filter web lint && pnpm --filter web build`
 Expected: succès (ces fichiers ne sont pas encore importés ailleurs, doivent juste être syntaxiquement/typiquement valides).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/web/src/lib/ideas-api.ts apps/web/src/components/wizard/wizard-reducer.ts
