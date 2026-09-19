@@ -1017,7 +1017,7 @@ git commit -m "feat(web): client API ideas + machine a etats du wizard"
 - Consumes: `WizardStep` (Task 7), `BusinessModel`, `BUSINESS_MODELS` (Task 7).
 - Produces: `WizardProgress({ currentStep }: { currentStep: WizardStep })`, `StepBusinessType({ onSelect }: { onSelect: (model: BusinessModel) => void })`. Consommés par la page wizard (Task 11).
 
-- [ ] **Step 1: `WizardProgress`**
+- [x] **Step 1: `WizardProgress`**
 
 Créer `apps/web/src/components/wizard/WizardProgress.tsx` :
 
@@ -1056,7 +1056,7 @@ export function WizardProgress({ currentStep }: { currentStep: WizardStep }) {
 }
 ```
 
-- [ ] **Step 2: `StepBusinessType`**
+- [x] **Step 2: `StepBusinessType`**
 
 Créer `apps/web/src/components/wizard/StepBusinessType.tsx` :
 
@@ -1093,12 +1093,12 @@ export function StepBusinessType({ onSelect }: { onSelect: (model: BusinessModel
 }
 ```
 
-- [ ] **Step 3: Vérifier lint + build**
+- [x] **Step 3: Vérifier lint + build**
 
 Run: `pnpm --filter web lint && pnpm --filter web build`
 Expected: succès.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/web/src/components/wizard/WizardProgress.tsx apps/web/src/components/wizard/StepBusinessType.tsx
