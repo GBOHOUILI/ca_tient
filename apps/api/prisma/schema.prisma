@@ -1,0 +1,11 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Aucun modèle pour l'instant — schéma de données à définir en Phase 2
+// (docs/DATABASE.md, docs/FINANCIAL_ENGINE.md), une fois les décisions
+// structurantes consignées dans docs/DECISIONS.md.
