@@ -404,7 +404,7 @@ git commit -m "feat(api): DTOs CreateIdeaDto/HypothesesDto avec validation"
 - Consumes: `PrismaService` (Task 2), `CreateIdeaDto` (Task 3), `FinancialEngineService.computeResult`/`computeBreakEven` (Phase 2, `apps/api/src/financial-engine/financial-engine.service.ts`).
 - Produces: `IdeasService.create(dto: CreateIdeaDto): Promise<{ ideaId: string; result: FinancialResult; breakEven: BreakEvenResult }>`, consommé par `IdeasController` (Task 6).
 
-- [ ] **Step 1: Écrire le test (RED)**
+- [x] **Step 1: Écrire le test (RED)**
 
 Créer `apps/api/src/ideas/ideas.service.ts` vide n'est pas nécessaire : écrire directement le test contre un fichier qui n'existe pas encore.
 
@@ -477,12 +477,12 @@ describe("IdeasService.create", () => {
 });
 ```
 
-- [ ] **Step 2: Vérifier l'échec (RED)**
+- [x] **Step 2: Vérifier l'échec (RED)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/ideas.service.spec.ts`
 Expected: FAIL, `Cannot find module './ideas.service.js'`.
 
-- [ ] **Step 3: Implémenter `IdeasService.create()`**
+- [x] **Step 3: Implémenter `IdeasService.create()`**
 
 Créer `apps/api/src/ideas/ideas.service.ts` :
 
@@ -546,12 +546,12 @@ export class IdeasService {
 }
 ```
 
-- [ ] **Step 4: Vérifier le succès (GREEN)**
+- [x] **Step 4: Vérifier le succès (GREEN)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/ideas.service.spec.ts`
 Expected: PASS, 2 tests.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/api/src/ideas/ideas.service.ts apps/api/src/ideas/ideas.service.spec.ts
