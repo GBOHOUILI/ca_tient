@@ -1,5 +1,12 @@
 # CHANGELOG.md
 
+## [Non versionné], Phase 3 : parcours utilisateur
+- Persistance Postgres locale via Docker Compose (`docker-compose.yml`, port hôte 5433) et schéma Prisma `Idea`/`Hypothesis`/`Simulation` + enum `BusinessModel` (`apps/api/prisma/schema.prisma`), `PrismaService`/`PrismaModule` avec le driver adapter `@prisma/adapter-pg` (Prisma 7).
+- `IdeasModule` (`apps/api/src/ideas/`) : `CreateIdeaDto`/`HypothesesDto` validés (class-validator/class-transformer), `IdeasService.create()` orchestrant `FinancialEngineModule` (Phase 2) et persistant idée + hypothèses + simulation "apercu", `IdeasService.findOne()`, `IdeasController` exposant `POST /ideas` et `GET /ideas/:id`.
+- Wizard frontend `/commencer` (`apps/web/src/app/commencer/page.tsx`) : 4 étapes (type de business -> description libre -> hypothèses chiffrées -> résultats), machine à états `useReducer`, aucun calcul financier côté frontend (tout vient de la réponse API, conforme `CLAUDE.md`).
+- Corrige deux gaps de configuration latents découverts en implémentant les premiers tests contre Postgres réel et le premier DTO décoré : `DATABASE_URL`/`.env` n'était chargé nulle part au runtime (ni tests, ni app démarrée), et `reflect-metadata` (déjà en dépendance) n'était importé nulle part — bloquant pour tout décorateur `class-transformer` (`@Type`). Ajoute `app.enableCors()` côté API (`WEB_APP_URL`), sans quoi aucun appel navigateur cross-origin vers l'API n'aboutit.
+- Vérification bout en bout manuelle (Playwright) : parcours complet, résultats cohérents avec le moteur financier (250 000 / 150 000 / 50 000 XOF, seuil 34 unités), persistance en base confirmée, 0 erreur console.
+
 ## [Non versionné], Phase 2 : moteur financier
 - Module pur `apps/api/src/financial-engine/` (aucune dépendance HTTP/IA) : `computeResult` (CA, marge brute, résultat estimé), `computeBreakEven` (seuil de rentabilité, gère explicitement marge unitaire nulle/négative sans division par zéro), `applyScenario`/`applyDelta` (prudent, réaliste, ambitieux, crise, et deltas personnalisés pour "Et si… ?").
 - Montants en entiers dans la plus petite unité de la devise choisie par l'utilisateur (`XOF`, `EUR`, `USD`, `GBP`, `NGN`, `GHS`), aucune arithmétique flottante, aucune dépendance de calcul décimal, voir `docs/DECISIONS.md`.

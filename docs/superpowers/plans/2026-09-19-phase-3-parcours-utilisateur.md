@@ -35,7 +35,7 @@
 
 Config, pas de cycle TDD (exception explicite de la skill test-driven-development).
 
-- [ ] **Step 1: Écrire `docker-compose.yml`**
+- [x] **Step 1: Écrire `docker-compose.yml`**
 
 ```yaml
 services:
@@ -55,17 +55,17 @@ volumes:
   postgres_data:
 ```
 
-- [ ] **Step 2: Démarrer Postgres et vérifier qu'il accepte les connexions**
+- [x] **Step 2: Démarrer Postgres et vérifier qu'il accepte les connexions**
 
 Run: `docker compose up -d && docker compose exec postgres pg_isready -U user -d ca_tient`
 Expected: `/var/run/postgresql:5432 - accepting connections`
 
-- [ ] **Step 3: Copier `.env.example` en `.env` si absent**
+- [x] **Step 3: Copier `.env.example` en `.env` si absent**
 
 Run: `cd apps/api && [ -f .env ] || cp .env.example .env`
 Expected: `apps/api/.env` existe avec `DATABASE_URL="postgresql://user:password@localhost:5432/ca_tient?schema=public"` (déjà le cas depuis la Phase 1, ne rien écraser si le fichier existe déjà).
 
-- [ ] **Step 4: Ajouter les modèles au schéma Prisma**
+- [x] **Step 4: Ajouter les modèles au schéma Prisma**
 
 Remplacer le contenu de `apps/api/prisma/schema.prisma` par :
 
@@ -122,17 +122,17 @@ model Simulation {
 }
 ```
 
-- [ ] **Step 5: Générer et appliquer la migration**
+- [x] **Step 5: Générer et appliquer la migration**
 
 Run: `cd apps/api && pnpm exec prisma migrate dev --name add_ideas_hypotheses_simulations`
 Expected: la commande crée `apps/api/prisma/migrations/<timestamp>_add_ideas_hypotheses_simulations/migration.sql`, l'applique, régénère le client Prisma, se termine sans erreur.
 
-- [ ] **Step 6: Vérifier que les tables existent**
+- [x] **Step 6: Vérifier que les tables existent**
 
 Run: `docker compose exec postgres psql -U user -d ca_tient -c '\dt'`
 Expected: la liste inclut `Idea`, `Hypothesis`, `Simulation`, `_prisma_migrations`.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add docker-compose.yml apps/api/prisma/schema.prisma apps/api/prisma/migrations
@@ -152,12 +152,12 @@ git commit -m "feat(api): schema Prisma Idea/Hypothesis/Simulation + Postgres lo
 - Consumes: tables créées en Task 1 (base `ca_tient` locale accessible via `DATABASE_URL`).
 - Produces: `PrismaService` (`apps/api/src/prisma/prisma.service.ts`, étend `PrismaClient`, expose toutes les méthodes Prisma standard comme `idea.create`, `idea.findUnique`, etc.), `PrismaModule` (`@Global()`, exporte `PrismaService`), consommés par toutes les tâches suivantes via `import { PrismaService } from "../prisma/prisma.service.js"`.
 
-- [ ] **Step 1: Installer les dépendances**
+- [x] **Step 1: Installer les dépendances**
 
 Run: `cd apps/api && pnpm add @prisma/adapter-pg pg && pnpm add -D @types/pg`
 Expected: `apps/api/package.json` liste `@prisma/adapter-pg` et `pg` en dependencies, `@types/pg` en devDependencies.
 
-- [ ] **Step 2: Écrire le test (RED)**
+- [x] **Step 2: Écrire le test (RED)**
 
 Créer `apps/api/src/prisma/prisma.service.spec.ts` :
 
@@ -178,12 +178,12 @@ describe("PrismaService", () => {
 });
 ```
 
-- [ ] **Step 3: Vérifier l'échec (RED)**
+- [x] **Step 3: Vérifier l'échec (RED)**
 
 Run: `pnpm --filter api exec vitest run src/prisma/prisma.service.spec.ts`
 Expected: FAIL, `Cannot find module './prisma.service.js'`.
 
-- [ ] **Step 4: Implémenter `PrismaService`**
+- [x] **Step 4: Implémenter `PrismaService`**
 
 Créer `apps/api/src/prisma/prisma.service.ts` :
 
@@ -210,12 +210,12 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
 
 Note : si `PrismaPg` n'accepte pas `{ connectionString }` tel quel, vérifier la signature exacte dans `apps/api/node_modules/@prisma/adapter-pg/dist/index.d.ts` et ajuster (l'API du driver adapter est encore jeune sur Prisma 7.10.0).
 
-- [ ] **Step 5: Vérifier le succès (GREEN)**
+- [x] **Step 5: Vérifier le succès (GREEN)**
 
 Run: `pnpm --filter api exec vitest run src/prisma/prisma.service.spec.ts`
 Expected: PASS, 1 test.
 
-- [ ] **Step 6: Créer `PrismaModule`**
+- [x] **Step 6: Créer `PrismaModule`**
 
 Créer `apps/api/src/prisma/prisma.module.ts` :
 
@@ -231,12 +231,12 @@ import { PrismaService } from "./prisma.service.js";
 export class PrismaModule {}
 ```
 
-- [ ] **Step 7: Lancer toute la suite pour confirmer l'absence de régression**
+- [x] **Step 7: Lancer toute la suite pour confirmer l'absence de régression**
 
 Run: `pnpm --filter api test`
 Expected: tous les tests passent (ceux du moteur financier + le nouveau).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add apps/api/package.json apps/api/pnpm-lock.yaml apps/api/src/prisma
@@ -256,12 +256,12 @@ git commit -m "feat(api): PrismaService avec driver adapter pg"
 - Consumes: `SUPPORTED_CURRENCIES`, `CurrencyCode` depuis `apps/api/src/financial-engine/financial-engine.types.ts` (déjà livré Phase 2) ; `BusinessModel` généré par Prisma (`@prisma/client`, disponible depuis Task 1).
 - Produces: classes `HypothesesDto` (`price`, `volume`, `variableCostPerUnit`, `fixedCosts: number`) et `CreateIdeaDto` (`businessModel: BusinessModel`, `rawDescription: string`, `currency: CurrencyCode`, `hypotheses: HypothesesDto`), consommées par `IdeasService`/`IdeasController` (Tasks 4-6).
 
-- [ ] **Step 1: Installer class-validator et class-transformer**
+- [x] **Step 1: Installer class-validator et class-transformer**
 
 Run: `cd apps/api && pnpm add class-validator class-transformer`
 Expected: ajoutés aux dependencies de `apps/api/package.json`.
 
-- [ ] **Step 2: Écrire le test (RED)**
+- [x] **Step 2: Écrire le test (RED)**
 
 Créer `apps/api/src/ideas/dto/create-idea.dto.spec.ts` :
 
@@ -320,12 +320,12 @@ describe("CreateIdeaDto", () => {
 });
 ```
 
-- [ ] **Step 3: Vérifier l'échec (RED)**
+- [x] **Step 3: Vérifier l'échec (RED)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/dto/create-idea.dto.spec.ts`
 Expected: FAIL, `Cannot find module './create-idea.dto.js'`.
 
-- [ ] **Step 4: Implémenter `HypothesesDto`**
+- [x] **Step 4: Implémenter `HypothesesDto`**
 
 Créer `apps/api/src/ideas/dto/hypotheses.dto.ts` :
 
@@ -351,7 +351,7 @@ export class HypothesesDto {
 }
 ```
 
-- [ ] **Step 5: Implémenter `CreateIdeaDto`**
+- [x] **Step 5: Implémenter `CreateIdeaDto`**
 
 Créer `apps/api/src/ideas/dto/create-idea.dto.ts` :
 
@@ -380,12 +380,12 @@ export class CreateIdeaDto {
 }
 ```
 
-- [ ] **Step 6: Vérifier le succès (GREEN)**
+- [x] **Step 6: Vérifier le succès (GREEN)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/dto/create-idea.dto.spec.ts`
 Expected: PASS, 5 tests.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add apps/api/package.json apps/api/pnpm-lock.yaml apps/api/src/ideas
@@ -404,7 +404,7 @@ git commit -m "feat(api): DTOs CreateIdeaDto/HypothesesDto avec validation"
 - Consumes: `PrismaService` (Task 2), `CreateIdeaDto` (Task 3), `FinancialEngineService.computeResult`/`computeBreakEven` (Phase 2, `apps/api/src/financial-engine/financial-engine.service.ts`).
 - Produces: `IdeasService.create(dto: CreateIdeaDto): Promise<{ ideaId: string; result: FinancialResult; breakEven: BreakEvenResult }>`, consommé par `IdeasController` (Task 6).
 
-- [ ] **Step 1: Écrire le test (RED)**
+- [x] **Step 1: Écrire le test (RED)**
 
 Créer `apps/api/src/ideas/ideas.service.ts` vide n'est pas nécessaire : écrire directement le test contre un fichier qui n'existe pas encore.
 
@@ -477,12 +477,12 @@ describe("IdeasService.create", () => {
 });
 ```
 
-- [ ] **Step 2: Vérifier l'échec (RED)**
+- [x] **Step 2: Vérifier l'échec (RED)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/ideas.service.spec.ts`
 Expected: FAIL, `Cannot find module './ideas.service.js'`.
 
-- [ ] **Step 3: Implémenter `IdeasService.create()`**
+- [x] **Step 3: Implémenter `IdeasService.create()`**
 
 Créer `apps/api/src/ideas/ideas.service.ts` :
 
@@ -546,12 +546,12 @@ export class IdeasService {
 }
 ```
 
-- [ ] **Step 4: Vérifier le succès (GREEN)**
+- [x] **Step 4: Vérifier le succès (GREEN)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/ideas.service.spec.ts`
 Expected: PASS, 2 tests.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/api/src/ideas/ideas.service.ts apps/api/src/ideas/ideas.service.spec.ts
@@ -570,7 +570,7 @@ git commit -m "feat(api): IdeasService.create, persistance + orchestration du mo
 - Consumes: `PrismaService` (Task 2), le résultat de `create()` (Task 4).
 - Produces: `IdeasService.findOne(id: string): Promise<IdeaDetail | null>`, où `IdeaDetail` est exporté depuis `apps/api/src/ideas/ideas.service.ts` avec la forme `{ id: string; businessModel: string; rawDescription: string; currency: string; hypotheses: { key: string; label: string; value: number; unit: string | null }[]; simulation: { type: string; inputsSnapshot: unknown; result: unknown; breakEven: unknown; createdAt: Date } | null }`. Consommé par `IdeasController` (Task 6).
 
-- [ ] **Step 1: Ajouter les tests (RED)**
+- [x] **Step 1: Ajouter les tests (RED)**
 
 Ajouter à `apps/api/src/ideas/ideas.service.spec.ts`, dans un nouveau bloc `describe` :
 
@@ -610,12 +610,12 @@ describe("IdeasService.findOne", () => {
 });
 ```
 
-- [ ] **Step 2: Vérifier l'échec (RED)**
+- [x] **Step 2: Vérifier l'échec (RED)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/ideas.service.spec.ts`
 Expected: FAIL sur les 2 nouveaux tests, `service.findOne is not a function`.
 
-- [ ] **Step 3: Implémenter `findOne()`**
+- [x] **Step 3: Implémenter `findOne()`**
 
 Ajouter à `apps/api/src/ideas/ideas.service.ts` (après la classe, ou dans la classe : ajouter la méthode et le type exporté en haut du fichier) :
 
@@ -663,12 +663,12 @@ Puis ajouter la méthode dans la classe `IdeasService` (après `create`) :
   }
 ```
 
-- [ ] **Step 4: Vérifier le succès (GREEN)**
+- [x] **Step 4: Vérifier le succès (GREEN)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/ideas.service.spec.ts`
 Expected: PASS, 4 tests au total.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/api/src/ideas/ideas.service.ts apps/api/src/ideas/ideas.service.spec.ts
@@ -690,7 +690,7 @@ git commit -m "feat(api): IdeasService.findOne"
 - Consumes: `IdeasService` (Tasks 4-5), `PrismaModule` (Task 2), `FinancialEngineModule` (Phase 2).
 - Produces: `POST /ideas` (201, body `CreateIdeaDto`, réponse `{ ideaId, result, breakEven }` ; 400 si DTO invalide), `GET /ideas/:id` (200 avec `IdeaDetail` ; 404 si absent). Consommé par le frontend (Task 7).
 
-- [ ] **Step 1: Activer la validation globale**
+- [x] **Step 1: Activer la validation globale**
 
 Modifier `apps/api/src/main.ts` :
 
@@ -707,7 +707,7 @@ async function bootstrap() {
 await bootstrap();
 ```
 
-- [ ] **Step 2: Écrire le test HTTP (RED)**
+- [x] **Step 2: Écrire le test HTTP (RED)**
 
 Créer `apps/api/src/ideas/ideas.controller.spec.ts` :
 
@@ -776,12 +776,12 @@ describe("IdeasController (HTTP)", () => {
 });
 ```
 
-- [ ] **Step 3: Vérifier l'échec (RED)**
+- [x] **Step 3: Vérifier l'échec (RED)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/ideas.controller.spec.ts`
 Expected: FAIL, `Cannot find module './ideas.module.js'`.
 
-- [ ] **Step 4: Implémenter `IdeasController`**
+- [x] **Step 4: Implémenter `IdeasController`**
 
 Créer `apps/api/src/ideas/ideas.controller.ts` :
 
@@ -810,7 +810,7 @@ export class IdeasController {
 }
 ```
 
-- [ ] **Step 5: Implémenter `IdeasModule`**
+- [x] **Step 5: Implémenter `IdeasModule`**
 
 Créer `apps/api/src/ideas/ideas.module.ts` :
 
@@ -829,12 +829,12 @@ import { FinancialEngineModule } from "../financial-engine/financial-engine.modu
 export class IdeasModule {}
 ```
 
-- [ ] **Step 6: Vérifier le succès (GREEN)**
+- [x] **Step 6: Vérifier le succès (GREEN)**
 
 Run: `pnpm --filter api exec vitest run src/ideas/ideas.controller.spec.ts`
 Expected: PASS, 4 tests.
 
-- [ ] **Step 7: Câbler `IdeasModule` dans `AppModule`**
+- [x] **Step 7: Câbler `IdeasModule` dans `AppModule`**
 
 Modifier `apps/api/src/app.module.ts` :
 
@@ -853,12 +853,12 @@ import { IdeasModule } from './ideas/ideas.module.js';
 export class AppModule {}
 ```
 
-- [ ] **Step 8: Lancer toute la suite, build, lint**
+- [x] **Step 8: Lancer toute la suite, build, lint**
 
 Run: `pnpm --filter api test && pnpm --filter api build && pnpm --filter api lint`
 Expected: tous les tests passent, build et lint sans erreur.
 
-- [ ] **Step 9: Smoke test manuel**
+- [x] **Step 9: Smoke test manuel**
 
 Run (deux terminaux, ou `pnpm --filter api start:dev &` puis attendre le démarrage) :
 ```bash
@@ -866,7 +866,7 @@ curl -s -X POST http://localhost:3001/ideas -H "Content-Type: application/json" 
 ```
 Expected: réponse JSON 201 avec `ideaId`, `result`, `breakEven`.
 
-- [ ] **Step 10: Commit**
+- [x] **Step 10: Commit**
 
 ```bash
 git add apps/api/src
@@ -886,7 +886,7 @@ git commit -m "feat(api): IdeasController, IdeasModule et route POST/GET /ideas"
 
 Pas de suite de tests automatisée sur `apps/web` (contrainte globale du plan). Vérification à la Task 11.
 
-- [ ] **Step 1: Écrire le client API**
+- [x] **Step 1: Écrire le client API**
 
 Créer `apps/web/src/lib/ideas-api.ts` :
 
@@ -943,7 +943,7 @@ export async function createIdea(input: CreateIdeaInput): Promise<CreateIdeaResp
 }
 ```
 
-- [ ] **Step 2: Écrire la machine à états du wizard**
+- [x] **Step 2: Écrire la machine à états du wizard**
 
 Créer `apps/web/src/components/wizard/wizard-reducer.ts` :
 
@@ -993,12 +993,12 @@ export function wizardReducer(state: WizardState, action: WizardAction): WizardS
 }
 ```
 
-- [ ] **Step 3: Vérifier que le projet compile toujours**
+- [x] **Step 3: Vérifier que le projet compile toujours**
 
 Run: `pnpm --filter web lint && pnpm --filter web build`
 Expected: succès (ces fichiers ne sont pas encore importés ailleurs, doivent juste être syntaxiquement/typiquement valides).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/web/src/lib/ideas-api.ts apps/web/src/components/wizard/wizard-reducer.ts
@@ -1017,7 +1017,7 @@ git commit -m "feat(web): client API ideas + machine a etats du wizard"
 - Consumes: `WizardStep` (Task 7), `BusinessModel`, `BUSINESS_MODELS` (Task 7).
 - Produces: `WizardProgress({ currentStep }: { currentStep: WizardStep })`, `StepBusinessType({ onSelect }: { onSelect: (model: BusinessModel) => void })`. Consommés par la page wizard (Task 11).
 
-- [ ] **Step 1: `WizardProgress`**
+- [x] **Step 1: `WizardProgress`**
 
 Créer `apps/web/src/components/wizard/WizardProgress.tsx` :
 
@@ -1056,7 +1056,7 @@ export function WizardProgress({ currentStep }: { currentStep: WizardStep }) {
 }
 ```
 
-- [ ] **Step 2: `StepBusinessType`**
+- [x] **Step 2: `StepBusinessType`**
 
 Créer `apps/web/src/components/wizard/StepBusinessType.tsx` :
 
@@ -1093,12 +1093,12 @@ export function StepBusinessType({ onSelect }: { onSelect: (model: BusinessModel
 }
 ```
 
-- [ ] **Step 3: Vérifier lint + build**
+- [x] **Step 3: Vérifier lint + build**
 
 Run: `pnpm --filter web lint && pnpm --filter web build`
 Expected: succès.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/web/src/components/wizard/WizardProgress.tsx apps/web/src/components/wizard/StepBusinessType.tsx
@@ -1117,7 +1117,7 @@ git commit -m "feat(web): WizardProgress et StepBusinessType"
 - Consumes: `BusinessModel`, `CurrencyCode`, `CURRENCIES`, `HypothesesInput` (Task 7).
 - Produces: `StepDescription({ value, onChange, onNext, onBack }: { value: string; onChange: (v: string) => void; onNext: () => void; onBack: () => void })`, `StepHypotheses({ businessModel, hypotheses, currency, onHypothesisChange, onCurrencyChange, onSubmit, onBack, submitting, error }: {...})`. Consommés par la page wizard (Task 11).
 
-- [ ] **Step 1: `StepDescription`**
+- [x] **Step 1: `StepDescription`**
 
 Créer `apps/web/src/components/wizard/StepDescription.tsx` :
 
@@ -1164,7 +1164,7 @@ export function StepDescription({
 }
 ```
 
-- [ ] **Step 2: `StepHypotheses`**
+- [x] **Step 2: `StepHypotheses`**
 
 Créer `apps/web/src/components/wizard/StepHypotheses.tsx` :
 
@@ -1259,12 +1259,12 @@ export function StepHypotheses({
 }
 ```
 
-- [ ] **Step 3: Vérifier lint + build**
+- [x] **Step 3: Vérifier lint + build**
 
 Run: `pnpm --filter web lint && pnpm --filter web build`
 Expected: succès.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/web/src/components/wizard/StepDescription.tsx apps/web/src/components/wizard/StepHypotheses.tsx
@@ -1282,7 +1282,7 @@ git commit -m "feat(web): StepDescription et StepHypotheses"
 - Consumes: `FinancialResult`, `BreakEvenResult` (Task 7).
 - Produces: `StepResults({ result, breakEven }: { result: FinancialResult; breakEven: BreakEvenResult })`. Consommé par la page wizard (Task 11).
 
-- [ ] **Step 1: Implémenter `StepResults`**
+- [x] **Step 1: Implémenter `StepResults`**
 
 Créer `apps/web/src/components/wizard/StepResults.tsx` :
 
@@ -1341,12 +1341,12 @@ export function StepResults({ result, breakEven }: { result: FinancialResult; br
 }
 ```
 
-- [ ] **Step 2: Vérifier lint + build**
+- [x] **Step 2: Vérifier lint + build**
 
 Run: `pnpm --filter web lint && pnpm --filter web build`
 Expected: succès.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add apps/web/src/components/wizard/StepResults.tsx
@@ -1364,7 +1364,7 @@ git commit -m "feat(web): StepResults"
 - Consumes: tout ce qui précède (Tasks 7-10).
 - Produces: route `/commencer` fonctionnelle, cible déjà utilisée par les CTA de la landing (`apps/web/src/components/landing/Hero.tsx`, `Pricing.tsx`).
 
-- [ ] **Step 1: Implémenter la page**
+- [x] **Step 1: Implémenter la page**
 
 Créer `apps/web/src/app/commencer/page.tsx` :
 
@@ -1445,12 +1445,12 @@ export default function CommencerPage() {
 }
 ```
 
-- [ ] **Step 2: Vérifier lint + build**
+- [x] **Step 2: Vérifier lint + build**
 
 Run: `pnpm --filter web lint && pnpm --filter web build`
 Expected: succès.
 
-- [ ] **Step 3: Vérification manuelle bout en bout**
+- [x] **Step 3: Vérification manuelle bout en bout**
 
 Prérequis : `docker compose up -d`, `pnpm --filter api start:dev &`, `pnpm --filter web dev &` (attendre que les deux répondent : `curl -sf http://localhost:3001/ideas -o /dev/null -w "%{http_code}"` refuse en GET sans id donc tester plutôt `curl -sf http://localhost:3000 -o /dev/null -w "%{http_code}"` doit renvoyer `200`).
 
@@ -1462,12 +1462,12 @@ Avec un navigateur piloté (Playwright/chromium-cli) :
 5. Capturer un screenshot de l'écran résultats : vérifier CA, marge, résultat, seuil de rentabilité affichés et cohérents avec le moteur (250 000 / 150 000 / 50 000 XOF, seuil 34 unités).
 6. Vérifier `console --errors` : 0 erreur.
 
-- [ ] **Step 4: Vérifier la persistance en base**
+- [x] **Step 4: Vérifier la persistance en base**
 
 Run: `docker compose exec postgres psql -U user -d ca_tient -c 'SELECT "businessModel", "currency" FROM "Idea" ORDER BY "createdAt" DESC LIMIT 1;'`
 Expected: une ligne `ECOMMERCE | XOF` correspondant au test manuel.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/web/src/app/commencer/page.tsx

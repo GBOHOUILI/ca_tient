@@ -6,6 +6,45 @@ datasource db {
   provider = "postgresql"
 }
 
-// Aucun modèle pour l'instant — schéma de données à définir en Phase 2
-// (docs/DATABASE.md, docs/FINANCIAL_ENGINE.md), une fois les décisions
-// structurantes consignées dans docs/DECISIONS.md.
+enum BusinessModel {
+  ECOMMERCE
+  FORMATION
+  EBOOK
+  SERVICE
+  PRODUIT_PHYSIQUE
+  AUTRE
+}
+
+model Idea {
+  id             String        @id @default(cuid())
+  businessModel  BusinessModel
+  rawDescription String
+  currency       String
+  createdAt      DateTime      @default(now())
+  hypotheses     Hypothesis[]
+  simulations    Simulation[]
+}
+
+model Hypothesis {
+  id     String  @id @default(cuid())
+  ideaId String
+  idea   Idea    @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  key    String
+  label  String
+  value  Int
+  unit   String?
+  source String
+
+  @@unique([ideaId, key])
+}
+
+model Simulation {
+  id             String   @id @default(cuid())
+  ideaId         String
+  idea           Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  type           String
+  inputsSnapshot Json
+  result         Json
+  breakEven      Json
+  createdAt      DateTime @default(now())
+}
