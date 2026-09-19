@@ -17,8 +17,10 @@
 - [ ] Câbler l'API `/ideas/:id/simulate` (`docs/API.md`), reporté à la Phase 3+ (nécessite la persistance des idées/hypothèses).
 
 ## Phase 3 — Parcours utilisateur
-- [ ] Formulaire guidé (`docs/USER_FLOWS.md`, `docs/SPECIFICATIONS.md`)
-- [ ] Écran de résultats/aperçu
+- [x] Persistance Postgres (Prisma `Idea`/`Hypothesis`/`Simulation`, `PrismaService` driver adapter `pg`)
+- [x] `POST /ideas` / `GET /ideas/:id` (`IdeasModule`, DTOs validés, orchestration du moteur financier Phase 2)
+- [x] Formulaire guidé (`docs/USER_FLOWS.md`, `docs/SPECIFICATIONS.md`) : wizard `/commencer` (type -> description -> hypothèses -> résultats), saisie manuelle uniquement (extraction IA en Phase 4)
+- [x] Écran de résultats/aperçu
 
 ## Phase 4 — IA
 - [ ] Extraction des hypothèses depuis la description libre (`docs/AI_ENGINE.md`)
