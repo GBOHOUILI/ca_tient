@@ -36,12 +36,12 @@
 
 Config, pas de cycle TDD (exception explicite de la skill test-driven-development, même pattern que Task 1 de la Phase 3).
 
-- [ ] **Step 1: Installer les dépendances**
+- [x] **Step 1: Installer les dépendances**
 
 Run: `cd apps/api && pnpm add @google/genai @nestjs/throttler`
 Expected: `apps/api/package.json` liste `@google/genai` et `@nestjs/throttler` en dependencies.
 
-- [ ] **Step 2: Ajouter les variables d'environnement**
+- [x] **Step 2: Ajouter les variables d'environnement**
 
 Ajouter à `apps/api/.env.example` (après `WEB_APP_URL`) :
 
@@ -52,7 +52,7 @@ GEMINI_MODEL="gemini-2.5-flash"
 
 Si `apps/api/.env` existe déjà (créé en Phase 3), y ajouter les deux mêmes lignes sans écraser les valeurs existantes. `GEMINI_API_KEY` peut rester vide en local : `GeminiProvider` (Task 3) traite tout échec d'appel (y compris une clé vide/invalide) comme une suggestion indisponible, jamais comme un crash.
 
-- [ ] **Step 3: Consigner la décision dans `docs/DECISIONS.md`**
+- [x] **Step 3: Consigner la décision dans `docs/DECISIONS.md`**
 
 Ajouter à la fin de `docs/DECISIONS.md`, avant la ligne `*(À compléter au fil du projet...)*` :
 
@@ -60,7 +60,7 @@ Ajouter à la fin de `docs/DECISIONS.md`, avant la ligne `*(À compléter au fil
 - **[2026-09-19] Fournisseur IA (Phase 4) : Google Gemini (famille Flash), SDK officiel `@google/genai`.** Choisi pour son mode structured output natif (`responseSchema`), qui force une réponse JSON conforme à un schéma et réduit le risque d'extraction mal formée par rapport à un parsing de texte libre. Free-tier généreux (`docs/AI_ENGINE.md` : « privilégier une API économique / free-tier »). Groq écarté : modèles open-source moins fiables pour du JSON strict sans validation additionnelle. Modèle exact configurable via `GEMINI_MODEL` (défaut `gemini-2.5-flash`), pour pouvoir suivre les mises à jour de la famille Flash sans redéploiement de code.
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/api/package.json apps/api/pnpm-lock.yaml apps/api/.env.example docs/DECISIONS.md
@@ -80,7 +80,7 @@ git commit -m "chore(api): ajoute @google/genai et @nestjs/throttler pour la Pha
 - Consumes: `BusinessModel` (`@prisma/client`), `SUPPORTED_CURRENCIES`/`CurrencyCode` (`apps/api/src/financial-engine/financial-engine.types.ts`, Phase 2).
 - Produces: interface `AiProvider` et type `SuggestedHypotheses` (`{ price: number; volume: number; variableCostPerUnit: number; fixedCosts: number }`), token d'injection `AI_PROVIDER` (`apps/api/src/ai/ai-provider.port.ts`), classe `SuggestHypothesesDto` (`apps/api/src/ai/dto/suggest-hypotheses.dto.ts`). Consommés par `GeminiProvider` (Task 3) et `AiController` (Task 4).
 
-- [ ] **Step 1: Écrire `ai-provider.port.ts` (pas de test — interface et type purs, rien à exécuter)**
+- [x] **Step 1: Écrire `ai-provider.port.ts` (pas de test — interface et type purs, rien à exécuter)**
 
 Créer `apps/api/src/ai/ai-provider.port.ts` :
 
@@ -108,7 +108,7 @@ export interface AiProvider {
 }
 ```
 
-- [ ] **Step 2: Écrire le test du DTO (RED)**
+- [x] **Step 2: Écrire le test du DTO (RED)**
 
 Créer `apps/api/src/ai/dto/suggest-hypotheses.dto.spec.ts` :
 
@@ -156,12 +156,12 @@ describe("SuggestHypothesesDto", () => {
 });
 ```
 
-- [ ] **Step 3: Vérifier l'échec (RED)**
+- [x] **Step 3: Vérifier l'échec (RED)**
 
 Run: `pnpm --filter api exec vitest run src/ai/dto/suggest-hypotheses.dto.spec.ts`
 Expected: FAIL, `Cannot find module './suggest-hypotheses.dto.js'`.
 
-- [ ] **Step 4: Implémenter `SuggestHypothesesDto`**
+- [x] **Step 4: Implémenter `SuggestHypothesesDto`**
 
 Créer `apps/api/src/ai/dto/suggest-hypotheses.dto.ts` :
 
@@ -184,12 +184,12 @@ export class SuggestHypothesesDto {
 }
 ```
 
-- [ ] **Step 5: Vérifier le succès (GREEN)**
+- [x] **Step 5: Vérifier le succès (GREEN)**
 
 Run: `pnpm --filter api exec vitest run src/ai/dto/suggest-hypotheses.dto.spec.ts`
 Expected: PASS, 4 tests.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add apps/api/src/ai/ai-provider.port.ts apps/api/src/ai/dto
@@ -208,7 +208,7 @@ git commit -m "feat(api): port AiProvider et SuggestHypothesesDto"
 - Consumes: `AiProvider`, `SuggestedHypotheses`, `AiSuggestionInput` (Task 2), SDK `@google/genai` (`GoogleGenAI`, `Type`).
 - Produces: classe `GeminiProvider implements AiProvider` (`apps/api/src/ai/gemini.provider.ts`), consommée par `AiModule` (Task 4).
 
-- [ ] **Step 1: Écrire le test (RED)**
+- [x] **Step 1: Écrire le test (RED)**
 
 Créer `apps/api/src/ai/gemini.provider.spec.ts` :
 
@@ -285,12 +285,12 @@ Note : le mock du module est déclaré avant l'import de `GeminiProvider` via un
 
 Note : `mockImplementation` utilise une expression `function`, pas une fonction fléchée — `gemini.provider.ts` instancie le SDK avec `new GoogleGenAI(...)`, et une fonction fléchée n'a pas de `[[Construct]]` ; vitest 4.1.11 lève `TypeError: ... is not a constructor` si l'implémentation mockée est une flèche.
 
-- [ ] **Step 2: Vérifier l'échec (RED)**
+- [x] **Step 2: Vérifier l'échec (RED)**
 
 Run: `pnpm --filter api exec vitest run src/ai/gemini.provider.spec.ts`
 Expected: FAIL, `Cannot find module './gemini.provider.js'`.
 
-- [ ] **Step 3: Implémenter `GeminiProvider`**
+- [x] **Step 3: Implémenter `GeminiProvider`**
 
 Créer `apps/api/src/ai/gemini.provider.ts` :
 
@@ -406,12 +406,12 @@ export class GeminiProvider implements AiProvider {
 }
 ```
 
-- [ ] **Step 4: Vérifier le succès (GREEN)**
+- [x] **Step 4: Vérifier le succès (GREEN)**
 
 Run: `pnpm --filter api exec vitest run src/ai/gemini.provider.spec.ts`
 Expected: PASS, 4 tests.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/api/src/ai/gemini.provider.ts apps/api/src/ai/gemini.provider.spec.ts
@@ -432,7 +432,7 @@ git commit -m "feat(api): GeminiProvider, extraction structuree via @google/gena
 - Consumes: `AI_PROVIDER`, `AiProvider` (Task 2), `SuggestHypothesesDto` (Task 2), `GeminiProvider` (Task 3).
 - Produces: `POST /ideas/suggest-hypotheses` (200 avec `{ available: true; hypotheses: SuggestedHypotheses }` ou `{ available: false }` ; 400 si DTO invalide ; 429 au-delà de 10 req/min/IP). Consommé par le frontend (Task 5).
 
-- [ ] **Step 1: Écrire le test HTTP (RED)**
+- [x] **Step 1: Écrire le test HTTP (RED)**
 
 Créer `apps/api/src/ai/ai.controller.spec.ts` :
 
@@ -538,12 +538,12 @@ describe("AiController (HTTP) — rate limiting", () => {
 
 Note : le test de rate-limiting utilise sa propre instance d'app (son propre `beforeAll`), pour partir d'un compteur de throttling à zéro, indépendant des 3 premiers tests.
 
-- [ ] **Step 2: Vérifier l'échec (RED)**
+- [x] **Step 2: Vérifier l'échec (RED)**
 
 Run: `pnpm --filter api exec vitest run src/ai/ai.controller.spec.ts`
 Expected: FAIL, `Cannot find module './ai.module.js'`.
 
-- [ ] **Step 3: Implémenter `AiController`**
+- [x] **Step 3: Implémenter `AiController`**
 
 Créer `apps/api/src/ai/ai.controller.ts` :
 
@@ -574,7 +574,7 @@ export class AiController {
 
 Note : `@HttpCode(HttpStatus.OK)` est nécessaire car NestJS renvoie 201 par défaut sur un `@Post` — la spec exige explicitement une réponse 200 pour cet endpoint (jamais 500 non plus, y compris en cas d'échec IA), et le test de l'étape suivante attend `.expect(200)`.
 
-- [ ] **Step 4: Implémenter `AiModule`**
+- [x] **Step 4: Implémenter `AiModule`**
 
 Créer `apps/api/src/ai/ai.module.ts` :
 
@@ -595,12 +595,12 @@ export class AiModule {}
 
 Note : `ThrottlerModule.forRoot(...)` est importé ici, dans `AiModule`, et non dans `AppModule` — ça garde le rate-limiting scopé à cet endpoint sans toucher `IdeasController`/`AppController` (Global Constraints).
 
-- [ ] **Step 5: Vérifier le succès (GREEN)**
+- [x] **Step 5: Vérifier le succès (GREEN)**
 
 Run: `pnpm --filter api exec vitest run src/ai/ai.controller.spec.ts`
 Expected: PASS, 4 tests.
 
-- [ ] **Step 6: Câbler `AiModule` dans `AppModule`**
+- [x] **Step 6: Câbler `AiModule` dans `AppModule`**
 
 Modifier `apps/api/src/app.module.ts` :
 
@@ -620,12 +620,12 @@ import { AiModule } from './ai/ai.module.js';
 export class AppModule {}
 ```
 
-- [ ] **Step 7: Lancer toute la suite, build, lint**
+- [x] **Step 7: Lancer toute la suite, build, lint**
 
 Run: `pnpm --filter api test && pnpm --filter api build && pnpm --filter api lint`
 Expected: tous les tests passent (Phase 2 + Phase 3 + Phase 4), build et lint sans erreur.
 
-- [ ] **Step 8: Smoke test manuel (chemin dégradé, sans clé API)**
+- [x] **Step 8: Smoke test manuel (chemin dégradé, sans clé API)**
 
 Run (deux terminaux, `docker compose up -d` déjà fait en Phase 3) :
 ```bash
@@ -635,7 +635,7 @@ curl -s -X POST http://localhost:3001/ideas/suggest-hypotheses -H "Content-Type:
 ```
 Expected : réponse JSON `{"available":false}` (aucune clé `GEMINI_API_KEY` valide en local à ce stade), code 200, l'API ne plante pas.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add apps/api/src/ai/ai.controller.ts apps/api/src/ai/ai.module.ts apps/api/src/ai/ai.controller.spec.ts apps/api/src/app.module.ts
@@ -655,7 +655,7 @@ git commit -m "feat(api): AiController, AiModule, endpoint POST /ideas/suggest-h
 
 Pas de suite de tests automatisée sur `apps/web` (contrainte globale héritée de la Phase 3). Vérification à la Task 6.
 
-- [ ] **Step 1: Ajouter `suggestHypotheses` au client API**
+- [x] **Step 1: Ajouter `suggestHypotheses` au client API**
 
 Modifier `apps/web/src/lib/ideas-api.ts`, ajouter après `createIdea` :
 
@@ -691,7 +691,7 @@ export async function suggestHypotheses(input: SuggestHypothesesInput): Promise<
 
 Note : contrairement à `createIdea`, cette fonction n'expose jamais d'exception à l'appelant — un problème réseau ou une réponse HTTP non-200 devient `{ available: false }`, cohérent avec le mode dégradé silencieux (Global Constraints).
 
-- [ ] **Step 2: Ajouter l'action `SET_HYPOTHESES` et l'état `wasSuggested`**
+- [x] **Step 2: Ajouter l'action `SET_HYPOTHESES` et l'état `wasSuggested`**
 
 Modifier `apps/web/src/components/wizard/wizard-reducer.ts` :
 
@@ -748,12 +748,12 @@ export function wizardReducer(state: WizardState, action: WizardAction): WizardS
 
 Note : `SET_HYPOTHESIS` (champ unique, édition manuelle) repasse `wasSuggested` à `false` — dès que l'utilisateur corrige un champ, le texte « suggéré par l'IA » (Task 6) n'a plus lieu d'être affiché.
 
-- [ ] **Step 3: Vérifier que le projet compile toujours**
+- [x] **Step 3: Vérifier que le projet compile toujours**
 
 Run: `pnpm --filter web lint && pnpm --filter web build`
 Expected: succès (ces changements ne sont pas encore branchés sur la page, doivent juste être syntaxiquement/typiquement valides).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/web/src/lib/ideas-api.ts apps/web/src/components/wizard/wizard-reducer.ts
@@ -775,7 +775,7 @@ git commit -m "feat(web): client suggestHypotheses + action SET_HYPOTHESES du wi
 
 Les trois fichiers changent ensemble dans cette tâche (pas de découpage en plusieurs tâches) : `page.tsx` passe une prop à `StepHypotheses` dès l'étape 2 ci-dessous, donc le projet ne compile qu'une fois les trois fichiers modifiés — un découpage laisserait un état intermédiaire non-compilable.
 
-- [ ] **Step 1: Ajouter l'état de chargement à `StepDescription`**
+- [x] **Step 1: Ajouter l'état de chargement à `StepDescription`**
 
 Modifier `apps/web/src/components/wizard/StepDescription.tsx` :
 
@@ -824,7 +824,7 @@ export function StepDescription({
 }
 ```
 
-- [ ] **Step 2: Rendre la transition asynchrone dans la page wizard**
+- [x] **Step 2: Rendre la transition asynchrone dans la page wizard**
 
 Modifier `apps/web/src/app/commencer/page.tsx` :
 
@@ -928,7 +928,7 @@ export default function CommencerPage() {
 
 Note : `suggestHypotheses` ne lève jamais d'exception (Task 5, Step 1) — le `finally` seul suffit pour toujours transitionner vers l'écran Hypothèses, qu'il y ait suggestion ou non.
 
-- [ ] **Step 3: Ajouter le texte contextuel « suggéré par l'IA » à `StepHypotheses`**
+- [x] **Step 3: Ajouter le texte contextuel « suggéré par l'IA » à `StepHypotheses`**
 
 Modifier `apps/web/src/components/wizard/StepHypotheses.tsx` :
 
@@ -1030,12 +1030,12 @@ export function StepHypotheses({
 }
 ```
 
-- [ ] **Step 4: Vérifier lint + build**
+- [x] **Step 4: Vérifier lint + build**
 
 Run: `pnpm --filter web lint && pnpm --filter web build`
 Expected: succès (les trois fichiers de cette tâche sont maintenant cohérents entre eux).
 
-- [ ] **Step 5: Vérification manuelle — chemin dégradé (obligatoire, ne dépend d'aucune clé API)**
+- [x] **Step 5: Vérification manuelle — chemin dégradé (obligatoire, ne dépend d'aucune clé API)**
 
 Prérequis : `docker compose up -d`, `pnpm --filter api start:dev &`, `pnpm --filter web dev &`, `apps/api/.env` **sans** `GEMINI_API_KEY` valide (vide ou absent — c'est l'état par défaut après Task 1).
 
@@ -1046,13 +1046,13 @@ Avec un navigateur piloté (Playwright) :
 4. Vérifier `console --errors` : 0 erreur (l'échec de suggestion ne doit jamais apparaître comme une erreur JS).
 5. Terminer le parcours (remplir manuellement, soumettre) pour confirmer qu'il reste fonctionnel de bout en bout.
 
-- [ ] **Step 6: Vérification manuelle — chemin de succès (nécessite une vraie clé `GEMINI_API_KEY`)**
+- [x] **Step 6: Vérification manuelle — chemin de succès (nécessite une vraie clé `GEMINI_API_KEY`)**
 
 Si une clé Google AI Studio est disponible : la renseigner dans `apps/api/.env`, redémarrer `pnpm --filter api start:dev`, refaire le parcours avec une description un peu détaillée (ex. « Je vends des vêtements en ligne pour jeunes actifs à Cotonou, livraison à domicile, environ 5000 FCFA la pièce »), et vérifier que l'écran Hypothèses arrive prérempli avec des valeurs plausibles et le texte « Suggéré par l'IA... » visible.
 
 Si aucune clé n'est disponible à ce stade : documenter cette étape comme non vérifiée (pas comme échouée) dans le message de fin de tâche — le chemin dégradé (Step 5) reste la vérification bloquante de cette tâche.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add apps/web/src/components/wizard/StepDescription.tsx apps/web/src/app/commencer/page.tsx apps/web/src/components/wizard/StepHypotheses.tsx
