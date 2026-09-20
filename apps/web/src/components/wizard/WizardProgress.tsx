@@ -4,6 +4,7 @@ const STEPS: { key: WizardStep; label: string }[] = [
   { key: "business-type", label: "Type" },
   { key: "description", label: "Description" },
   { key: "hypotheses", label: "Hypotheses" },
+  { key: "canvas", label: "Ton business model" },
   { key: "results", label: "Resultats" },
   { key: "et-si", label: "Et si ?" },
   { key: "scenarios", label: "Scenarios" },

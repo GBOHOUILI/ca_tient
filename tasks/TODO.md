@@ -33,6 +33,9 @@
 - [x] Phase 5b — écrans "Et si ?"/"Scénarios" (`apps/web/src/components/wizard/StepEtSi.tsx`, `StepScenarios.tsx`), graphiques Recharts (`apps/web/src/components/wizard/charts/`), recalcul temps réel côté navigateur via le package `financial-engine` (Phase 5a). Vocabulaire de l'écran Hypothèses reformulé (dette Phase 4 close). Voir `docs/superpowers/specs/2026-09-20-phase-5b-et-si-scenarios-design.md`.
 - [ ] **Bug mineur découvert (revue finale Phase 5b)** : dans `StepHypotheses.tsx`, l'indice affiché sous le champ "charges fixes" est le même texte que celui du champ "coût variable" (`HINTS[businessModel]`, ex. "Inclut coût produit, livraison et commissions"), ce qui n'a pas de sens pour des charges fixes. Le tableau `HINTS` n'a pas été touché par la Phase 5b (hors scope de cette phase) ; à corriger dans une prochaine passe.
 
+## Phase 6a — Canvas (blocs manquants)
+- [x] Capture des 7 blocs qualitatifs du business model canvas (`apps/web/src/components/wizard/StepCanvas.tsx`), suggestion IA (`apps/api/src/ai/gemini.provider.ts`), persistance (`CanvasBlock`, `PATCH /ideas/:id/canvas-blocks`). Voir `docs/superpowers/specs/2026-09-20-phase-6a-canvas-capture-design.md`.
+
 ## Phase 6-7 — Analyse complète & Paiement
 - [ ] Écran d'offre à 1 000 FCFA
 - [ ] Intégration FedaPay (`docs/PAYMENT.md`, `skills/payment.md`)

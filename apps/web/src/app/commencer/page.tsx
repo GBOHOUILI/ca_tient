@@ -8,8 +8,9 @@ import { StepHypotheses } from "@/components/wizard/StepHypotheses";
 import { StepResults } from "@/components/wizard/StepResults";
 import { StepEtSi } from "@/components/wizard/StepEtSi";
 import { StepScenarios } from "@/components/wizard/StepScenarios";
+import { StepCanvas } from "@/components/wizard/StepCanvas";
 import { initialWizardState, wizardReducer } from "@/components/wizard/wizard-reducer";
-import { createIdea, suggestHypotheses, type CreateIdeaResponse } from "@/lib/ideas-api";
+import { createIdea, suggestHypotheses, suggestCanvasBlocks, saveCanvasBlocks, type CreateIdeaResponse } from "@/lib/ideas-api";
 
 export default function CommencerPage() {
   const [state, dispatch] = useReducer(wizardReducer, initialWizardState);
@@ -41,16 +42,44 @@ export default function CommencerPage() {
     setSubmitting(true);
     setError(null);
     try {
-      const result = await createIdea({
-        businessModel: state.businessModel,
-        rawDescription: state.rawDescription,
-        currency: state.currency,
-        hypotheses: state.hypotheses,
-      });
+      const [result, canvasSuggestion] = await Promise.all([
+        createIdea({
+          businessModel: state.businessModel,
+          rawDescription: state.rawDescription,
+          currency: state.currency,
+          hypotheses: state.hypotheses,
+        }),
+        suggestCanvasBlocks({
+          businessModel: state.businessModel,
+          rawDescription: state.rawDescription,
+          currency: state.currency,
+        }),
+      ]);
       setResponse(result);
-      dispatch({ type: "GO_TO_STEP", step: "results" });
+      if (canvasSuggestion.available) {
+        dispatch({ type: "SET_CANVAS_BLOCKS", blocks: canvasSuggestion.blocks });
+      }
+      dispatch({ type: "GO_TO_STEP", step: "canvas" });
     } catch {
       setError("Le calcul a echoue. Verifie tes valeurs et reessaie.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleCanvasNext() {
+    if (!response) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      await saveCanvasBlocks(
+        response.ideaId,
+        state.canvasBlocks,
+        state.canvasWasSuggested ? "ia_suggere" : "utilisateur_edite",
+      );
+      dispatch({ type: "GO_TO_STEP", step: "results" });
+    } catch {
+      setError("L'enregistrement a echoue. Reessaie.");
     } finally {
       setSubmitting(false);
     }
@@ -84,6 +113,18 @@ export default function CommencerPage() {
           onCurrencyChange={(currency) => dispatch({ type: "SET_CURRENCY", currency })}
           onSubmit={handleSubmit}
           onBack={() => dispatch({ type: "GO_TO_STEP", step: "description" })}
+          submitting={submitting}
+          error={error}
+        />
+      )}
+
+      {state.step === "canvas" && (
+        <StepCanvas
+          canvasBlocks={state.canvasBlocks}
+          wasSuggested={state.canvasWasSuggested}
+          onBlockChange={(key, value) => dispatch({ type: "SET_CANVAS_BLOCK", key, value })}
+          onNext={handleCanvasNext}
+          onBack={() => dispatch({ type: "GO_TO_STEP", step: "hypotheses" })}
           submitting={submitting}
           error={error}
         />

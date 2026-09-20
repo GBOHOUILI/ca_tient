@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## [Non versionné], Phase 6a : capture du canvas
+- Nouvel écran "Ton business model" dans le wizard, entre "Hypothèses" et "Résultats" : 7 blocs qualitatifs du business model canvas (proposition de valeur, segments clients, canaux, relations clients, ressources clés, activités clés, partenaires clés), suggérés par l'IA (`GeminiProvider.suggestCanvasBlocks`, même mécanique que la Phase 4) depuis la description libre, validés/édités par l'utilisateur.
+- Nouveau modèle Prisma `CanvasBlock` (pattern identique à `Hypothesis`), persisté via `PATCH /ideas/:id/canvas-blocks` (`upsert`, tolère un retour en arrière puis re-soumission). Suggestion IA et création de l'idée lancées en parallèle (`Promise.all`) pour ne pas cumuler les latences.
+- Préparation de contenu pour le rapport final enrichi (Phase 6b, hors scope ici) : les 2 blocs restants du canvas (structure de coûts, flux de revenus) resteront calculés en direct par `financial-engine`, jamais stockés comme texte.
+
 ## [Non versionné], Phase 5b : écrans "Et si ?" / "Scénarios"
 - Deux nouveaux écrans du wizard, juste après l'aperçu : "Et si ?" (4 sliders en pourcentage + sélecteur de saisonnalité + graphique de seuil de rentabilité en temps réel + graphique mensuel conditionnel) et "Scénarios" (comparaison en barres des 4 scénarios prédéfinis + un scénario "Personnalisé" qui reprend les réglages de l'écran précédent).
 - `apps/web` consomme directement le package `financial-engine` (Phase 5a) : aucun aller-retour réseau, recalcul instantané à chaque interaction.
