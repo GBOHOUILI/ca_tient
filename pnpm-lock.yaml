@@ -37,6 +37,9 @@ importers:
       class-validator:
         specifier: ^0.15.1
         version: 0.15.1
+      financial-engine:
+        specifier: workspace:*
+        version: link:../../packages/financial-engine
       pg:
         specifier: ^8.23.0
         version: 8.23.0
@@ -147,6 +150,18 @@ importers:
       typescript:
         specifier: ^5
         version: 5.9.3
+
+  packages/financial-engine:
+    devDependencies:
+      '@types/node':
+        specifier: ^24.13.6
+        version: 24.13.6
+      typescript:
+        specifier: ^6.0.2
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.2
+        version: 4.1.11(@types/node@24.13.6)(@vitest/coverage-v8@4.1.11)(vite@8.3.0(@types/node@24.13.6)(jiti@2.7.0))
 
 packages:
 

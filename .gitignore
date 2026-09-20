@@ -8,6 +8,9 @@ apps/web/out/
 # nest.js
 apps/api/dist/
 
+# packages internes (build tsc)
+packages/*/dist/
+
 # env
 .env
 .env.local

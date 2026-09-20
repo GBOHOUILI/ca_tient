@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## [Non versionné], Phase 5a : moteur financier partagé + projection annuelle
+- Extraction du moteur financier (`financial-engine.types.ts`, `financial-engine.errors.ts`, `financial-engine.validation.ts`, `scenarios.ts`) en package partagé du monorepo (`packages/financial-engine`), consommé par `apps/api` via un build `tsc` standard. `computeResult`/`computeBreakEven` (auparavant méthodes NestJS uniquement) sont désormais des fonctions pures du package (`financial-engine.calculations.ts`), `FinancialEngineService` en reste le seul point d'entrée NestJS, désormais un fin wrapper.
+- Nouveau : `computeAnnualProjection(hypotheses, profile)` (`packages/financial-engine/src/seasonality.ts`) — projection sur 12 mois avec 4 profils de saisonnalité prédéfinis (`stable`, `fetes_fin_annee`, `ete`, `rentree_scolaire`), même mécanique que les scénarios existants (`applyDelta` sur le volume, pourcentages sommant à zéro), composable avec les scénarios prudent/réaliste/ambitieux/crise. Aucune UI, aucune persistance, aucun nouvel endpoint HTTP — module backend pur, prêt pour la Phase 5b.
+- 36 tests dans `packages/financial-engine` (20 déplacés inchangés + 9 sur les fonctions de calcul extraites + 7 sur la saisonnalité), suite `apps/api` simplifiée en conséquence (logique métier non dupliquée entre les deux couches).
+
 ## [Non versionné], Phase 4 : extraction IA des hypothèses
 - Nouveau module `AiModule` (`apps/api/src/ai/`), isolé d'`IdeasModule` : port `AiProvider` (`ai-provider.port.ts`), implémentation `GeminiProvider` (SDK officiel `@google/genai`, mode structured output pour forcer un JSON conforme, timeout 8s), `SuggestHypothesesDto`. Fournisseur choisi et consigné dans `docs/DECISIONS.md`.
 - `POST /ideas/suggest-hypotheses` (`AiController`, stateless, aucune persistance) : renvoie `{ available: true, hypotheses }` ou `{ available: false }`, toujours HTTP 200 (jamais 500 sur une panne IA), rate-limité à 10 req/min/IP (`@nestjs/throttler`, scopé à ce seul endpoint via `ThrottlerModule.forRoot` importé dans `AiModule` uniquement). Aucun changement au contrat `POST /ideas`/`GET /ideas/:id` ni au schéma Prisma.

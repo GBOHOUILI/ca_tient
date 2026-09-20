@@ -1,5 +1,5 @@
 import type { BusinessModel } from "@prisma/client";
-import type { CurrencyCode } from "../financial-engine/financial-engine.types.js";
+import type { CurrencyCode } from "financial-engine";
 
 export interface SuggestedHypotheses {
   price: number;

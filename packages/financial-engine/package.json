@@ -1,0 +1,17 @@
+{
+  "name": "financial-engine",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.6",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.2"
+  }
+}
