@@ -76,3 +76,61 @@ export async function suggestHypotheses(input: SuggestHypothesesInput): Promise<
     return { available: false };
   }
 }
+
+export const CANVAS_BLOCK_KEYS = [
+  "valueProposition",
+  "customerSegments",
+  "channels",
+  "customerRelationships",
+  "keyResources",
+  "keyActivities",
+  "keyPartners",
+] as const;
+
+export type CanvasBlockKey = (typeof CANVAS_BLOCK_KEYS)[number];
+export type CanvasBlocks = Record<CanvasBlockKey, string>;
+
+export interface SuggestCanvasBlocksInput {
+  businessModel: BusinessModel;
+  rawDescription: string;
+  currency: CurrencyCode;
+}
+
+export type SuggestCanvasBlocksResponse = { available: true; blocks: CanvasBlocks } | { available: false };
+
+export async function suggestCanvasBlocks(input: SuggestCanvasBlocksInput): Promise<SuggestCanvasBlocksResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/ideas/suggest-canvas-blocks`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+
+    if (!response.ok) {
+      return { available: false };
+    }
+
+    return (await response.json()) as SuggestCanvasBlocksResponse;
+  } catch {
+    return { available: false };
+  }
+}
+
+export async function saveCanvasBlocks(
+  ideaId: string,
+  blocks: CanvasBlocks,
+  source: "ia_suggere" | "utilisateur_edite",
+): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/ideas/${ideaId}/canvas-blocks`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      blocks: CANVAS_BLOCK_KEYS.map((key) => ({ key, content: blocks[key] })),
+      source,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`L'enregistrement du canvas a echoue (${response.status}).`);
+  }
+}
