@@ -30,7 +30,7 @@
 
 ## Phase 5 — Scénarios
 - [x] Phase 5a — moteur : projection annuelle avec saisonnalité (`packages/financial-engine/src/seasonality.ts`), package partagé du monorepo (`packages/financial-engine`), consommé par `apps/api` via `financial-engine.service.ts`. Voir `docs/superpowers/specs/2026-09-20-phase-5a-moteur-saisonnalite-design.md` et `docs/DECISIONS.md`.
-- [ ] Phase 5b — écrans "Et si ?"/"Scénarios", graphiques (Recharts), recalcul temps réel côté navigateur, simplification du vocabulaire (regroupe la dette UX notée en Phase 4).
+- [x] Phase 5b — écrans "Et si ?"/"Scénarios" (`apps/web/src/components/wizard/StepEtSi.tsx`, `StepScenarios.tsx`), graphiques Recharts (`apps/web/src/components/wizard/charts/`), recalcul temps réel côté navigateur via le package `financial-engine` (Phase 5a). Vocabulaire de l'écran Hypothèses reformulé (dette Phase 4 close). Voir `docs/superpowers/specs/2026-09-20-phase-5b-et-si-scenarios-design.md`.
 
 ## Phase 6-7 — Analyse complète & Paiement
 - [ ] Écran d'offre à 1 000 FCFA
