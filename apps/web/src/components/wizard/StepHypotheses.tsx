@@ -10,10 +10,10 @@ const HINTS: Record<BusinessModel, string> = {
 };
 
 const FIELDS: { key: keyof HypothesesInput; label: string }[] = [
-  { key: "price", label: "Prix de vente unitaire" },
-  { key: "volume", label: "Volume de ventes par mois" },
-  { key: "variableCostPerUnit", label: "Cout variable par unite" },
-  { key: "fixedCosts", label: "Couts fixes par mois" },
+  { key: "price", label: "A combien tu vends une unite ?" },
+  { key: "volume", label: "Combien tu penses en vendre par mois ?" },
+  { key: "variableCostPerUnit", label: "Combien ca te coute de produire ou fournir une unite ?" },
+  { key: "fixedCosts", label: "Tes charges fixes chaque mois (loyer, salaires, abonnements...)" },
 ];
 
 export function StepHypotheses({

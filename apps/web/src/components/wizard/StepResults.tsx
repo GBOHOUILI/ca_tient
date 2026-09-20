@@ -1,8 +1,5 @@
 import type { BreakEvenResult, FinancialResult } from "@/lib/ideas-api";
-
-function formatAmount(value: number, currency: string) {
-  return new Intl.NumberFormat("fr-FR", { style: "currency", currency, maximumFractionDigits: 0 }).format(value);
-}
+import { formatAmount } from "@/lib/format";
 
 export function StepResults({ result, breakEven }: { result: FinancialResult; breakEven: BreakEvenResult }) {
   const positive = result.estimatedResult >= 0;
