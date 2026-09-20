@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { applyDelta, applyScenario, computeResult, type Hypotheses, type ScenarioKey } from "financial-engine";
 import type { CurrencyCode, HypothesesInput } from "@/lib/ideas-api";
+import { formatAmount } from "@/lib/format";
 import type { WhatIfDeltas } from "./wizard-reducer";
 import { ScenarioComparisonChart, type ScenarioBar } from "./charts/ScenarioComparisonChart";
 
@@ -53,6 +54,14 @@ export function StepScenarios({
         bars && (
           <div className="rounded-2xl border border-border bg-surface p-4">
             <ScenarioComparisonChart bars={bars} currency={currency} />
+            <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-small text-text-secondary">
+              {bars.map((bar) => (
+                <span key={bar.label}>
+                  {bar.label} :{" "}
+                  <span className="tabular-nums text-text-primary">{formatAmount(bar.estimatedResult, currency)}</span>
+                </span>
+              ))}
+            </p>
           </div>
         )
       )}

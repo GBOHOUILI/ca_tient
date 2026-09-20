@@ -1,12 +1,10 @@
 "use client";
 
 import { Area, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { formatAmount } from "@/lib/format";
+import { AXIS_PROPS, TOOLTIP_CONTENT_STYLE, TOOLTIP_LABEL_STYLE } from "./chart-theme";
 
 const SAMPLE_POINTS = 20;
-
-function formatAmount(value: number, currency: string) {
-  return new Intl.NumberFormat("fr-FR", { style: "currency", currency, maximumFractionDigits: 0 }).format(value);
-}
 
 export function BreakEvenChart({
   price,
@@ -28,6 +26,8 @@ export function BreakEvenChart({
 
   const data = Array.from({ length: SAMPLE_POINTS + 1 }, (_, i) => {
     const volume = Math.round((domainMax / SAMPLE_POINTS) * i);
+    // Mirrors financial-engine's computeResult formula (revenue - variableCosts - fixedCosts) inlined for
+    // per-point sampling performance; keep in sync if computeResult's formula ever changes.
     return { volume, margin: unitMargin * volume - fixedCosts };
   });
 
@@ -39,7 +39,7 @@ export function BreakEvenChart({
   const clampedOffset = Math.min(Math.max(zeroOffset, 0), 1);
 
   return (
-    <div aria-label={`Graphique de seuil de rentabilite : marge estimee selon le volume de ventes, de 0 a ${domainMax} unites par mois.`}>
+    <div role="img" aria-label={`Graphique de seuil de rentabilite : marge estimee selon le volume de ventes, de 0 a ${domainMax} unites par mois.`}>
       <ResponsiveContainer width="100%" height={240}>
         <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
           <defs>
@@ -50,14 +50,16 @@ export function BreakEvenChart({
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
+            {...AXIS_PROPS}
             dataKey="volume"
             type="number"
             domain={[0, domainMax]}
-            tick={{ fontSize: 12 }}
             label={{ value: "Volume vendu / mois", position: "insideBottom", offset: -10, fontSize: 12 }}
           />
-          <YAxis tick={{ fontSize: 12 }} tickFormatter={(value: number) => formatAmount(value, currency)} width={90} />
+          <YAxis {...AXIS_PROPS} tickFormatter={(value: number) => formatAmount(value, currency)} width={90} />
           <Tooltip
+            contentStyle={TOOLTIP_CONTENT_STYLE}
+            labelStyle={TOOLTIP_LABEL_STYLE}
             formatter={(value) => formatAmount(Number(value), currency)}
             labelFormatter={(label) => `${label} unites/mois`}
           />

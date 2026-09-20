@@ -1,8 +1,16 @@
 "use client";
 
 import { useMemo } from "react";
-import { applyDelta, computeAnnualProjection, computeBreakEven, type Hypotheses, type SeasonalityProfileKey } from "financial-engine";
+import {
+  applyDelta,
+  computeAnnualProjection,
+  computeBreakEven,
+  computeResult,
+  type Hypotheses,
+  type SeasonalityProfileKey,
+} from "financial-engine";
 import type { CurrencyCode, HypothesesInput } from "@/lib/ideas-api";
+import { formatAmount } from "@/lib/format";
 import type { WhatIfDeltas } from "./wizard-reducer";
 import { BreakEvenChart } from "./charts/BreakEvenChart";
 import { MonthlyRevenueChart } from "./charts/MonthlyRevenueChart";
@@ -40,7 +48,7 @@ export function StepEtSi({
   onNext: () => void;
   onBack: () => void;
 }) {
-  const { adjusted, breakEvenVolume, error } = useMemo(() => {
+  const { adjusted, breakEvenVolume, result, error } = useMemo(() => {
     const base: Hypotheses = { currency, ...hypotheses };
     try {
       const adjusted = applyDelta(base, whatIfDeltas);
@@ -48,12 +56,14 @@ export function StepEtSi({
       return {
         adjusted,
         breakEvenVolume: breakEven.reachable ? breakEven.volumeUnits : null,
+        result: computeResult(adjusted),
         error: null as string | null,
       };
     } catch {
       return {
         adjusted: null,
         breakEvenVolume: null,
+        result: null,
         error: "Ces reglages donnent des valeurs impossibles (prix ou couts a zero). Ajuste un curseur.",
       };
     }
@@ -83,6 +93,7 @@ export function StepEtSi({
             </span>
             <input
               type="range"
+              className="accent-accent-emerald"
               min={field.min}
               max={field.max}
               value={whatIfDeltas[field.key]}
@@ -121,10 +132,33 @@ export function StepEtSi({
                 breakEvenVolume={breakEvenVolume}
                 currency={currency}
               />
+              <p className="mt-2 text-small text-text-secondary">
+                Resultat estime a ton volume actuel :{" "}
+                <span className="tabular-nums text-text-primary">{formatAmount(result!.estimatedResult, currency)}</span>.{" "}
+                {breakEvenVolume !== null ? (
+                  <>
+                    Seuil de rentabilite : <span className="tabular-nums text-text-primary">{breakEvenVolume}</span>{" "}
+                    unites/mois.
+                  </>
+                ) : (
+                  "Seuil de rentabilite non atteignable avec ces reglages."
+                )}
+              </p>
             </div>
             {projection && (
               <div className="rounded-2xl border border-border bg-surface p-4">
                 <MonthlyRevenueChart projection={projection} currency={currency} />
+                <p className="mt-2 text-small text-text-secondary">
+                  Chiffre d&apos;affaires estime : de{" "}
+                  <span className="tabular-nums text-text-primary">
+                    {formatAmount(Math.min(...projection.map((m) => m.result.revenue)), currency)}
+                  </span>{" "}
+                  a{" "}
+                  <span className="tabular-nums text-text-primary">
+                    {formatAmount(Math.max(...projection.map((m) => m.result.revenue)), currency)}
+                  </span>{" "}
+                  selon le mois.
+                </p>
               </div>
             )}
           </>
