@@ -64,11 +64,14 @@ Créer `packages/financial-engine/package.json` :
     "test": "vitest run"
   },
   "devDependencies": {
+    "@types/node": "^24.0.0",
     "typescript": "^6.0.2",
     "vitest": "^4.1.2"
   }
 }
 ```
+
+Note : `@types/node` est nécessaire ici car `tsconfig.json` (ci-dessous) référence `"node"` dans son tableau `"types"` — oubli du plan initial, découvert et corrigé pendant l'implémentation de la Task 2.
 
 Créer `packages/financial-engine/tsconfig.json` :
 
