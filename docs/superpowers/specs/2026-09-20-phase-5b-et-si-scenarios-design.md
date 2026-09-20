@@ -69,10 +69,12 @@ Bornes des sliders (pourcentages), choisies pour ne jamais produire d'hypothèse
 
 ### Calcul (client-side, package `financial-engine`)
 
+**Correction par rapport à la première rédaction de cette spec** : le graphique de seuil était décrit comme deux lignes (revenu + coût total). En chargeant le skill `dataviz` avant l'implémentation, ça viole sa règle "légende obligatoire dès 2 séries" pour un graphique qui n'en a pas besoin — et surtout, `design/COMPONENTS.md` décrit en réalité **une seule courbe** ("la courbe principale") avec des zones colorées au-dessus/en dessous du seuil, pas deux lignes distinctes. Corrigé en une seule série : la **marge à ce volume** (`margin(volume) = (price - variableCostPerUnit) * volume - fixedCosts`, soit revenu moins coût total), qui vaut exactement `-fixedCosts` à volume 0 et croise zéro très exactement à `breakEven.volumeUnits`. Une seule série → pas de légende nécessaire, direct sur le design system.
+
 Sur l'écran "Et si ?", à chaque changement de slider ou de profil :
 1. `const adjusted = applyDelta(baseHypotheses, state.whatIfDeltas)` — recalcul instantané, synchrone.
-2. Graphique de seuil : construit à partir de `adjusted` directement (revenu = `adjusted.price * volume` pour un volume variable en abscisse, coût total = `adjusted.fixedCosts + adjusted.variableCostPerUnit * volume`), plus `computeBreakEven(adjusted)` pour le point de croisement et `adjusted.volume` pour le marqueur "tu es ici".
-3. Si `state.seasonalityProfile !== "stable"` : `computeAnnualProjection(adjusted, state.seasonalityProfile)` alimente le graphique mensuel compact.
+2. Graphique de seuil : une série `margin` échantillonnée sur un intervalle de volume `[0, domainMax]` (`domainMax = Math.max(adjusted.volume, breakEven.volumeUnits ?? 0) * 2`, plancher à 10 pour rester lisible à faible volume), colorée en deux tons (succès au-dessus de zéro, erreur en dessous) via un dégradé SVG dont le point de bascule est calculé depuis le min/max de la série échantillonnée. `computeBreakEven(adjusted)` donne le point de croisement (`ReferenceLine` verticale, si atteignable) et `adjusted.volume` le marqueur "tu es ici" (autre `ReferenceLine` verticale). Une `ReferenceLine` horizontale à `y=0` sert de ligne de base.
+3. Si `state.seasonalityProfile !== "stable"` : `computeAnnualProjection(adjusted, state.seasonalityProfile)` alimente le graphique mensuel compact (une seule série là aussi : revenu par mois).
 
 Sur l'écran "Scénarios" :
 - 4 barres depuis `computeResult(applyScenario(baseHypotheses, scenarioKey))` pour chaque `scenarioKey` (`prudent`/`realiste`/`ambitieux`/`crise`).
@@ -86,11 +88,13 @@ Toute erreur de validation levée par le package (`FinancialEngineInputError`, c
 
 - `apps/web/src/components/wizard/StepEtSi.tsx` — 4 sliders + sélecteur de saisonnalité + les 2 graphiques.
 - `apps/web/src/components/wizard/StepScenarios.tsx` — graphique en barres à 5 entrées.
-- `apps/web/src/components/wizard/charts/BreakEvenChart.tsx` — Recharts, ligne revenu + ligne coût total en fonction du volume, `ReferenceLine` verticale au volume courant, remplissage `success`/`error` selon la zone (au-dessus/en dessous du croisement), grille discrète (`design/COMPONENTS.md`).
+- `apps/web/src/components/wizard/charts/BreakEvenChart.tsx` — Recharts `AreaChart`, une seule série (marge estimée en fonction du volume), remplissage en dégradé `success`/`error` de part et d'autre de zéro, `ReferenceLine` verticale au volume courant ("tu es ici") et au seuil de rentabilité si atteignable, `ReferenceLine` horizontale à zéro, grille discrète (`design/COMPONENTS.md`).
 - `apps/web/src/components/wizard/charts/MonthlyRevenueChart.tsx` — Recharts, 12 barres (Jan-Déc), une seule série (revenu mensuel), remplissage `cyan-400` uniforme sur toutes les barres (« highlights de données », usage documenté tel quel dans `design/COLORS.md`) — pas de dégradé par barre, inutilement complexe pour une seule série de données.
 - `apps/web/src/components/wizard/charts/ScenarioComparisonChart.tsx` — Recharts, 5 barres (résultat estimé par scénario), couleur par barre selon signe (`success` si ≥ 0, `error` sinon), même logique que les cards de `StepResults.tsx`.
 
 Tokens de couleur réutilisés tels quels depuis `design/COLORS.md`/le CSS existant (`--color-success`, `--color-error`, `--color-accent-emerald`, `--color-accent-cyan`, `--color-border`) — aucune couleur inventée (règle non négociable `CLAUDE.md` #8).
+
+Chaque graphique a un `<Tooltip>` Recharts (survol/point actif) et un texte alternatif porteur de sens (`aria-label` ou légende visible résumant ce que montre le graphique) — exigence déjà documentée dans `design/UX_PRINCIPLES.md` ("textes alternatifs sur tout élément graphique porteur de sens"). Pas de vue tableau alternative pour chaque graphique : les chiffres qu'ils visualisent sont déjà affichés en texte ailleurs dans l'écran (cohérent avec `StepResults.tsx` existant, qui combine déjà cards chiffrées + narration), une double représentation systématique serait de la sur-ingénierie pour la taille de cette fonctionnalité.
 
 ## Vocabulaire (dette Phase 4)
 
