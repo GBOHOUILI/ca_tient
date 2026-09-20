@@ -1,8 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import type { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { FinancialEngineService } from "../financial-engine/financial-engine.service.js";
 import type { CreateIdeaDto } from "./dto/create-idea.dto.js";
+import type { UpdateCanvasBlocksDto } from "./dto/update-canvas-blocks.dto.js";
 import type { Hypotheses } from "financial-engine";
 
 export interface IdeaDetail {
@@ -92,5 +93,22 @@ export class IdeasService {
           }
         : null,
     };
+  }
+
+  async updateCanvasBlocks(ideaId: string, dto: UpdateCanvasBlocksDto): Promise<void> {
+    const idea = await this.prisma.idea.findUnique({ where: { id: ideaId }, select: { id: true } });
+    if (!idea) {
+      throw new NotFoundException(`Idee ${ideaId} introuvable.`);
+    }
+
+    await this.prisma.$transaction(
+      dto.blocks.map((block) =>
+        this.prisma.canvasBlock.upsert({
+          where: { ideaId_key: { ideaId, key: block.key } },
+          create: { ideaId, key: block.key, content: block.content, source: dto.source },
+          update: { content: block.content, source: dto.source },
+        }),
+      ),
+    );
   }
 }
