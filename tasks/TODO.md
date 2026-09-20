@@ -29,7 +29,8 @@
 - [ ] Dette UX pré-existante (Phase 3) : `<textarea>` de description sans `maxLength` côté client (le serveur plafonne à 2000 caractères) — au-delà, l'échec ne remonte que sur l'écran Hypothèses avec un message générique.
 
 ## Phase 5 — Scénarios
-- [ ] Module "Et si… ?" + scénarios prudent/réaliste/ambitieux/crise
+- [x] Phase 5a — moteur : projection annuelle avec saisonnalité (`packages/financial-engine/src/seasonality.ts`), package partagé du monorepo (`packages/financial-engine`), consommé par `apps/api` via `financial-engine.service.ts`. Voir `docs/superpowers/specs/2026-09-20-phase-5a-moteur-saisonnalite-design.md` et `docs/DECISIONS.md`.
+- [ ] Phase 5b — écrans "Et si ?"/"Scénarios", graphiques (Recharts), recalcul temps réel côté navigateur, simplification du vocabulaire (regroupe la dette UX notée en Phase 4).
 
 ## Phase 6-7 — Analyse complète & Paiement
 - [ ] Écran d'offre à 1 000 FCFA

@@ -35,4 +35,16 @@ describe("FinancialEngineService", () => {
   it("delegates computeBreakEven to the financial-engine package", () => {
     expect(service.computeBreakEven(hypotheses())).toEqual({ reachable: true, volumeUnits: 34 });
   });
+
+  it("delegates computeAnnualProjection to the financial-engine package", () => {
+    const projection = service.computeAnnualProjection(hypotheses(), "stable");
+
+    expect(projection).toHaveLength(12);
+    expect(projection[0]?.result).toEqual({
+      currency: "XOF",
+      revenue: 250000,
+      grossMargin: 150000,
+      estimatedResult: 50000,
+    });
+  });
 });

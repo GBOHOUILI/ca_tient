@@ -1,6 +1,13 @@
 import { Injectable } from "@nestjs/common";
-import { computeResult, computeBreakEven } from "financial-engine";
-import type { BreakEvenInput, BreakEvenResult, FinancialResult, Hypotheses } from "financial-engine";
+import { computeResult, computeBreakEven, computeAnnualProjection } from "financial-engine";
+import type {
+  BreakEvenInput,
+  BreakEvenResult,
+  FinancialResult,
+  Hypotheses,
+  MonthlyResult,
+  SeasonalityProfileKey,
+} from "financial-engine";
 
 @Injectable()
 export class FinancialEngineService {
@@ -10,5 +17,9 @@ export class FinancialEngineService {
 
   computeBreakEven(input: BreakEvenInput): BreakEvenResult {
     return computeBreakEven(input);
+  }
+
+  computeAnnualProjection(hypotheses: Hypotheses, profile: SeasonalityProfileKey): MonthlyResult[] {
+    return computeAnnualProjection(hypotheses, profile);
   }
 }
