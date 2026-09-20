@@ -9,15 +9,18 @@ export interface MonthlyResult {
   result: FinancialResult;
 }
 
-// Pourcentages de variation du volume par mois (janvier -> decembre), somme = 0.
+// Pourcentages de variation du volume par mois (janvier -> decembre), somme = 0 :
+// le volume annuel implicite est conserve a l'arrondi entier pres (chaque mois est
+// arrondi individuellement via applyDelta, l'ecart cumule reste de l'ordre de
+// quelques unites sur l'annee).
 // Points de depart a calibrer avec des donnees reelles avant mise en production,
 // meme statut que SCENARIO_DELTAS dans scenarios.ts ("un point de depart, a valider").
-export const SEASONALITY_PROFILES: Record<SeasonalityProfileKey, number[]> = {
+export const SEASONALITY_PROFILES = {
   stable: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   fetes_fin_annee: [-25, -20, -10, -5, 0, 0, 0, 0, 0, 5, 25, 30],
   ete: [-10, -10, -5, 0, 5, 20, 30, 20, -5, -15, -15, -15],
   rentree_scolaire: [-10, -10, -5, -5, -5, -10, -15, 0, 30, 35, 0, -5],
-};
+} as const;
 
 export function computeAnnualProjection(base: Hypotheses, profile: SeasonalityProfileKey): MonthlyResult[] {
   return SEASONALITY_PROFILES[profile].map((percent, index) => ({

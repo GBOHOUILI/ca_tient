@@ -21,6 +21,7 @@ Cette phase est scindée en deux (décision prise en brainstorming) :
 - **Le seuil de rentabilité reste calculé une fois sur les hypothèses de base (éventuellement ajustées par le scénario), jamais dérivé de la courbe mensuelle.** Pas de notion de "seuil cumulé" — non demandée, ajouterait de la complexité (gestion de trésorerie cumulée sur l'année) hors du périmètre actuel du moteur (`docs/FINANCIAL_ENGINE.md` ne définit le seuil qu'en instantané mensuel).
 - **Aucune persistance, aucun nouvel endpoint HTTP.** Comme le reste du moteur, la fonction est pure (pas d'I/O). L'exploration "Et si ?"/Scénarios est éphémère côté utilisateur (Phase 5b) ; ce qui est payé et conservé, c'est le rapport final (Phase 6-7), hors scope ici.
 - **Extraction du moteur en package partagé du monorepo** (`packages/financial-engine`), consommé en TypeScript source directement (pas de step de build séparé à maintenir pour un package interne jamais publié). Nécessaire pour que la Phase 5b recalcule côté navigateur sans aller-retour réseau (déjà justifié en brainstorming par `design/UX_PRINCIPLES.md` : "connexions parfois lentes" en Afrique de l'Ouest). Décision structurante consignée dans `docs/DECISIONS.md`.
+  **Correction par rapport à la spec** : cette décision a été inversée pendant le planning — le build `tsc` d'`apps/api` ne peut pas résoudre/émettre le `.ts` source brut d'un package workspace externe sans un vrai step de build. Le package se construit finalement via `tsc -p tsconfig.build.json` (même mécanisme qu'`apps/api`), voir `docs/DECISIONS.md`.
 
 ## Architecture
 
