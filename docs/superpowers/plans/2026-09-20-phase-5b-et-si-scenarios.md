@@ -179,6 +179,8 @@ git commit -m "feat(web): etat du wizard pour Et si ? et Scenarios (deltas, sais
 
 Composants purs, présentation uniquement — ne connaissent pas `WizardState`, prennent des données déjà calculées en props (isolation, testabilité indépendante).
 
+**Correction par rapport à la première rédaction de ce plan** : le `formatter` de `<Tooltip>` était initialement typé `(value: number) => ...`, mais `recharts@3.10.1` type ce paramètre en `ValueType` (`number | string | ReadonlyArray<...> | undefined`), pas `number` directement — vérifié dans `node_modules/recharts/types/component/DefaultTooltipContent.d.ts` pendant l'implémentation. Corrigé dans les 3 fichiers en `(value) => formatAmount(Number(value), currency)` (inférence contextuelle + coercition explicite), sans changement de comportement visuel.
+
 - [ ] **Step 1: `BreakEvenChart`**
 
 Créer `apps/web/src/components/wizard/charts/BreakEvenChart.tsx` :
@@ -244,7 +246,7 @@ export function BreakEvenChart({
           />
           <YAxis tick={{ fontSize: 12 }} tickFormatter={(value: number) => formatAmount(value, currency)} width={90} />
           <Tooltip
-            formatter={(value: number) => formatAmount(value, currency)}
+            formatter={(value) => formatAmount(Number(value), currency)}
             labelFormatter={(label) => `${label} unites/mois`}
           />
           <ReferenceLine y={0} stroke="var(--color-text-secondary)" />
@@ -294,7 +296,7 @@ export function MonthlyRevenueChart({ projection, currency }: { projection: Mont
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
           <XAxis dataKey="month" tick={{ fontSize: 12 }} />
           <YAxis tick={{ fontSize: 12 }} tickFormatter={(value: number) => formatAmount(value, currency)} width={90} />
-          <Tooltip formatter={(value: number) => formatAmount(value, currency)} />
+          <Tooltip formatter={(value) => formatAmount(Number(value), currency)} />
           <Bar dataKey="revenue" fill="var(--color-accent-cyan)" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
@@ -329,7 +331,7 @@ export function ScenarioComparisonChart({ bars, currency }: { bars: ScenarioBar[
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
           <XAxis dataKey="label" tick={{ fontSize: 12 }} />
           <YAxis tick={{ fontSize: 12 }} tickFormatter={(value: number) => formatAmount(value, currency)} width={90} />
-          <Tooltip formatter={(value: number) => formatAmount(value, currency)} />
+          <Tooltip formatter={(value) => formatAmount(Number(value), currency)} />
           <Bar dataKey="estimatedResult" radius={[4, 4, 0, 0]}>
             {bars.map((bar) => (
               <Cell key={bar.label} fill={bar.estimatedResult >= 0 ? "var(--color-success)" : "var(--color-error)"} />

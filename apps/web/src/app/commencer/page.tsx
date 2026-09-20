@@ -6,6 +6,8 @@ import { StepBusinessType } from "@/components/wizard/StepBusinessType";
 import { StepDescription } from "@/components/wizard/StepDescription";
 import { StepHypotheses } from "@/components/wizard/StepHypotheses";
 import { StepResults } from "@/components/wizard/StepResults";
+import { StepEtSi } from "@/components/wizard/StepEtSi";
+import { StepScenarios } from "@/components/wizard/StepScenarios";
 import { initialWizardState, wizardReducer } from "@/components/wizard/wizard-reducer";
 import { createIdea, suggestHypotheses, type CreateIdeaResponse } from "@/lib/ideas-api";
 
@@ -88,7 +90,38 @@ export default function CommencerPage() {
       )}
 
       {state.step === "results" && response && (
-        <StepResults result={response.result} breakEven={response.breakEven} />
+        <div className="flex flex-col items-center gap-8">
+          <StepResults result={response.result} breakEven={response.breakEven} />
+          <button
+            type="button"
+            onClick={() => dispatch({ type: "GO_TO_STEP", step: "et-si" })}
+            className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white"
+          >
+            Explorer &quot;Et si ?&quot;
+          </button>
+        </div>
+      )}
+
+      {state.step === "et-si" && (
+        <StepEtSi
+          hypotheses={state.hypotheses}
+          currency={state.currency}
+          whatIfDeltas={state.whatIfDeltas}
+          seasonalityProfile={state.seasonalityProfile}
+          onDeltaChange={(key, value) => dispatch({ type: "SET_WHAT_IF_DELTA", key, value })}
+          onSeasonalityChange={(profile) => dispatch({ type: "SET_SEASONALITY_PROFILE", profile })}
+          onNext={() => dispatch({ type: "GO_TO_STEP", step: "scenarios" })}
+          onBack={() => dispatch({ type: "GO_TO_STEP", step: "results" })}
+        />
+      )}
+
+      {state.step === "scenarios" && (
+        <StepScenarios
+          hypotheses={state.hypotheses}
+          currency={state.currency}
+          whatIfDeltas={state.whatIfDeltas}
+          onBack={() => dispatch({ type: "GO_TO_STEP", step: "et-si" })}
+        />
       )}
     </main>
   );

@@ -1,6 +1,20 @@
 import type { BusinessModel, CurrencyCode, HypothesesInput } from "@/lib/ideas-api";
+import type { SeasonalityProfileKey } from "financial-engine";
 
-export type WizardStep = "business-type" | "description" | "hypotheses" | "results";
+export type WizardStep =
+  | "business-type"
+  | "description"
+  | "hypotheses"
+  | "results"
+  | "et-si"
+  | "scenarios";
+
+export interface WhatIfDeltas {
+  price: number;
+  volume: number;
+  variableCostPerUnit: number;
+  fixedCosts: number;
+}
 
 export interface WizardState {
   step: WizardStep;
@@ -9,6 +23,8 @@ export interface WizardState {
   currency: CurrencyCode;
   hypotheses: HypothesesInput;
   wasSuggested: boolean;
+  whatIfDeltas: WhatIfDeltas;
+  seasonalityProfile: SeasonalityProfileKey;
 }
 
 export type WizardAction =
@@ -17,6 +33,8 @@ export type WizardAction =
   | { type: "SET_CURRENCY"; currency: CurrencyCode }
   | { type: "SET_HYPOTHESIS"; key: keyof HypothesesInput; value: number }
   | { type: "SET_HYPOTHESES"; hypotheses: HypothesesInput }
+  | { type: "SET_WHAT_IF_DELTA"; key: keyof WhatIfDeltas; value: number }
+  | { type: "SET_SEASONALITY_PROFILE"; profile: SeasonalityProfileKey }
   | { type: "GO_TO_STEP"; step: WizardStep };
 
 export const initialWizardState: WizardState = {
@@ -26,6 +44,8 @@ export const initialWizardState: WizardState = {
   currency: "XOF",
   hypotheses: { price: 0, volume: 0, variableCostPerUnit: 0, fixedCosts: 0 },
   wasSuggested: false,
+  whatIfDeltas: { price: 0, volume: 0, variableCostPerUnit: 0, fixedCosts: 0 },
+  seasonalityProfile: "stable",
 };
 
 export function wizardReducer(state: WizardState, action: WizardAction): WizardState {
@@ -40,6 +60,10 @@ export function wizardReducer(state: WizardState, action: WizardAction): WizardS
       return { ...state, hypotheses: { ...state.hypotheses, [action.key]: action.value }, wasSuggested: false };
     case "SET_HYPOTHESES":
       return { ...state, hypotheses: action.hypotheses, wasSuggested: true };
+    case "SET_WHAT_IF_DELTA":
+      return { ...state, whatIfDeltas: { ...state.whatIfDeltas, [action.key]: action.value } };
+    case "SET_SEASONALITY_PROFILE":
+      return { ...state, seasonalityProfile: action.profile };
     case "GO_TO_STEP":
       return { ...state, step: action.step };
     default:

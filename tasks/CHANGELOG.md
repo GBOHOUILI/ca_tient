@@ -1,5 +1,12 @@
 # CHANGELOG.md
 
+## [Non versionné], Phase 5b : écrans "Et si ?" / "Scénarios"
+- Deux nouveaux écrans du wizard, juste après l'aperçu : "Et si ?" (4 sliders en pourcentage + sélecteur de saisonnalité + graphique de seuil de rentabilité en temps réel + graphique mensuel conditionnel) et "Scénarios" (comparaison en barres des 4 scénarios prédéfinis + un scénario "Personnalisé" qui reprend les réglages de l'écran précédent).
+- `apps/web` consomme directement le package `financial-engine` (Phase 5a) : aucun aller-retour réseau, recalcul instantané à chaque interaction.
+- Graphiques Recharts (`apps/web/src/components/wizard/charts/`) : palette et grille reprises telles quelles de `design/COLORS.md`/`design/COMPONENTS.md`, tooltips + texte alternatif sur chaque graphique.
+- Vocabulaire de l'écran Hypothèses reformulé en questions directes plutôt qu'en termes comptables (dette notée depuis la Phase 4, `design/UX_PRINCIPLES.md`).
+- Vérification bout en bout manuelle (Playwright) : recalcul en direct des sliders, apparition/disparition du graphique mensuel selon la saisonnalité, cohérence du scénario "Personnalisé", 0 erreur console.
+
 ## [Non versionné], Phase 5a : moteur financier partagé + projection annuelle
 - Extraction du moteur financier (`financial-engine.types.ts`, `financial-engine.errors.ts`, `financial-engine.validation.ts`, `scenarios.ts`) en package partagé du monorepo (`packages/financial-engine`), consommé par `apps/api` via un build `tsc` standard. `computeResult`/`computeBreakEven` (auparavant méthodes NestJS uniquement) sont désormais des fonctions pures du package (`financial-engine.calculations.ts`), `FinancialEngineService` en reste le seul point d'entrée NestJS, désormais un fin wrapper.
 - Nouveau : `computeAnnualProjection(hypotheses, profile)` (`packages/financial-engine/src/seasonality.ts`) — projection sur 12 mois avec 4 profils de saisonnalité prédéfinis (`stable`, `fetes_fin_annee`, `ete`, `rentree_scolaire`), même mécanique que les scénarios existants (`applyDelta` sur le volume, pourcentages sommant à zéro), composable avec les scénarios prudent/réaliste/ambitieux/crise. Aucune UI, aucune persistance, aucun nouvel endpoint HTTP — module backend pur, prêt pour la Phase 5b.

@@ -5,13 +5,15 @@ const STEPS: { key: WizardStep; label: string }[] = [
   { key: "description", label: "Description" },
   { key: "hypotheses", label: "Hypotheses" },
   { key: "results", label: "Resultats" },
+  { key: "et-si", label: "Et si ?" },
+  { key: "scenarios", label: "Scenarios" },
 ];
 
 export function WizardProgress({ currentStep }: { currentStep: WizardStep }) {
   const currentIndex = STEPS.findIndex((s) => s.key === currentStep);
 
   return (
-    <ol className="flex items-center justify-center gap-2 text-micro font-medium tracking-micro text-text-secondary">
+    <ol className="flex flex-wrap items-center justify-center gap-2 text-micro font-medium tracking-micro text-text-secondary">
       {STEPS.map((step, index) => (
         <li key={step.key} className="flex items-center gap-2">
           <span
