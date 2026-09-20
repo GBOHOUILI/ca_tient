@@ -1,6 +1,6 @@
 import { IsEnum, IsIn, IsNotEmpty, IsString, MaxLength } from "class-validator";
 import { BusinessModel } from "@prisma/client";
-import { SUPPORTED_CURRENCIES, type CurrencyCode } from "../../financial-engine/financial-engine.types.js";
+import { SUPPORTED_CURRENCIES, type CurrencyCode } from "financial-engine";
 
 export class SuggestHypothesesDto {
   @IsEnum(BusinessModel)

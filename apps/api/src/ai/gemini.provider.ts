@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { GoogleGenAI, Type } from "@google/genai";
 import type { BusinessModel } from "@prisma/client";
-import type { CurrencyCode } from "../financial-engine/financial-engine.types.js";
+import type { CurrencyCode } from "financial-engine";
 import type { AiProvider, AiSuggestionInput, SuggestedHypotheses } from "./ai-provider.port.js";
 
 const REQUEST_TIMEOUT_MS = 8_000;

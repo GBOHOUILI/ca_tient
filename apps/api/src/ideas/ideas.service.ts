@@ -3,7 +3,7 @@ import type { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { FinancialEngineService } from "../financial-engine/financial-engine.service.js";
 import type { CreateIdeaDto } from "./dto/create-idea.dto.js";
-import type { Hypotheses } from "../financial-engine/financial-engine.types.js";
+import type { Hypotheses } from "financial-engine";
 
 export interface IdeaDetail {
   id: string;

@@ -37,6 +37,9 @@ importers:
       class-validator:
         specifier: ^0.15.1
         version: 0.15.1
+      financial-engine:
+        specifier: workspace:*
+        version: link:../../packages/financial-engine
       pg:
         specifier: ^8.23.0
         version: 8.23.0
