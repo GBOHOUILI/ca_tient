@@ -5,9 +5,8 @@ const STEPS: { key: WizardStep; label: string }[] = [
   { key: "description", label: "Description" },
   { key: "hypotheses", label: "Hypotheses" },
   { key: "canvas", label: "Ton business model" },
-  { key: "results", label: "Resultats" },
-  { key: "et-si", label: "Et si ?" },
-  { key: "scenarios", label: "Scenarios" },
+  { key: "results", label: "Apercu" },
+  { key: "offer", label: "Analyse complete" },
 ];
 
 export function WizardProgress({ currentStep }: { currentStep: WizardStep }) {

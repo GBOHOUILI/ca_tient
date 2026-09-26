@@ -43,8 +43,10 @@
 - [x] **Dette tests (découverte 2026-09-26)** : `ideas.service.spec.ts` et `ideas.controller.spec.ts` font `prisma.idea.deleteMany()` sur la base pointée par `DATABASE_URL`, la même que le dev : chaque `pnpm --filter api test` vide les idées de dev. Prévoir une base de test dédiée (ex. `DATABASE_URL_TEST`). Corrigé : base `<nom>_test` dérivée de `DATABASE_URL` (ou `DATABASE_URL_TEST`), migrée automatiquement avant `pnpm test`.
 
 ## Phase 6-7 — Analyse complète & Paiement
-- [ ] Écran d'offre à 1 000 FCFA
-- [ ] Intégration FedaPay (`docs/PAYMENT.md`, `skills/payment.md`)
+- [x] Écran d'offre à 1 000 FCFA
+- [x] Phase 6b-1 : jeton d'accès par idée, paiement après l'aperçu, `PaymentService` + providers `test`/`fedapay`, page `/analyse/[ideaId]` (`docs/PAYMENT.md`, `docs/superpowers/specs/2026-09-26-phase-6b1-acces-paiement-design.md`)
+- [ ] Test réel FedaPay sandbox (clés sandbox + URL publique pour le webhook)
+- [ ] Phase 6b-2 : écran capital, besoin financier, rapport complet, analytics
 - [ ] Rapport final
 
 ## Phase 8 — Bêta

@@ -24,6 +24,9 @@ model Idea {
   hypotheses     Hypothesis[]
   simulations    Simulation[]
   canvasBlocks   CanvasBlock[]
+  accessTokenHash String?
+  paidAt          DateTime?
+  payments        Payment[]
 }
 
 model Hypothesis {
@@ -64,4 +67,32 @@ model CanvasBlock {
 enum CanvasBlockSource {
   ia_suggere
   utilisateur_edite
+}
+
+enum PaymentProvider {
+  test
+  fedapay
+}
+
+enum PaymentStatus {
+  pending
+  approved
+  declined
+  canceled
+}
+
+model Payment {
+  id                    String          @id @default(cuid())
+  ideaId                String
+  idea                  Idea            @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  provider              PaymentProvider
+  providerTransactionId String?
+  amount                Int
+  currency              String
+  status                PaymentStatus   @default(pending)
+  createdAt             DateTime        @default(now())
+  confirmedAt           DateTime?
+
+  @@unique([provider, providerTransactionId])
+  @@index([ideaId])
 }

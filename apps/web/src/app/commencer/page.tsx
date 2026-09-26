@@ -6,8 +6,7 @@ import { StepBusinessType } from "@/components/wizard/StepBusinessType";
 import { StepDescription } from "@/components/wizard/StepDescription";
 import { StepHypotheses } from "@/components/wizard/StepHypotheses";
 import { StepResults } from "@/components/wizard/StepResults";
-import { StepEtSi } from "@/components/wizard/StepEtSi";
-import { StepScenarios } from "@/components/wizard/StepScenarios";
+import { StepOffer } from "@/components/wizard/StepOffer";
 import { StepCanvas } from "@/components/wizard/StepCanvas";
 import { initialWizardState, wizardReducer } from "@/components/wizard/wizard-reducer";
 import {
@@ -17,6 +16,7 @@ import {
   suggestHypotheses,
   suggestCanvasBlocks,
   saveCanvasBlocks,
+  startPayment,
   type CreateIdeaResponse,
 } from "@/lib/ideas-api";
 
@@ -24,6 +24,7 @@ export default function CommencerPage() {
   const [state, dispatch] = useReducer(wizardReducer, initialWizardState);
   const [suggesting, setSuggesting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [paying, setPaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [response, setResponse] = useState<CreateIdeaResponse | null>(null);
 
@@ -99,6 +100,19 @@ export default function CommencerPage() {
     }
   }
 
+  async function handlePay() {
+    if (!response) return;
+    setPaying(true);
+    setError(null);
+    try {
+      const { redirectUrl } = await startPayment(response.ideaId);
+      window.location.assign(redirectUrl);
+    } catch {
+      setError("Le paiement n'a pas pu demarrer. Reessaie.");
+      setPaying(false);
+    }
+  }
+
   return (
     <main className="mx-auto flex max-w-4xl flex-col gap-12 px-4 py-16 sm:px-6">
       <WizardProgress currentStep={state.step} />
@@ -149,33 +163,20 @@ export default function CommencerPage() {
           <StepResults result={response.result} breakEven={response.breakEven} />
           <button
             type="button"
-            onClick={() => dispatch({ type: "GO_TO_STEP", step: "et-si" })}
+            onClick={() => dispatch({ type: "GO_TO_STEP", step: "offer" })}
             className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white"
           >
-            Explorer &quot;Et si ?&quot;
+            Voir l&apos;analyse complete
           </button>
         </div>
       )}
 
-      {state.step === "et-si" && (
-        <StepEtSi
-          hypotheses={state.hypotheses}
-          currency={state.currency}
-          whatIfDeltas={state.whatIfDeltas}
-          seasonalityProfile={state.seasonalityProfile}
-          onDeltaChange={(key, value) => dispatch({ type: "SET_WHAT_IF_DELTA", key, value })}
-          onSeasonalityChange={(profile) => dispatch({ type: "SET_SEASONALITY_PROFILE", profile })}
-          onNext={() => dispatch({ type: "GO_TO_STEP", step: "scenarios" })}
+      {state.step === "offer" && response && (
+        <StepOffer
+          onPay={handlePay}
           onBack={() => dispatch({ type: "GO_TO_STEP", step: "results" })}
-        />
-      )}
-
-      {state.step === "scenarios" && (
-        <StepScenarios
-          hypotheses={state.hypotheses}
-          currency={state.currency}
-          whatIfDeltas={state.whatIfDeltas}
-          onBack={() => dispatch({ type: "GO_TO_STEP", step: "et-si" })}
+          paying={paying}
+          error={error}
         />
       )}
     </main>

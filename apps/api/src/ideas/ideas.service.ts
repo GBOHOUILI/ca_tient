@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import type { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { FinancialEngineService } from "../financial-engine/financial-engine.service.js";
+import { generateAccessToken } from "./access-token.js";
 import type { CreateIdeaDto } from "./dto/create-idea.dto.js";
 import type { UpdateCanvasBlocksDto } from "./dto/update-canvas-blocks.dto.js";
 import type { Hypotheses } from "financial-engine";
@@ -11,6 +12,7 @@ export interface IdeaDetail {
   businessModel: string;
   rawDescription: string;
   currency: string;
+  paid: boolean;
   hypotheses: { key: string; label: string; value: number; unit: string | null }[];
   simulation: { type: string; inputsSnapshot: unknown; result: unknown; breakEven: unknown; createdAt: Date } | null;
 }
@@ -24,18 +26,20 @@ export class IdeasService {
 
   async create(dto: CreateIdeaDto) {
     const { result, breakEven, hypothesesRows, simulation } = this.buildPreview(dto);
+    const { token, hash } = generateAccessToken();
 
     const idea = await this.prisma.idea.create({
       data: {
         businessModel: dto.businessModel,
         rawDescription: dto.rawDescription,
         currency: dto.currency,
+        accessTokenHash: hash,
         hypotheses: { create: hypothesesRows },
         simulations: { create: simulation },
       },
     });
 
-    return { ideaId: idea.id, result, breakEven };
+    return { ideaId: idea.id, accessToken: token, result, breakEven };
   }
 
   // Resubmitting the wizard updates the same idea instead of creating a new one,
@@ -112,6 +116,7 @@ export class IdeasService {
       businessModel: idea.businessModel,
       rawDescription: idea.rawDescription,
       currency: idea.currency,
+      paid: idea.paidAt !== null,
       hypotheses: idea.hypotheses.map((h) => ({ key: h.key, label: h.label, value: h.value, unit: h.unit })),
       simulation: idea.simulations[0]
         ? {

@@ -46,7 +46,7 @@ export function StepEtSi({
   onDeltaChange: (key: keyof WhatIfDeltas, value: number) => void;
   onSeasonalityChange: (profile: SeasonalityProfileKey) => void;
   onNext: () => void;
-  onBack: () => void;
+  onBack?: () => void;
 }) {
   const { adjusted, breakEvenVolume, result, error } = useMemo(() => {
     const base: Hypotheses = { currency, ...hypotheses };
@@ -166,9 +166,13 @@ export function StepEtSi({
       )}
 
       <div className="flex justify-between">
-        <button type="button" onClick={onBack} className="text-body font-medium text-text-secondary">
-          Retour
-        </button>
+        {onBack ? (
+          <button type="button" onClick={onBack} className="text-body font-medium text-text-secondary">
+            Retour
+          </button>
+        ) : (
+          <span />
+        )}
         <button
           type="button"
           onClick={onNext}

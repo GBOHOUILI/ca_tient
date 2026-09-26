@@ -2,6 +2,7 @@ import { NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { FinancialEngineService } from "../financial-engine/financial-engine.service.js";
 import { IdeasService } from "./ideas.service.js";
+import { hashAccessToken } from "./access-token.js";
 import type { CreateIdeaDto } from "./dto/create-idea.dto.js";
 
 function payload(overrides: Partial<CreateIdeaDto> = {}): CreateIdeaDto {
@@ -62,6 +63,15 @@ describe("IdeasService.create", () => {
       fixedCosts: 100000,
     });
   });
+
+  it("returns an access token and stores only its hash", async () => {
+    const { ideaId, accessToken } = await service.create(payload());
+
+    const stored = await prisma.idea.findUniqueOrThrow({ where: { id: ideaId } });
+    expect(accessToken).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    expect(stored.accessTokenHash).toBe(hashAccessToken(accessToken));
+    expect(stored.paidAt).toBeNull();
+  });
 });
 
 describe("IdeasService.findOne", () => {
@@ -89,12 +99,20 @@ describe("IdeasService.findOne", () => {
     expect(idea?.businessModel).toBe("ECOMMERCE");
     expect(idea?.hypotheses).toHaveLength(4);
     expect(idea?.simulation?.type).toBe("apercu");
+    expect(idea?.paid).toBe(false);
   });
 
   it("returns null for an unknown id", async () => {
     const idea = await service.findOne("does-not-exist");
 
     expect(idea).toBeNull();
+  });
+
+  it("reports the idea as paid once paidAt is set", async () => {
+    const { ideaId } = await service.create(payload());
+    await prisma.idea.update({ where: { id: ideaId }, data: { paidAt: new Date() } });
+
+    expect((await service.findOne(ideaId))?.paid).toBe(true);
   });
 });
 
