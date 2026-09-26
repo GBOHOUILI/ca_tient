@@ -23,6 +23,46 @@ export class IdeasService {
   ) {}
 
   async create(dto: CreateIdeaDto) {
+    const { result, breakEven, hypothesesRows, simulation } = this.buildPreview(dto);
+
+    const idea = await this.prisma.idea.create({
+      data: {
+        businessModel: dto.businessModel,
+        rawDescription: dto.rawDescription,
+        currency: dto.currency,
+        hypotheses: { create: hypothesesRows },
+        simulations: { create: simulation },
+      },
+    });
+
+    return { ideaId: idea.id, result, breakEven };
+  }
+
+  // Resubmitting the wizard updates the same idea instead of creating a new one,
+  // so going back a step never leaves an orphan idea (and keeps its canvas blocks).
+  async update(ideaId: string, dto: CreateIdeaDto) {
+    const existing = await this.prisma.idea.findUnique({ where: { id: ideaId }, select: { id: true } });
+    if (!existing) {
+      throw new NotFoundException(`Idee ${ideaId} introuvable.`);
+    }
+
+    const { result, breakEven, hypothesesRows, simulation } = this.buildPreview(dto);
+
+    await this.prisma.idea.update({
+      where: { id: ideaId },
+      data: {
+        businessModel: dto.businessModel,
+        rawDescription: dto.rawDescription,
+        currency: dto.currency,
+        hypotheses: { deleteMany: {}, create: hypothesesRows },
+        simulations: { deleteMany: { type: "apercu" }, create: simulation },
+      },
+    });
+
+    return { ideaId, result, breakEven };
+  }
+
+  private buildPreview(dto: CreateIdeaDto) {
     const hypotheses: Hypotheses = {
       currency: dto.currency,
       price: dto.hypotheses.price,
@@ -46,24 +86,14 @@ export class IdeasService {
       { key: "fixedCosts", label: "Coûts fixes", value: dto.hypotheses.fixedCosts, unit: dto.currency },
     ].map((row) => ({ ...row, source: "utilisateur_saisi" }));
 
-    const idea = await this.prisma.idea.create({
-      data: {
-        businessModel: dto.businessModel,
-        rawDescription: dto.rawDescription,
-        currency: dto.currency,
-        hypotheses: { create: hypothesesRows },
-        simulations: {
-          create: {
-            type: "apercu",
-            inputsSnapshot: hypotheses as unknown as Prisma.InputJsonValue,
-            result: result as unknown as Prisma.InputJsonValue,
-            breakEven: breakEven as unknown as Prisma.InputJsonValue,
-          },
-        },
-      },
-    });
+    const simulation = {
+      type: "apercu",
+      inputsSnapshot: hypotheses as unknown as Prisma.InputJsonValue,
+      result: result as unknown as Prisma.InputJsonValue,
+      breakEven: breakEven as unknown as Prisma.InputJsonValue,
+    };
 
-    return { ideaId: idea.id, result, breakEven };
+    return { result, breakEven, hypothesesRows, simulation };
   }
 
   async findOne(id: string): Promise<IdeaDetail | null> {

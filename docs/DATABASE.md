@@ -16,6 +16,9 @@
 **Simulation** (résultat d'un calcul du moteur)
 - id, idea_id, type (enum : apercu, analyse_complete), inputs_snapshot (JSON des hypothèses utilisées), ca, marge_brute, resultat_estime, seuil_rentabilite, created_at
 
+**CanvasBlock** (bloc qualitatif du business model canvas, Phase 6a)
+- id, idea_id, key (7 blocs : valueProposition, customerSegments, channels, customerRelationships, keyResources, keyActivities, keyPartners), content (≤ 500 caractères), source (enum : ia_suggere, utilisateur_edite) — unique (idea_id, key)
+
 **Scenario**
 - id, simulation_id, type (prudent, réaliste, ambitieux, crise, personnalisé), variations (JSON), resultat (JSON du recalcul)
 

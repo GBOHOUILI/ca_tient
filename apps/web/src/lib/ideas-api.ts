@@ -49,6 +49,20 @@ export async function createIdea(input: CreateIdeaInput): Promise<CreateIdeaResp
   return (await response.json()) as CreateIdeaResponse;
 }
 
+export async function updateIdea(ideaId: string, input: CreateIdeaInput): Promise<CreateIdeaResponse> {
+  const response = await fetch(`${API_BASE_URL}/ideas/${ideaId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    throw new Error(`La mise à jour de l'idée a échoué (${response.status}).`);
+  }
+
+  return (await response.json()) as CreateIdeaResponse;
+}
+
 export interface SuggestHypothesesInput {
   businessModel: BusinessModel;
   rawDescription: string;
