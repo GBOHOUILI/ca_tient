@@ -2,7 +2,8 @@ import { Injectable, Logger } from "@nestjs/common";
 import { GoogleGenAI, Type } from "@google/genai";
 import type { BusinessModel } from "@prisma/client";
 import type { CurrencyCode } from "financial-engine";
-import type { AiProvider, AiSuggestionInput, SuggestedHypotheses } from "./ai-provider.port.js";
+import type { AiProvider, AiSuggestionInput, SuggestedHypotheses, SuggestedCanvasBlocks } from "./ai-provider.port.js";
+import { CANVAS_BLOCK_KEYS } from "./ai-provider.port.js";
 
 const REQUEST_TIMEOUT_MS = 8_000;
 
@@ -69,6 +70,47 @@ function parseSuggestedHypotheses(text: string | undefined): SuggestedHypotheses
   return { price, volume, variableCostPerUnit, fixedCosts };
 }
 
+function buildCanvasPrompt(input: AiSuggestionInput): string {
+  return [
+    "Tu aides a remplir un business model canvas (methode Osterwalder) pour une idee de business, en francais.",
+    `Modele de business : ${BUSINESS_MODEL_LABELS[input.businessModel]}.`,
+    `Description de l'idee, en langage libre : "${input.rawDescription}"`,
+    "Propose un texte court (1 a 2 phrases maximum, style note plutot que paragraphe) pour chacun des 7 blocs suivants, meme si la description est vague (fais une hypothese plausible plutot que de repondre par une phrase vide) :",
+    "- valueProposition : la proposition de valeur, ce qui rend cette offre desirable",
+    "- customerSegments : a qui s'adresse cette offre",
+    "- channels : comment les clients decouvrent et achetent l'offre",
+    "- customerRelationships : comment la relation avec les clients est entretenue dans la duree",
+    "- keyResources : les ressources indispensables pour operer (materiel, competences, stock...)",
+    "- keyActivities : les activites cles du quotidien pour faire tourner ce business",
+    "- keyPartners : les partenaires ou fournisseurs cles necessaires",
+    "Reponds uniquement avec les 7 textes, chacun en francais, sans jargon, 500 caracteres maximum par bloc.",
+  ].join("\n");
+}
+
+function parseSuggestedCanvasBlocks(text: string | undefined): SuggestedCanvasBlocks | null {
+  if (!text) return null;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return null;
+  }
+
+  if (typeof parsed !== "object" || parsed === null) return null;
+
+  const record = parsed as Record<string, unknown>;
+  const result = {} as SuggestedCanvasBlocks;
+
+  for (const key of CANVAS_BLOCK_KEYS) {
+    const value = record[key];
+    if (typeof value !== "string" || value.trim().length === 0 || value.length > 500) return null;
+    result[key] = value.trim();
+  }
+
+  return result;
+}
+
 @Injectable()
 export class GeminiProvider implements AiProvider {
   private readonly logger = new Logger(GeminiProvider.name);
@@ -104,6 +146,30 @@ export class GeminiProvider implements AiProvider {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       this.logger.warn(`Suggestion Gemini indisponible : ${message}`);
+      return null;
+    }
+  }
+
+  async suggestCanvasBlocks(input: AiSuggestionInput): Promise<SuggestedCanvasBlocks | null> {
+    try {
+      const response = await this.client.models.generateContent({
+        model: this.modelName,
+        contents: buildCanvasPrompt(input),
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: Object.fromEntries(CANVAS_BLOCK_KEYS.map((key) => [key, { type: Type.STRING }])),
+            required: [...CANVAS_BLOCK_KEYS],
+          },
+          abortSignal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+        },
+      });
+
+      return parseSuggestedCanvasBlocks(response.text);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.warn(`Suggestion canvas Gemini indisponible : ${message}`);
       return null;
     }
   }

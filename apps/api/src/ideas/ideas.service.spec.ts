@@ -96,3 +96,63 @@ describe("IdeasService.findOne", () => {
     expect(idea).toBeNull();
   });
 });
+
+describe("IdeasService.updateCanvasBlocks", () => {
+  const prisma = new PrismaService();
+  const service = new IdeasService(prisma, new FinancialEngineService());
+
+  beforeAll(async () => {
+    await prisma.onModuleInit();
+  });
+
+  afterEach(async () => {
+    await prisma.idea.deleteMany();
+  });
+
+  afterAll(async () => {
+    await prisma.onModuleDestroy();
+  });
+
+  function canvasPayload() {
+    return {
+      blocks: [
+        { key: "valueProposition" as const, content: "Des sacs faits main." },
+        { key: "customerSegments" as const, content: "Jeunes actifs urbains." },
+        { key: "channels" as const, content: "Instagram." },
+        { key: "customerRelationships" as const, content: "WhatsApp." },
+        { key: "keyResources" as const, content: "Machine a coudre." },
+        { key: "keyActivities" as const, content: "Production." },
+        { key: "keyPartners" as const, content: "Fournisseur de tissu." },
+      ],
+      source: "utilisateur_edite" as const,
+    };
+  }
+
+  it("persists the 7 blocks for an existing idea", async () => {
+    const { ideaId } = await service.create(payload());
+
+    await service.updateCanvasBlocks(ideaId, canvasPayload());
+
+    const stored = await prisma.canvasBlock.findMany({ where: { ideaId } });
+    expect(stored).toHaveLength(7);
+    expect(stored.every((b) => b.source === "utilisateur_edite")).toBe(true);
+    expect(stored.find((b) => b.key === "valueProposition")?.content).toBe("Des sacs faits main.");
+  });
+
+  it("upserts on a second call instead of duplicating", async () => {
+    const { ideaId } = await service.create(payload());
+
+    await service.updateCanvasBlocks(ideaId, canvasPayload());
+    const updated = canvasPayload();
+    updated.blocks[0].content = "Contenu modifie.";
+    await service.updateCanvasBlocks(ideaId, updated);
+
+    const stored = await prisma.canvasBlock.findMany({ where: { ideaId } });
+    expect(stored).toHaveLength(7);
+    expect(stored.find((b) => b.key === "valueProposition")?.content).toBe("Contenu modifie.");
+  });
+
+  it("throws NotFoundException for an unknown idea", async () => {
+    await expect(service.updateCanvasBlocks("does-not-exist", canvasPayload())).rejects.toThrow();
+  });
+});

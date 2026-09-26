@@ -1,6 +1,7 @@
-import { Body, Controller, Get, NotFoundException, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, NotFoundException, Param, Patch, Post } from "@nestjs/common";
 import { IdeasService } from "./ideas.service.js";
 import { CreateIdeaDto } from "./dto/create-idea.dto.js";
+import { UpdateCanvasBlocksDto } from "./dto/update-canvas-blocks.dto.js";
 
 @Controller("ideas")
 export class IdeasController {
@@ -18,5 +19,11 @@ export class IdeasController {
       throw new NotFoundException(`Idee ${id} introuvable.`);
     }
     return idea;
+  }
+
+  @Patch(":id/canvas-blocks")
+  async updateCanvasBlocks(@Param("id") id: string, @Body() dto: UpdateCanvasBlocksDto) {
+    await this.ideasService.updateCanvasBlocks(id, dto);
+    return { ok: true };
   }
 }

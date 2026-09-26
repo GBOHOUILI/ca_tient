@@ -23,6 +23,7 @@ model Idea {
   createdAt      DateTime      @default(now())
   hypotheses     Hypothesis[]
   simulations    Simulation[]
+  canvasBlocks   CanvasBlock[]
 }
 
 model Hypothesis {
@@ -47,4 +48,15 @@ model Simulation {
   result         Json
   breakEven      Json
   createdAt      DateTime @default(now())
+}
+
+model CanvasBlock {
+  id      String @id @default(cuid())
+  ideaId  String
+  idea    Idea   @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  key     String
+  content String
+  source  String
+
+  @@unique([ideaId, key])
 }

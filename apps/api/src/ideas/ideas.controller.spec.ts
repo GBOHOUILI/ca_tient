@@ -59,4 +59,57 @@ describe("IdeasController (HTTP)", () => {
   it("GET /ideas/:id returns 404 for an unknown id", async () => {
     await request(app.getHttpServer()).get("/ideas/does-not-exist").expect(404);
   });
+
+  it("PATCH /ideas/:id/canvas-blocks persists the blocks and returns ok", async () => {
+    const created = await request(app.getHttpServer()).post("/ideas").send(validPayload()).expect(201);
+
+    const canvasPayload = {
+      blocks: [
+        { key: "valueProposition", content: "Des sacs faits main." },
+        { key: "customerSegments", content: "Jeunes actifs urbains." },
+        { key: "channels", content: "Instagram." },
+        { key: "customerRelationships", content: "WhatsApp." },
+        { key: "keyResources", content: "Machine a coudre." },
+        { key: "keyActivities", content: "Production." },
+        { key: "keyPartners", content: "Fournisseur de tissu." },
+      ],
+      source: "utilisateur_edite",
+    };
+
+    const response = await request(app.getHttpServer())
+      .patch(`/ideas/${created.body.ideaId}/canvas-blocks`)
+      .send(canvasPayload)
+      .expect(200);
+
+    expect(response.body).toEqual({ ok: true });
+  });
+
+  it("PATCH /ideas/:id/canvas-blocks returns 404 for an unknown idea", async () => {
+    const canvasPayload = {
+      blocks: [
+        { key: "valueProposition", content: "x" },
+        { key: "customerSegments", content: "x" },
+        { key: "channels", content: "x" },
+        { key: "customerRelationships", content: "x" },
+        { key: "keyResources", content: "x" },
+        { key: "keyActivities", content: "x" },
+        { key: "keyPartners", content: "x" },
+      ],
+      source: "utilisateur_edite",
+    };
+
+    await request(app.getHttpServer())
+      .patch("/ideas/does-not-exist/canvas-blocks")
+      .send(canvasPayload)
+      .expect(404);
+  });
+
+  it("PATCH /ideas/:id/canvas-blocks rejects an invalid payload", async () => {
+    const created = await request(app.getHttpServer()).post("/ideas").send(validPayload()).expect(201);
+
+    await request(app.getHttpServer())
+      .patch(`/ideas/${created.body.ideaId}/canvas-blocks`)
+      .send({ blocks: [], source: "utilisateur_edite" })
+      .expect(400);
+  });
 });

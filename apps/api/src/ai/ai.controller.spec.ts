@@ -15,7 +15,7 @@ function validPayload() {
 
 describe("AiController (HTTP) — suggestion", () => {
   let app: INestApplication;
-  const aiProvider: AiProvider = { suggestHypotheses: vi.fn() };
+  const aiProvider: AiProvider = { suggestHypotheses: vi.fn(), suggestCanvasBlocks: vi.fn() };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [AiModule] })
@@ -71,7 +71,10 @@ describe("AiController (HTTP) — suggestion", () => {
 
 describe("AiController (HTTP) — rate limiting", () => {
   let app: INestApplication;
-  const aiProvider: AiProvider = { suggestHypotheses: vi.fn().mockResolvedValue(null) };
+  const aiProvider: AiProvider = {
+    suggestHypotheses: vi.fn().mockResolvedValue(null),
+    suggestCanvasBlocks: vi.fn().mockResolvedValue(null),
+  };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [AiModule] })
@@ -93,5 +96,63 @@ describe("AiController (HTTP) — rate limiting", () => {
     }
 
     await request(app.getHttpServer()).post("/ideas/suggest-hypotheses").send(validPayload()).expect(429);
+  });
+});
+
+describe("AiController (HTTP) — suggestion canvas", () => {
+  let app: INestApplication;
+  const aiProvider: AiProvider = { suggestHypotheses: vi.fn(), suggestCanvasBlocks: vi.fn() };
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({ imports: [AiModule] })
+      .overrideProvider(AI_PROVIDER)
+      .useValue(aiProvider)
+      .compile();
+    app = moduleRef.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }));
+    await app.init();
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  const canvasBlocks = {
+    valueProposition: "Des sacs faits main livres a domicile.",
+    customerSegments: "Jeunes actifs urbains.",
+    channels: "Instagram.",
+    customerRelationships: "WhatsApp.",
+    keyResources: "Machine a coudre.",
+    keyActivities: "Production.",
+    keyPartners: "Fournisseur de tissu.",
+  };
+
+  it("returns available:true with the blocks when the provider succeeds", async () => {
+    vi.mocked(aiProvider.suggestCanvasBlocks).mockResolvedValueOnce(canvasBlocks);
+
+    const response = await request(app.getHttpServer())
+      .post("/ideas/suggest-canvas-blocks")
+      .send(validPayload())
+      .expect(200);
+
+    expect(response.body).toEqual({ available: true, blocks: canvasBlocks });
+  });
+
+  it("returns available:false when the provider has no suggestion", async () => {
+    vi.mocked(aiProvider.suggestCanvasBlocks).mockResolvedValueOnce(null);
+
+    const response = await request(app.getHttpServer())
+      .post("/ideas/suggest-canvas-blocks")
+      .send(validPayload())
+      .expect(200);
+
+    expect(response.body).toEqual({ available: false });
+  });
+
+  it("rejects an invalid payload", async () => {
+    await request(app.getHttpServer())
+      .post("/ideas/suggest-canvas-blocks")
+      .send({ ...validPayload(), currency: "JPY" })
+      .expect(400);
   });
 });

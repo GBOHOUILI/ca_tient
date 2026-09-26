@@ -19,4 +19,17 @@ export class AiController {
 
     return { available: true as const, hypotheses };
   }
+
+  @Post("suggest-canvas-blocks")
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(ThrottlerGuard)
+  async suggestCanvasBlocks(@Body() dto: SuggestHypothesesDto) {
+    const blocks = await this.aiProvider.suggestCanvasBlocks(dto);
+
+    if (!blocks) {
+      return { available: false as const };
+    }
+
+    return { available: true as const, blocks };
+  }
 }
