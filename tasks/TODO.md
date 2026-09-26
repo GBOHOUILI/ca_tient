@@ -35,6 +35,7 @@
 
 ## Phase 6a — Canvas (blocs manquants)
 - [x] Capture des 7 blocs qualitatifs du business model canvas (`apps/web/src/components/wizard/StepCanvas.tsx`), suggestion IA (`apps/api/src/ai/gemini.provider.ts`), persistance (`CanvasBlock`, `PATCH /ideas/:id/canvas-blocks`). Voir `docs/superpowers/specs/2026-09-20-phase-6a-canvas-capture-design.md`.
+- [ ] **Dette découverte (vérification bout en bout Phase 6a)** : chaque soumission de l'écran Hypothèses crée une nouvelle `Idea` (comportement Phase 3). Un retour arrière depuis "Ton business model" puis re-soumission laisse une `Idea` orpheline sans `CanvasBlock`. À traiter avant le rapport final (réutiliser l'idée existante ou nettoyer les orphelines).
 
 ## Phase 6-7 — Analyse complète & Paiement
 - [ ] Écran d'offre à 1 000 FCFA

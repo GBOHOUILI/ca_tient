@@ -10,7 +10,14 @@ import { StepEtSi } from "@/components/wizard/StepEtSi";
 import { StepScenarios } from "@/components/wizard/StepScenarios";
 import { StepCanvas } from "@/components/wizard/StepCanvas";
 import { initialWizardState, wizardReducer } from "@/components/wizard/wizard-reducer";
-import { createIdea, suggestHypotheses, suggestCanvasBlocks, saveCanvasBlocks, type CreateIdeaResponse } from "@/lib/ideas-api";
+import {
+  CANVAS_BLOCK_KEYS,
+  createIdea,
+  suggestHypotheses,
+  suggestCanvasBlocks,
+  saveCanvasBlocks,
+  type CreateIdeaResponse,
+} from "@/lib/ideas-api";
 
 export default function CommencerPage() {
   const [state, dispatch] = useReducer(wizardReducer, initialWizardState);
@@ -41,6 +48,9 @@ export default function CommencerPage() {
     if (!state.businessModel) return;
     setSubmitting(true);
     setError(null);
+    // Only suggest while the canvas is still blank: going back to hypotheses and resubmitting
+    // must not overwrite blocks the user already has (edited or not).
+    const canvasIsEmpty = CANVAS_BLOCK_KEYS.every((key) => state.canvasBlocks[key].trim() === "");
     try {
       const [result, canvasSuggestion] = await Promise.all([
         createIdea({
@@ -49,11 +59,13 @@ export default function CommencerPage() {
           currency: state.currency,
           hypotheses: state.hypotheses,
         }),
-        suggestCanvasBlocks({
-          businessModel: state.businessModel,
-          rawDescription: state.rawDescription,
-          currency: state.currency,
-        }),
+        canvasIsEmpty
+          ? suggestCanvasBlocks({
+              businessModel: state.businessModel,
+              rawDescription: state.rawDescription,
+              currency: state.currency,
+            })
+          : Promise.resolve({ available: false as const }),
       ]);
       setResponse(result);
       if (canvasSuggestion.available) {
