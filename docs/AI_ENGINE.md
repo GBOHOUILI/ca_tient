@@ -20,5 +20,5 @@
 - Fournisseur IA interchangeable (couche d'abstraction, pas de dépendance dure à un seul provider).
 - Pour le MVP : privilégier une API économique / free-tier tant que le volume le permet.
 - Prévoir un mode dégradé si le fournisseur IA est indisponible (a minima, formulaire manuel de saisie des hypothèses sans extraction automatique).
-- Chaîne de providers **Gemini → Groq → Mistral** derrière le port `AiProvider` (`FallbackAiProvider`, `apps/api/src/ai/`) : chaque provider a un pool de clés en rotation (`<PROVIDER>_API_KEY`, `_2` … `_10`), budget de 15 s par suggestion (6 s max par tentative). Si tout échoue, repli silencieux : l'utilisateur saisit lui-même (voir `docs/DECISIONS.md`, 2026-09-26).
+- Chaîne de providers **Gemini → Groq → Mistral** derrière le port `AiProvider` (`FallbackAiProvider`, `apps/api/src/ai/`) : chaque provider a un pool de clés en rotation (`<PROVIDER>_API_KEY`, `_2` … `_10`), budget de 15 s par suggestion (8 s max par tentative). Si tout échoue, repli silencieux : l'utilisateur saisit lui-même (voir `docs/DECISIONS.md`, 2026-09-26).
 - Toute réponse IA, quel que soit le provider, est validée par un parseur strict (`ai-prompts.ts`) avant d'être proposée à l'utilisateur.

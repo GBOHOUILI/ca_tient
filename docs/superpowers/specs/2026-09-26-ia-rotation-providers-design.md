@@ -19,7 +19,7 @@ Critère de succès : tant qu'au moins une clé d'un des providers configurés e
 | Sujet | Décision |
 |---|---|
 | Chaîne | **Gemini → Groq → Mistral**, ordre fixe. Trois free-tiers avec mode JSON natif. Claude (payant), Cohere, OpenRouter (`:free` instable) et Ollama (pas de serveur local en prod) écartés. |
-| Budget de temps | **15 s au total** par suggestion, **6 s max par tentative** (`min(6 s, temps restant)`). Budget épuisé → `null` (repli silencieux actuel). |
+| Budget de temps | **15 s au total** par suggestion, **8 s max par tentative** (`min(8 s, temps restant)`). Budget épuisé → `null` (repli silencieux actuel). |
 | État des clés | En mémoire du processus (un seul serveur au MVP). Pas de Redis. |
 | Transport | Gemini : SDK `@google/genai` existant (structured output). Groq et Mistral : **`fetch` natif**, un seul adaptateur OpenAI-compatible. Aucune nouvelle dépendance. |
 | Clés | Variables d'environnement `<PROVIDER>_API_KEY`, puis `_2` … `_10`. Provider sans aucune clé = ignoré. |
@@ -58,15 +58,15 @@ AiController ──> AI_PROVIDER = FallbackAiProvider
 - **`llm-backend.ts`** (nouveau) : interface `LlmBackend { name; pool: KeyPool; generateJson(req: { prompt; schema; apiKey; signal }): Promise<string> }` et classe `LlmError { kind: "rate_limited" | "unauthorized" | "unavailable"; retryAfterMs? }`.
 - **`gemini.backend.ts`** (remplace `gemini.provider.ts`) : `@google/genai` avec `responseMimeType: "application/json"` + `responseSchema` converti depuis le schéma neutre. Traduit les erreurs SDK (statut 429 / 401 / 403, sinon `unavailable`).
 - **`openai-compatible.backend.ts`** (nouveau) : `fetch` sur `POST {baseUrl}/chat/completions` avec `response_format: { type: "json_object" }`, `temperature: 0.3`, `Authorization: Bearer`. Instancié deux fois : Groq (`https://api.groq.com/openai/v1`) et Mistral (`https://api.mistral.ai/v1`). Lit `choices[0].message.content`. Traduit 429 (+ en-tête `Retry-After`), 401/403, le reste en `unavailable`.
-- **`fallback-ai.provider.ts`** (nouveau, implémente `AiProvider`) : pour chaque tâche, fixe `deadline = now + 15 s`, parcourt les backends puis les clés disponibles de chacun ; chaque tentative reçoit `AbortSignal.timeout(min(6 s, deadline − now))` ; applique le classement des erreurs ci-dessus ; parse avec le parseur de la tâche ; renvoie le premier résultat valide, sinon `null`. Un `logger.warn` par échec (provider + index de clé + raison), jamais le contenu de la clé ni la description utilisateur.
+- **`fallback-ai.provider.ts`** (nouveau, implémente `AiProvider`) : pour chaque tâche, fixe `deadline = now + 15 s`, parcourt les backends puis les clés disponibles de chacun ; chaque tentative reçoit `AbortSignal.timeout(min(8 s, deadline − now))` ; applique le classement des erreurs ci-dessus ; parse avec le parseur de la tâche ; renvoie le premier résultat valide, sinon `null`. Un `logger.warn` par échec (provider + index de clé + raison), jamais le contenu de la clé ni la description utilisateur.
 - **`ai.module.ts`** : `AI_PROVIDER` passe en `useFactory` qui construit les trois backends, **ne garde que ceux dont le pool a au moins une clé**, et instancie `FallbackAiProvider`. Aucun backend configuré → le provider renvoie toujours `null` (même comportement qu'aujourd'hui sans clé) et un `logger.warn` au démarrage.
 
 ## Flux (exemple)
 
 1. `suggestCanvasBlocks` → Gemini clé #1 → 429 « retry in 40s » → clé #1 en pause 40 s.
-2. Gemini clé #2 → timeout à 6 s → provider suivant.
+2. Gemini clé #2 → timeout à 8 s → provider suivant.
 3. Groq clé #1 → JSON valide mais un bloc vide → rejeté par `parseSuggestedCanvasBlocks` → provider suivant.
-4. Mistral clé #1 → JSON valide → renvoyé (temps total ≈ 8 s).
+4. Mistral clé #1 → JSON valide → renvoyé (temps total ≈ 10 s).
 5. Requête suivante : Gemini clé #1 toujours en pause → sautée ; clé #2 retentée.
 
 ## Règles projet respectées

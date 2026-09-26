@@ -13,7 +13,7 @@ import type { Clock } from "./key-pool.js";
 import { LlmError, type LlmBackend } from "./llm-backend.js";
 
 export const TOTAL_BUDGET_MS = 15_000;
-export const ATTEMPT_TIMEOUT_MS = 6_000;
+export const ATTEMPT_TIMEOUT_MS = 8_000;
 export const DEFAULT_RATE_LIMIT_PAUSE_MS = 60_000;
 
 interface SuggestionTask<T> {

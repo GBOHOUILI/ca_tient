@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { FallbackAiProvider } from "./fallback-ai.provider.js";
 import { KeyPool } from "./key-pool.js";
 import { LlmError, type LlmBackend, type LlmRequest } from "./llm-backend.js";
@@ -180,6 +180,23 @@ describe("FallbackAiProvider", () => {
     await new FallbackAiProvider([gemini], now).suggestHypotheses(input());
 
     expect(signal?.aborted).toBe(false);
+  });
+
+  it("caps the attempt timeout to the remaining budget", async () => {
+    const { clock, pool, now } = setup();
+    const timeoutSpy = vi.spyOn(AbortSignal, "timeout");
+    const gemini = new FakeBackend("gemini", pool("g1"), async () => {
+      clock.now += 10_000;
+      throw new LlmError("unavailable", "timeout");
+    });
+    const groq = new FakeBackend("groq", pool("q1"), async () => VALID_HYPOTHESES);
+
+    const result = await new FallbackAiProvider([gemini, groq], now).suggestHypotheses(input());
+
+    expect(result).toEqual(HYPOTHESES);
+    expect(timeoutSpy).toHaveBeenNthCalledWith(1, 8_000);
+    expect(timeoutSpy).toHaveBeenNthCalledWith(2, 5_000);
+    timeoutSpy.mockRestore();
   });
 
   it("returns null when no backend is configured", async () => {
