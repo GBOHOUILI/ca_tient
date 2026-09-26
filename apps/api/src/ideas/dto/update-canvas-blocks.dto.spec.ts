@@ -44,6 +44,15 @@ describe("UpdateCanvasBlocksDto", () => {
     expect(blocksError?.children?.some((c) => c.children?.some((cc) => cc.property === "key"))).toBe(true);
   });
 
+  it("rejects duplicate block keys", async () => {
+    const payload = validPayload();
+    payload.blocks[6] = { key: "valueProposition", content: "Doublon." };
+    const dto = plainToInstance(UpdateCanvasBlocksDto, payload);
+    const errors = await validate(dto);
+
+    expect(errors.some((e) => e.property === "blocks" && e.constraints?.arrayUnique)).toBe(true);
+  });
+
   it("rejects a block content over 500 characters", async () => {
     const payload = validPayload();
     payload.blocks[0].content = "a".repeat(501);

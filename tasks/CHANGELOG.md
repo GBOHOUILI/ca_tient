@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## [Non versionné], Suivi Phase 6a : correctifs
+- Revenir en arrière dans le wizard puis re-soumettre met à jour la même idée (`PUT /ideas/:id`) au lieu d'en créer une nouvelle : plus d'idée orpheline, les blocs de canvas sont conservés.
+- "Voir mes resultats" est désactivé tant que le prix de vente est à 0 (cas où la suggestion IA des hypothèses échoue), avec un message explicite au lieu d'une erreur générique.
+- `CanvasBlock.source` passe en enum Prisma (`CanvasBlockSource`), migration par cast sans perte ; les clés de blocs en double sont rejetées (`@ArrayUnique`).
+- L'indice du coût variable n'apparaît plus sous le champ des charges fixes.
+
 ## [Non versionné], Phase 6a : capture du canvas
 - Nouvel écran "Ton business model" dans le wizard, entre "Hypothèses" et "Résultats" : 7 blocs qualitatifs du business model canvas (proposition de valeur, segments clients, canaux, relations clients, ressources clés, activités clés, partenaires clés), suggérés par l'IA (`GeminiProvider.suggestCanvasBlocks`, même mécanique que la Phase 4) depuis la description libre, validés/édités par l'utilisateur.
 - Nouveau modèle Prisma `CanvasBlock` (pattern identique à `Hypothesis`), persisté via `PATCH /ideas/:id/canvas-blocks` (`upsert`, tolère un retour en arrière puis re-soumission). Suggestion IA et création de l'idée lancées en parallèle (`Promise.all`) pour ne pas cumuler les latences.

@@ -56,6 +56,29 @@ describe("IdeasController (HTTP)", () => {
     expect(response.body.hypotheses).toHaveLength(4);
   });
 
+  it("PUT /ideas/:id updates the same idea and returns the new preview result", async () => {
+    const created = await request(app.getHttpServer()).post("/ideas").send(validPayload()).expect(201);
+    const payload = validPayload();
+    payload.hypotheses.price = 6000;
+
+    const response = await request(app.getHttpServer()).put(`/ideas/${created.body.ideaId}`).send(payload).expect(200);
+
+    expect(response.body.ideaId).toBe(created.body.ideaId);
+    expect(response.body.result.revenue).toBe(300000);
+  });
+
+  it("PUT /ideas/:id returns 404 for an unknown id", async () => {
+    await request(app.getHttpServer()).put("/ideas/does-not-exist").send(validPayload()).expect(404);
+  });
+
+  it("PUT /ideas/:id rejects an invalid payload", async () => {
+    const created = await request(app.getHttpServer()).post("/ideas").send(validPayload()).expect(201);
+    const payload = validPayload();
+    payload.hypotheses.price = 0;
+
+    await request(app.getHttpServer()).put(`/ideas/${created.body.ideaId}`).send(payload).expect(400);
+  });
+
   it("GET /ideas/:id returns 404 for an unknown id", async () => {
     await request(app.getHttpServer()).get("/ideas/does-not-exist").expect(404);
   });
