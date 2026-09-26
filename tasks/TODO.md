@@ -37,6 +37,8 @@
 - [x] Capture des 7 blocs qualitatifs du business model canvas (`apps/web/src/components/wizard/StepCanvas.tsx`), suggestion IA (`apps/api/src/ai/gemini.provider.ts`), persistance (`CanvasBlock`, `PATCH /ideas/:id/canvas-blocks`). Voir `docs/superpowers/specs/2026-09-20-phase-6a-canvas-capture-design.md`.
 - [x] **Dette découverte (vérification bout en bout Phase 6a)** : chaque soumission de l'écran Hypothèses crée une nouvelle `Idea` (comportement Phase 3). Un retour arrière depuis "Ton business model" puis re-soumission laisse une `Idea` orpheline sans `CanvasBlock`. À traiter avant le rapport final (réutiliser l'idée existante ou nettoyer les orphelines). Corrigé : `PUT /ideas/:id` réutilise l'idée existante.
 
+- [ ] **Dette tests (découverte 2026-09-26)** : `ideas.service.spec.ts` et `ideas.controller.spec.ts` font `prisma.idea.deleteMany()` sur la base pointée par `DATABASE_URL`, la même que le dev : chaque `pnpm --filter api test` vide les idées de dev. Prévoir une base de test dédiée (ex. `DATABASE_URL_TEST`).
+
 ## Phase 6-7 — Analyse complète & Paiement
 - [ ] Écran d'offre à 1 000 FCFA
 - [ ] Intégration FedaPay (`docs/PAYMENT.md`, `skills/payment.md`)

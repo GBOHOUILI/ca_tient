@@ -9,6 +9,7 @@
 ## API
 
 - Endpoints sensibles (accès à une analyse complète, statut de paiement) protégés par une vérification d'appartenance (l'idée/l'analyse demandée doit appartenir à la session/l'utilisateur courant).
+- État actuel (MVP sans comptes ni session) : `GET /ideas/:id`, `PUT /ideas/:id` et `PATCH /ideas/:id/canvas-blocks` ne vérifient pas d'appartenance. L'identifiant de l'idée (cuid, non devinable) sert de jeton d'accès, exposé uniquement au navigateur qui l'a créée. Dès qu'une session anonyme existe (Phase 6b, paiement), ces endpoints d'écriture doivent vérifier que l'idée appartient à la session courante, avant toute idée payée.
 - Rate limiting sur les endpoints publics (création d'idée, suggestion IA) pour limiter les abus et la consommation de l'API IA/paiement.
 - Validation stricte des entrées utilisateur (bornes numériques sur prix/volumes/coûts — voir `FINANCIAL_ENGINE.md`) pour éviter les injections ou les valeurs aberrantes.
 
