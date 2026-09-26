@@ -9,7 +9,9 @@
 ## API
 
 - Endpoints sensibles (accès à une analyse complète, statut de paiement) protégés par une vérification d'appartenance (l'idée/l'analyse demandée doit appartenir à la session/l'utilisateur courant).
-- État actuel (MVP sans comptes ni session) : `GET /ideas/:id`, `PUT /ideas/:id` et `PATCH /ideas/:id/canvas-blocks` ne vérifient pas d'appartenance. L'identifiant de l'idée (cuid, non devinable) sert de jeton d'accès, exposé uniquement au navigateur qui l'a créée. Dès qu'une session anonyme existe (Phase 6b, paiement), ces endpoints d'écriture doivent vérifier que l'idée appartient à la session courante, avant toute idée payée.
+- Depuis la Phase 6b-1 : toutes les routes `/ideas/:id…` (`GET`, `PUT`, `PATCH /canvas-blocks`, `POST /payments`, `GET /payment`) sont protégées par un jeton d'accès par idée (`IdeaAccessGuard`), pas de compte ni de session. `POST /ideas` renvoie un `accessToken` aléatoire (32 octets, base64url) ; seul son SHA-256 est stocké (`Idea.accessTokenHash`), comparé en temps constant. En-tête `Authorization` absent → 401 ; jeton faux ou idée inconnue → 404 identique dans les deux cas (ne révèle jamais qu'une idée existe). Le navigateur conserve le jeton en `localStorage` ; changer de navigateur ou vider le stockage local fait perdre l'accès (limite assumée pour le MVP, voir `docs/DECISIONS.md`).
+- Webhook FedaPay : signature obligatoire (`X-FEDAPAY-SIGNATURE`) puis relecture de la transaction chez FedaPay avant toute écriture — le statut porté par l'événement n'est jamais cru sur parole (détails `docs/PAYMENT.md`).
+- `PAYMENT_PROVIDER=test` (qui approuve tout paiement immédiatement) est refusé au démarrage si `NODE_ENV=production`.
 - Rate limiting sur les endpoints publics (création d'idée, suggestion IA) pour limiter les abus et la consommation de l'API IA/paiement.
 - Validation stricte des entrées utilisateur (bornes numériques sur prix/volumes/coûts — voir `FINANCIAL_ENGINE.md`) pour éviter les injections ou les valeurs aberrantes.
 

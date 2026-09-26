@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## [Non versionné], Phase 6b-1 : accès à l'analyse et paiement
+- Le paiement se place désormais après l'aperçu gratuit : "Et si ?" et les scénarios ne s'affichent qu'une fois le paiement de 1 000 FCFA confirmé côté serveur (nouvel écran "Offre" dans `/commencer`).
+- Paiement sur la page hébergée FedaPay (redirection, aucune donnée bancaire sur nos serveurs) ; en développement, un `TestProvider` (`PAYMENT_PROVIDER=test`) approuve immédiatement pour travailler sans compte FedaPay.
+- Chaque idée reçoit un jeton d'accès (pas de compte) : le navigateur qui l'a créée peut seul relire ou payer cette idée, y compris plus tard via `/analyse/<id>` ; un autre navigateur voit "Analyse introuvable".
+- Le statut d'un paiement n'est jamais décidé par le frontend : webhook FedaPay signé, relu auprès de l'API FedaPay, ou relecture à la demande quand `/analyse/<id>` interroge le statut (toutes les 3 s pendant 2 min tant qu'il est en attente).
+
 ## [Non versionné], IA : rotation de clés et de providers
 - Les suggestions IA (hypothèses, canvas) essaient Gemini, puis Groq, puis Mistral ; chaque provider peut avoir plusieurs clés (`_2` … `_10`) utilisées à tour de rôle quand l'une atteint son quota.
 - Budget de 15 s par suggestion : au-delà, repli silencieux vers la saisie manuelle, comme avant.
