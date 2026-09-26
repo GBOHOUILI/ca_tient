@@ -56,7 +56,12 @@ model CanvasBlock {
   idea    Idea   @relation(fields: [ideaId], references: [id], onDelete: Cascade)
   key     String
   content String
-  source  String
+  source  CanvasBlockSource
 
   @@unique([ideaId, key])
+}
+
+enum CanvasBlockSource {
+  ia_suggere
+  utilisateur_edite
 }
