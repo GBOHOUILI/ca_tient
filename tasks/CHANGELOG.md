@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## [Non versionné], IA : rotation de clés et de providers
+- Les suggestions IA (hypothèses, canvas) essaient Gemini, puis Groq, puis Mistral ; chaque provider peut avoir plusieurs clés (`_2` … `_10`) utilisées à tour de rôle quand l'une atteint son quota.
+- Budget de 15 s par suggestion : au-delà, repli silencieux vers la saisie manuelle, comme avant.
+- Toutes les réponses restent validées par les mêmes parseurs stricts avant d'être proposées.
+
 ## [Non versionné], Phase 6a : capture du canvas
 - Nouvel écran "Ton business model" dans le wizard, entre "Hypothèses" et "Résultats" : 7 blocs qualitatifs du business model canvas (proposition de valeur, segments clients, canaux, relations clients, ressources clés, activités clés, partenaires clés), suggérés par l'IA (`GeminiProvider.suggestCanvasBlocks`, même mécanique que la Phase 4) depuis la description libre, validés/édités par l'utilisateur.
 - Nouveau modèle Prisma `CanvasBlock` (pattern identique à `Hypothesis`), persisté via `PATCH /ideas/:id/canvas-blocks` (`upsert`, tolère un retour en arrière puis re-soumission). Suggestion IA et création de l'idée lancées en parallèle (`Promise.all`) pour ne pas cumuler les latences.
