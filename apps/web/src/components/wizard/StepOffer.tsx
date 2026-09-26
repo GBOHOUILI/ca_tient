@@ -3,11 +3,13 @@ export function StepOffer({
   onBack,
   paying,
   error,
+  persistenceWarning,
 }: {
   onPay: () => void;
   onBack: () => void;
   paying: boolean;
   error: string | null;
+  persistenceWarning?: boolean;
 }) {
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-6 text-center">
