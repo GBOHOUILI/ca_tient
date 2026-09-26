@@ -25,7 +25,7 @@
 
 ## Phase 4 — IA
 - [x] Extraction des hypothèses depuis la description libre (`docs/AI_ENGINE.md`) : `AiModule` (`apps/api/src/ai/`), Google Gemini via `@google/genai` en mode structured output, `POST /ideas/suggest-hypotheses` (stateless, rate-limité 10 req/min/IP), préremplissage automatique de l'écran Hypothèses du wizard avec repli silencieux si l'IA échoue. Voir `docs/superpowers/specs/2026-09-19-phase-4-extraction-ia-design.md` et `docs/DECISIONS.md`.
-- [ ] **Dette pré-déploiement notée pendant la revue finale** : `ThrottlerGuard` suit `req.ip`, qui se réduit à une seule IP derrière un reverse proxy sans `app.set('trust proxy', ...)` — à corriger une fois la cible d'hébergement choisie (profondeur de proxy dépendante de l'infra).
+- [x] **Dette pré-déploiement notée pendant la revue finale** : `ThrottlerGuard` suit `req.ip`, qui se réduit à une seule IP derrière un reverse proxy sans `app.set('trust proxy', ...)` — à corriger une fois la cible d'hébergement choisie (profondeur de proxy dépendante de l'infra). Corrigé : variable `TRUST_PROXY` (nombre de proxys, `true` ou sous-réseaux) lue au démarrage ; à renseigner selon l'hébergeur.
 - [ ] Dette UX pré-existante (Phase 3) : `<textarea>` de description sans `maxLength` côté client (le serveur plafonne à 2000 caractères) — au-delà, l'échec ne remonte que sur l'écran Hypothèses avec un message générique.
 
 ## Phase 5 — Scénarios
