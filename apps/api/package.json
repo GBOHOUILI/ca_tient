@@ -14,7 +14,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "NODE_ENV=production node dist/main",
     "lint": "oxlint src/ test/",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:test:migrate": "PRISMA_TEST_DB=1 prisma migrate deploy",

@@ -1,3 +1,4 @@
+import { Logger } from "@nestjs/common";
 import { FedaPayGateway } from "./fedapay.gateway.js";
 import type { PaymentGateway } from "./payment-gateway.port.js";
 import { TestPaymentGateway } from "./test-payment.gateway.js";
@@ -9,6 +10,12 @@ export function createPaymentGateway(env: NodeJS.ProcessEnv = process.env): Paym
     if (env.NODE_ENV === "production") {
       throw new Error("PAYMENT_PROVIDER=test est interdit en production : il approuve tout paiement.");
     }
+    // FEDAPAY_ENV=live signals a real merchant account is configured for this deployment:
+    // refuse the always-approving test gateway even if NODE_ENV is not "production".
+    if (env.FEDAPAY_ENV === "live") {
+      throw new Error("PAYMENT_PROVIDER=test est interdit quand FEDAPAY_ENV=live : il approuve tout paiement.");
+    }
+    new Logger("PaymentsModule").warn("PAYMENT_PROVIDER=test : les paiements sont simules, ne jamais utiliser en production");
     return new TestPaymentGateway();
   }
 

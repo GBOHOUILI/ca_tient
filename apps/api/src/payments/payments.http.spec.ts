@@ -343,3 +343,30 @@ describe("Payments — re-reading pending payments before acting (double charge 
     expect(payments[0].status).toBe("pending");
   });
 });
+
+describe("POST /ideas/:id/payments — rate limiting", () => {
+  let app: INestApplication;
+  let prisma: PrismaService;
+
+  beforeAll(async () => {
+    ({ app, prisma } = await buildApp(new TestPaymentGateway()));
+  });
+
+  afterAll(async () => {
+    await prisma.idea.deleteMany();
+    await app.close();
+  });
+
+  it("allows 10 requests per minute then rejects the 11th with 429", async () => {
+    // Each idea is its own throttle key candidate would be nice, but the guard keys on the
+    // caller (IP) by default, same as AiController: create a fresh idea per attempt so the
+    // 409 "already paid" rule never interferes with counting requests toward the limit.
+    for (let i = 0; i < 10; i++) {
+      const { id, auth } = await createIdea(app);
+      await request(app.getHttpServer()).post(`/ideas/${id}/payments`).set(...auth).expect(201);
+    }
+
+    const { id, auth } = await createIdea(app);
+    await request(app.getHttpServer()).post(`/ideas/${id}/payments`).set(...auth).expect(429);
+  });
+});
