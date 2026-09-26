@@ -39,6 +39,9 @@ export function StepHypotheses({
   submitting: boolean;
   error: string | null;
 }) {
+  // The API requires a price of at least 1 (all other values may be 0).
+  const hasPrice = hypotheses.price >= 1;
+
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-6">
       <h1 className="text-center text-h2-mobile font-semibold md:text-h2">Tes hypotheses</h1>
@@ -77,6 +80,9 @@ export function StepHypotheses({
         </label>
       ))}
       {error ? <p className="text-small text-error">{error}</p> : null}
+      {!hasPrice ? (
+        <p className="text-center text-small text-text-secondary">Indique ton prix de vente pour continuer.</p>
+      ) : null}
       <div className="flex justify-between">
         <button type="button" onClick={onBack} className="text-body font-medium text-text-secondary">
           Retour
@@ -84,7 +90,7 @@ export function StepHypotheses({
         <button
           type="button"
           onClick={onSubmit}
-          disabled={submitting}
+          disabled={submitting || !hasPrice}
           className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white disabled:opacity-40"
         >
           {submitting ? "Calcul en cours..." : "Voir mes resultats"}
