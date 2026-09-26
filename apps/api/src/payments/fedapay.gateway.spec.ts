@@ -99,6 +99,7 @@ describe("FedaPay payload helpers", () => {
     ["declined", "declined"],
     ["canceled", "canceled"],
     ["cancelled", "canceled"],
+    ["expired", "canceled"],
     ["pending", "pending"],
     ["something-new", "pending"],
     [undefined, "pending"],

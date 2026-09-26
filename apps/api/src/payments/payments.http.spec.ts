@@ -30,8 +30,10 @@ function signedHeader(body: string, secret = WEBHOOK_SECRET): string {
 class FakeFedaPayGateway implements PaymentGateway {
   readonly name = "fedapay" as const;
   status: PaymentStatus = "pending";
+  // Per-transaction override, for tests where different pending payments must resolve differently.
+  statusByTransactionId: Record<string, PaymentStatus> = {};
   failCheckout = false;
-  readonly fetchStatus = vi.fn(async () => this.status);
+  readonly fetchStatus = vi.fn(async (transactionId: string) => this.statusByTransactionId[transactionId] ?? this.status);
   private counter = 0;
 
   async createCheckout() {
@@ -122,6 +124,7 @@ describe("Payments with FedaPay (fake gateway) and its webhook", () => {
 
   beforeEach(() => {
     gateway.status = "pending";
+    gateway.statusByTransactionId = {};
     gateway.failCheckout = false;
     gateway.fetchStatus.mockClear();
   });
@@ -131,7 +134,11 @@ describe("Payments with FedaPay (fake gateway) and its webhook", () => {
   });
 
   afterAll(async () => {
-    process.env.FEDAPAY_WEBHOOK_SECRET = previousSecret;
+    if (previousSecret === undefined) {
+      delete process.env.FEDAPAY_WEBHOOK_SECRET;
+    } else {
+      process.env.FEDAPAY_WEBHOOK_SECRET = previousSecret;
+    }
     await app.close();
   });
 
@@ -216,6 +223,20 @@ describe("Payments with FedaPay (fake gateway) and its webhook", () => {
     expect(idea.payments[0].status).toBe("approved");
   });
 
+  it("unlocks the idea when a later webhook approves a payment declined earlier", async () => {
+    const { id, transactionId } = await startPending();
+    gateway.status = "declined";
+    await sendWebhook(transactionId).expect(200);
+    expect((await prisma.idea.findUniqueOrThrow({ where: { id } })).paidAt).toBeNull();
+
+    gateway.status = "approved";
+    await sendWebhook(transactionId).expect(200);
+
+    const idea = await prisma.idea.findUniqueOrThrow({ where: { id }, include: { payments: true } });
+    expect(idea.paidAt).not.toBeNull();
+    expect(idea.payments[0].status).toBe("approved");
+  });
+
   it("cancels the payment and answers 503 when the checkout cannot be created", async () => {
     const { id, auth } = await createIdea(app);
     gateway.failCheckout = true;
@@ -224,5 +245,101 @@ describe("Payments with FedaPay (fake gateway) and its webhook", () => {
 
     const status = await request(app.getHttpServer()).get(`/ideas/${id}/payment`).set(...auth).expect(200);
     expect(status.body).toEqual({ paid: false, status: "canceled" });
+  });
+
+  it("rejects a webhook with no signature header at all", async () => {
+    const body = JSON.stringify({ name: "transaction.approved", entity: { id: "tx_sans_signature" } });
+
+    await request(app.getHttpServer())
+      .post("/payments/webhook/fedapay")
+      .set("Content-Type", "application/json")
+      .send(body)
+      .expect(400);
+  });
+
+  it("answers 404 when no webhook secret is configured", async () => {
+    delete process.env.FEDAPAY_WEBHOOK_SECRET;
+    try {
+      await sendWebhook("tx_peu_importe").expect(404);
+    } finally {
+      process.env.FEDAPAY_WEBHOOK_SECRET = WEBHOOK_SECRET;
+    }
+  });
+});
+
+describe("Payments — re-reading pending payments before acting (double charge protection)", () => {
+  let app: INestApplication;
+  let prisma: PrismaService;
+  const gateway = new FakeFedaPayGateway();
+  const previousSecret = process.env.FEDAPAY_WEBHOOK_SECRET;
+
+  beforeAll(async () => {
+    process.env.FEDAPAY_WEBHOOK_SECRET = WEBHOOK_SECRET;
+    ({ app, prisma } = await buildApp(gateway));
+  });
+
+  beforeEach(() => {
+    gateway.status = "pending";
+    gateway.statusByTransactionId = {};
+    gateway.failCheckout = false;
+    gateway.fetchStatus.mockClear();
+  });
+
+  afterEach(async () => {
+    await prisma.idea.deleteMany();
+  });
+
+  afterAll(async () => {
+    if (previousSecret === undefined) {
+      delete process.env.FEDAPAY_WEBHOOK_SECRET;
+    } else {
+      process.env.FEDAPAY_WEBHOOK_SECRET = previousSecret;
+    }
+    await app.close();
+  });
+
+  it("re-reads every pending payment (not just the latest) on a status poll", async () => {
+    const { id, auth } = await createIdea(app);
+
+    const first = await request(app.getHttpServer()).post(`/ideas/${id}/payments`).set(...auth).expect(201);
+    const paymentA = await prisma.payment.findUniqueOrThrow({ where: { id: first.body.paymentId } });
+    const txA = paymentA.providerTransactionId!;
+
+    const second = await request(app.getHttpServer()).post(`/ideas/${id}/payments`).set(...auth).expect(201);
+    const paymentB = await prisma.payment.findUniqueOrThrow({ where: { id: second.body.paymentId } });
+    const txB = paymentB.providerTransactionId!;
+
+    // Only the OLDER payment (A) is approved at FedaPay; the newer one (B) is still pending.
+    // A getStatus that only re-read the latest payment would miss this and report unpaid.
+    gateway.statusByTransactionId = { [txA]: "approved", [txB]: "pending" };
+
+    const status = await request(app.getHttpServer()).get(`/ideas/${id}/payment`).set(...auth).expect(200);
+
+    expect(status.body).toEqual({ paid: true, status: "approved" });
+    expect((await prisma.idea.findUniqueOrThrow({ where: { id } })).paidAt).not.toBeNull();
+  });
+
+  it("refuses a second charge (409) and creates no new payment when a pending one is already approved at FedaPay", async () => {
+    const { id, auth } = await createIdea(app);
+    await request(app.getHttpServer()).post(`/ideas/${id}/payments`).set(...auth).expect(201);
+    gateway.status = "approved";
+
+    await request(app.getHttpServer()).post(`/ideas/${id}/payments`).set(...auth).expect(409);
+
+    const payments = await prisma.payment.findMany({ where: { ideaId: id } });
+    expect(payments).toHaveLength(1);
+    expect(payments[0].status).toBe("approved");
+  });
+
+  it("answers 503 and creates no new payment when a pending payment cannot be re-read", async () => {
+    const { id, auth } = await createIdea(app);
+    await request(app.getHttpServer()).post(`/ideas/${id}/payments`).set(...auth).expect(201);
+    gateway.fetchStatus.mockRejectedValueOnce(new PaymentGatewayError("fedapay: indisponible"));
+
+    await request(app.getHttpServer()).post(`/ideas/${id}/payments`).set(...auth).expect(503);
+
+    const payments = await prisma.payment.findMany({ where: { ideaId: id } });
+    expect(payments).toHaveLength(1);
+    expect(payments[0].status).toBe("pending");
   });
 });

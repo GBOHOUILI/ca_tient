@@ -39,6 +39,7 @@ export function mapFedaPayStatus(status: unknown): PaymentStatus {
       return "declined";
     case "canceled":
     case "cancelled":
+    case "expired":
       return "canceled";
     default:
       return "pending";

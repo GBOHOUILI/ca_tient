@@ -1,7 +1,10 @@
 import type { PaymentStatus } from "@prisma/client";
 
-// Only a pending payment can change: approved/declined/canceled are final (a retry creates a new payment).
+// Only `approved` is a true dead end: a mobile money retry can confirm after an initial
+// decline/cancellation, and that later server-confirmed approval must still unlock access.
 export function nextPaymentStatus(current: PaymentStatus, incoming: PaymentStatus): PaymentStatus | null {
-  if (current !== "pending" || incoming === current) return null;
-  return incoming;
+  if (incoming === current) return null;
+  if (current === "approved") return null;
+  if (current === "pending") return incoming;
+  return incoming === "approved" ? "approved" : null;
 }

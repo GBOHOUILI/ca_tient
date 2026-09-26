@@ -20,9 +20,16 @@ export class PaymentService {
   ) {}
 
   async startCheckout(ideaId: string): Promise<{ paymentId: string; redirectUrl: string }> {
+    // Re-read any pending payment before charging again: the user may already have paid at
+    // FedaPay (webhook not arrived yet) — creating a second transaction would be a double charge.
+    const { anyFailed } = await this.reReadPendingPayments(ideaId);
+
     const idea = await this.prisma.idea.findUniqueOrThrow({ where: { id: ideaId }, select: { paidAt: true } });
     if (idea.paidAt) {
       throw new ConflictException("Cette analyse est deja payee.");
+    }
+    if (anyFailed) {
+      throw new ServiceUnavailableException("Le paiement n'a pas pu etre initialise, reessaie.");
     }
 
     const payment = await this.prisma.payment.create({
@@ -56,22 +63,16 @@ export class PaymentService {
   }
 
   async getStatus(ideaId: string): Promise<{ paid: boolean; status: PaymentStatus | null }> {
-    const latest = await this.prisma.payment.findFirst({ where: { ideaId }, orderBy: { createdAt: "desc" } });
-
     // The user may come back from FedaPay before the webhook: ask FedaPay directly (server side).
-    if (latest?.status === "pending" && latest.providerTransactionId) {
-      try {
-        await this.applyStatus(latest.id, await this.gateway.fetchStatus(latest.providerTransactionId));
-      } catch (error) {
-        this.logger.warn(`Relecture du paiement ${latest.id} impossible : ${error instanceof Error ? error.message : error}`);
-      }
-    }
+    // Every pending payment is re-read, not just the latest one, so an older payment approved
+    // out of order is not missed (see reReadPendingPayments).
+    await this.reReadPendingPayments(ideaId);
 
-    const [idea, current] = await Promise.all([
+    const [idea, latest] = await Promise.all([
       this.prisma.idea.findUniqueOrThrow({ where: { id: ideaId }, select: { paidAt: true } }),
-      latest ? this.prisma.payment.findUniqueOrThrow({ where: { id: latest.id }, select: { status: true } }) : null,
+      this.prisma.payment.findFirst({ where: { ideaId }, orderBy: { createdAt: "desc" }, select: { status: true } }),
     ]);
-    return { paid: idea.paidAt !== null, status: current?.status ?? null };
+    return { paid: idea.paidAt !== null, status: idea.paidAt !== null ? "approved" : (latest?.status ?? null) };
   }
 
   async handleProviderUpdate(providerTransactionId: string): Promise<void> {
@@ -98,5 +99,28 @@ export class PaymentService {
 
       await tx.idea.updateMany({ where: { id: payment.ideaId, paidAt: null }, data: { paidAt: new Date() } });
     });
+  }
+
+  // Bounded to the 5 most recent pending payments: enough to catch a stale one without an
+  // unbounded re-read loop. Each re-read is isolated so one provider failure does not block the
+  // others; the caller decides what to do when `anyFailed` is true (getStatus ignores it and
+  // still answers with whatever it could confirm, startCheckout refuses to charge again).
+  private async reReadPendingPayments(ideaId: string): Promise<{ anyFailed: boolean }> {
+    const pending = await this.prisma.payment.findMany({
+      where: { ideaId, status: "pending", providerTransactionId: { not: null } },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+    });
+
+    let anyFailed = false;
+    for (const payment of pending) {
+      try {
+        await this.applyStatus(payment.id, await this.gateway.fetchStatus(payment.providerTransactionId!));
+      } catch (error) {
+        anyFailed = true;
+        this.logger.warn(`Relecture du paiement ${payment.id} impossible : ${error instanceof Error ? error.message : error}`);
+      }
+    }
+    return { anyFailed };
   }
 }
