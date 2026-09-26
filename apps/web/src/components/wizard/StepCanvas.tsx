@@ -57,6 +57,9 @@ export function StepCanvas({
   submitting: boolean;
   error: string | null;
 }) {
+  // The API rejects empty blocks: the paid report (Phase 6b) needs a complete canvas.
+  const allFilled = FIELDS.every((field) => canvasBlocks[field.key].trim().length > 0);
+
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-6">
       <h1 className="text-center text-h2-mobile font-semibold md:text-h2">Ton business model</h1>
@@ -79,6 +82,9 @@ export function StepCanvas({
         </label>
       ))}
       {error ? <p className="text-small text-error">{error}</p> : null}
+      {!allFilled ? (
+        <p className="text-center text-small text-text-secondary">Remplis les 7 blocs pour continuer.</p>
+      ) : null}
       <div className="flex justify-between">
         <button type="button" onClick={onBack} className="text-body font-medium text-text-secondary">
           Retour
@@ -86,7 +92,7 @@ export function StepCanvas({
         <button
           type="button"
           onClick={onNext}
-          disabled={submitting}
+          disabled={submitting || !allFilled}
           className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white disabled:opacity-40"
         >
           {submitting ? "Enregistrement..." : "Continuer"}

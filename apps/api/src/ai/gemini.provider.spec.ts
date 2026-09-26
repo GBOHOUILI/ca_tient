@@ -101,7 +101,7 @@ describe("GeminiProvider.suggestCanvasBlocks", () => {
   });
 
   it("returns null when a block is missing", async () => {
-    const { keyPartners, ...incomplete } = validCanvasBlocks();
+    const { keyPartners: _keyPartners, ...incomplete } = validCanvasBlocks();
     generateContentMock.mockResolvedValue({ text: JSON.stringify(incomplete) });
 
     const provider = new GeminiProvider();
