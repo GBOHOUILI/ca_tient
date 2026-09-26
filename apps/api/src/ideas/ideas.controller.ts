@@ -1,4 +1,4 @@
-import { Body, Controller, Get, NotFoundException, Param, Patch, Post } from "@nestjs/common";
+import { Body, Controller, Get, NotFoundException, Param, Patch, Post, Put } from "@nestjs/common";
 import { IdeasService } from "./ideas.service.js";
 import { CreateIdeaDto } from "./dto/create-idea.dto.js";
 import { UpdateCanvasBlocksDto } from "./dto/update-canvas-blocks.dto.js";
@@ -10,6 +10,11 @@ export class IdeasController {
   @Post()
   create(@Body() dto: CreateIdeaDto) {
     return this.ideasService.create(dto);
+  }
+
+  @Put(":id")
+  update(@Param("id") id: string, @Body() dto: CreateIdeaDto) {
+    return this.ideasService.update(id, dto);
   }
 
   @Get(":id")

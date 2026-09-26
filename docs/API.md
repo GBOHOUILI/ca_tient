@@ -5,6 +5,7 @@
 ## Idées et hypothèses
 
 - `POST /ideas` — crée une idée (description libre + modèle de business optionnel)
+- `PUT /ideas/:id` — met à jour la même idée (même corps que `POST /ideas`), remplace ses hypothèses et sa simulation d'aperçu, conserve ses blocs de canvas ; utilisé quand l'utilisateur revient en arrière dans le wizard
 - `POST /ideas/:id/hypotheses/suggest` — l'IA propose des variables à partir de la description
 - `PUT /ideas/:id/hypotheses` — l'utilisateur confirme/corrige les hypothèses
 
