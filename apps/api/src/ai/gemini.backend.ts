@@ -15,8 +15,8 @@ function toLlmError(error: unknown): LlmError {
     const match = /retry in (\d+(?:\.\d+)?)s/i.exec(message);
     return new LlmError("rate_limited", `gemini: ${message}`, match ? Math.ceil(parseFloat(match[1]) * 1000) : undefined);
   }
-  // Gemini answers an invalid key with 400 INVALID_ARGUMENT rather than 401.
-  if (status === 401 || status === 403 || (status === 400 && /api key not valid/i.test(message))) {
+  // Gemini answers an invalid or expired key with 400 INVALID_ARGUMENT/API_KEY_INVALID rather than 401.
+  if (status === 401 || status === 403 || (status === 400 && /API_KEY_INVALID|api key (not valid|expired)/i.test(message))) {
     return new LlmError("unauthorized", `gemini: ${message}`);
   }
   return new LlmError("unavailable", `gemini: ${message}`);

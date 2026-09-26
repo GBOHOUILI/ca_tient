@@ -82,6 +82,7 @@ describe("GeminiBackend.generateJson", () => {
     [401, "Unauthorized"],
     [403, "Permission denied"],
     [400, "API key not valid. Please pass a valid API key."],
+    [400, "API key expired. Please renew the API key."],
   ])("throws unauthorized on %i (%s)", async (status, message) => {
     generateContentMock.mockRejectedValue(apiError(status, message));
 
