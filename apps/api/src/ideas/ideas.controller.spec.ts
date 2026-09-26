@@ -13,6 +13,15 @@ function validPayload() {
   };
 }
 
+async function createIdea(app: INestApplication): Promise<{ id: string; token: string }> {
+  const response = await request(app.getHttpServer()).post("/ideas").send(validPayload()).expect(201);
+  return { id: response.body.ideaId, token: response.body.accessToken };
+}
+
+function bearer(token: string): [string, string] {
+  return ["Authorization", `Bearer ${token}`];
+}
+
 describe("IdeasController (HTTP)", () => {
   let app: INestApplication;
   let prisma: PrismaService;
@@ -47,44 +56,92 @@ describe("IdeasController (HTTP)", () => {
     await request(app.getHttpServer()).post("/ideas").send(payload).expect(400);
   });
 
-  it("GET /ideas/:id returns the persisted idea", async () => {
-    const created = await request(app.getHttpServer()).post("/ideas").send(validPayload()).expect(201);
+  it("POST /ideas returns an access token", async () => {
+    const { token } = await createIdea(app);
 
-    const response = await request(app.getHttpServer()).get(`/ideas/${created.body.ideaId}`).expect(200);
+    expect(token).toMatch(/^[A-Za-z0-9_-]{43}$/);
+  });
+
+  it("GET /ideas/:id returns the persisted idea", async () => {
+    const { id, token } = await createIdea(app);
+
+    const response = await request(app.getHttpServer()).get(`/ideas/${id}`).set(...bearer(token)).expect(200);
 
     expect(response.body.businessModel).toBe("ECOMMERCE");
     expect(response.body.hypotheses).toHaveLength(4);
   });
 
+  it("GET /ideas/:id without Authorization returns 401", async () => {
+    const { id } = await createIdea(app);
+
+    await request(app.getHttpServer()).get(`/ideas/${id}`).expect(401);
+  });
+
+  it("GET /ideas/:id with the token of another idea returns 404", async () => {
+    const first = await createIdea(app);
+    const second = await createIdea(app);
+
+    await request(app.getHttpServer()).get(`/ideas/${first.id}`).set(...bearer(second.token)).expect(404);
+  });
+
+  it("GET /ideas/:id returns 404 for an idea created without access token", async () => {
+    const legacy = await prisma.idea.create({
+      data: { businessModel: "SERVICE", rawDescription: "Idee d'avant la Phase 6b.", currency: "XOF" },
+    });
+
+    await request(app.getHttpServer()).get(`/ideas/${legacy.id}`).set(...bearer("jeton-quelconque")).expect(404);
+  });
+
+  it("GET /ideas/:id returns paid: false for a new idea", async () => {
+    const { id, token } = await createIdea(app);
+
+    const response = await request(app.getHttpServer()).get(`/ideas/${id}`).set(...bearer(token)).expect(200);
+
+    expect(response.body.paid).toBe(false);
+  });
+
   it("PUT /ideas/:id updates the same idea and returns the new preview result", async () => {
-    const created = await request(app.getHttpServer()).post("/ideas").send(validPayload()).expect(201);
+    const { id, token } = await createIdea(app);
     const payload = validPayload();
     payload.hypotheses.price = 6000;
 
-    const response = await request(app.getHttpServer()).put(`/ideas/${created.body.ideaId}`).send(payload).expect(200);
+    const response = await request(app.getHttpServer()).put(`/ideas/${id}`).set(...bearer(token)).send(payload).expect(200);
 
-    expect(response.body.ideaId).toBe(created.body.ideaId);
+    expect(response.body.ideaId).toBe(id);
     expect(response.body.result.revenue).toBe(300000);
   });
 
+  it("PUT /ideas/:id without Authorization returns 401", async () => {
+    const { id } = await createIdea(app);
+
+    await request(app.getHttpServer()).put(`/ideas/${id}`).send(validPayload()).expect(401);
+  });
+
   it("PUT /ideas/:id returns 404 for an unknown id", async () => {
-    await request(app.getHttpServer()).put("/ideas/does-not-exist").send(validPayload()).expect(404);
+    await request(app.getHttpServer())
+      .put("/ideas/does-not-exist")
+      .set(...bearer("jeton-quelconque"))
+      .send(validPayload())
+      .expect(404);
   });
 
   it("PUT /ideas/:id rejects an invalid payload", async () => {
-    const created = await request(app.getHttpServer()).post("/ideas").send(validPayload()).expect(201);
+    const { id, token } = await createIdea(app);
     const payload = validPayload();
     payload.hypotheses.price = 0;
 
-    await request(app.getHttpServer()).put(`/ideas/${created.body.ideaId}`).send(payload).expect(400);
+    await request(app.getHttpServer()).put(`/ideas/${id}`).set(...bearer(token)).send(payload).expect(400);
   });
 
   it("GET /ideas/:id returns 404 for an unknown id", async () => {
-    await request(app.getHttpServer()).get("/ideas/does-not-exist").expect(404);
+    await request(app.getHttpServer())
+      .get("/ideas/does-not-exist")
+      .set(...bearer("jeton-quelconque"))
+      .expect(404);
   });
 
   it("PATCH /ideas/:id/canvas-blocks persists the blocks and returns ok", async () => {
-    const created = await request(app.getHttpServer()).post("/ideas").send(validPayload()).expect(201);
+    const { id, token } = await createIdea(app);
 
     const canvasPayload = {
       blocks: [
@@ -100,11 +157,21 @@ describe("IdeasController (HTTP)", () => {
     };
 
     const response = await request(app.getHttpServer())
-      .patch(`/ideas/${created.body.ideaId}/canvas-blocks`)
+      .patch(`/ideas/${id}/canvas-blocks`)
+      .set(...bearer(token))
       .send(canvasPayload)
       .expect(200);
 
     expect(response.body).toEqual({ ok: true });
+  });
+
+  it("PATCH /ideas/:id/canvas-blocks without Authorization returns 401", async () => {
+    const { id } = await createIdea(app);
+
+    await request(app.getHttpServer())
+      .patch(`/ideas/${id}/canvas-blocks`)
+      .send({ blocks: [], source: "utilisateur_edite" })
+      .expect(401);
   });
 
   it("PATCH /ideas/:id/canvas-blocks returns 404 for an unknown idea", async () => {
@@ -123,15 +190,17 @@ describe("IdeasController (HTTP)", () => {
 
     await request(app.getHttpServer())
       .patch("/ideas/does-not-exist/canvas-blocks")
+      .set(...bearer("jeton-quelconque"))
       .send(canvasPayload)
       .expect(404);
   });
 
   it("PATCH /ideas/:id/canvas-blocks rejects an invalid payload", async () => {
-    const created = await request(app.getHttpServer()).post("/ideas").send(validPayload()).expect(201);
+    const { id, token } = await createIdea(app);
 
     await request(app.getHttpServer())
-      .patch(`/ideas/${created.body.ideaId}/canvas-blocks`)
+      .patch(`/ideas/${id}/canvas-blocks`)
+      .set(...bearer(token))
       .send({ blocks: [], source: "utilisateur_edite" })
       .expect(400);
   });
