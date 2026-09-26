@@ -13,6 +13,7 @@ import { initialWizardState, wizardReducer } from "@/components/wizard/wizard-re
 import {
   CANVAS_BLOCK_KEYS,
   createIdea,
+  updateIdea,
   suggestHypotheses,
   suggestCanvasBlocks,
   saveCanvasBlocks,
@@ -48,17 +49,18 @@ export default function CommencerPage() {
     if (!state.businessModel) return;
     setSubmitting(true);
     setError(null);
+    const ideaInput = {
+      businessModel: state.businessModel,
+      rawDescription: state.rawDescription,
+      currency: state.currency,
+      hypotheses: state.hypotheses,
+    };
     // Only suggest while the canvas is still blank: going back to hypotheses and resubmitting
     // must not overwrite blocks the user already has (edited or not).
     const canvasIsEmpty = CANVAS_BLOCK_KEYS.every((key) => state.canvasBlocks[key].trim() === "");
     try {
       const [result, canvasSuggestion] = await Promise.all([
-        createIdea({
-          businessModel: state.businessModel,
-          rawDescription: state.rawDescription,
-          currency: state.currency,
-          hypotheses: state.hypotheses,
-        }),
+        response ? updateIdea(response.ideaId, ideaInput) : createIdea(ideaInput),
         canvasIsEmpty
           ? suggestCanvasBlocks({
               businessModel: state.businessModel,
