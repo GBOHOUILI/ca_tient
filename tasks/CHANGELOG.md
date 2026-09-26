@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## [Non versionné], IA : rotation de clés et de providers
+- Les suggestions IA (hypothèses, canvas) essaient Gemini, puis Groq, puis Mistral ; chaque provider peut avoir plusieurs clés (`_2` … `_10`) utilisées à tour de rôle quand l'une atteint son quota.
+- Budget de 15 s par suggestion : au-delà, repli silencieux vers la saisie manuelle, comme avant.
+- Toutes les réponses restent validées par les mêmes parseurs stricts avant d'être proposées.
+
 ## [Non versionné], Suivi Phase 6a : correctifs
 - Revenir en arrière dans le wizard puis re-soumettre met à jour la même idée (`PUT /ideas/:id`) au lieu d'en créer une nouvelle : plus d'idée orpheline, les blocs de canvas sont conservés.
 - "Voir mes resultats" est désactivé tant que le prix de vente est à 0 (cas où la suggestion IA des hypothèses échoue), avec un message explicite au lieu d'une erreur générique.
