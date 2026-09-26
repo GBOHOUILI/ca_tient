@@ -64,7 +64,7 @@ export function StepHypotheses({
       {FIELDS.map((field) => (
         <label key={field.key} className="flex flex-col gap-2 text-small text-text-secondary">
           {field.label}
-          {(field.key === "variableCostPerUnit" || field.key === "fixedCosts") && (
+          {field.key === "variableCostPerUnit" && (
             <span className="text-micro">{HINTS[businessModel]}</span>
           )}
           <input
