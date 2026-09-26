@@ -32,9 +32,9 @@ Webhook FedaPay → backend
    ↓
 Backend vérifie la transaction (signature + statut) côté serveur
    ↓
-payment.status = SUCCESS
+Payment.status = approved (Payment.confirmedAt + Idea.paidAt renseignés)
    ↓
-Analysis = UNLOCKED
+Analyse complète débloquée
 ```
 
 **Règle absolue :** un paiement n'est considéré comme valide qu'après confirmation côté serveur (webhook + vérification), jamais uniquement parce que le frontend affiche un état "payé".
@@ -51,7 +51,7 @@ Analysis = UNLOCKED
 
 ## Mode développement
 
-Un `TestProvider` simule un paiement réussi immédiatement (`payment.status = SUCCESS`) pour permettre de développer et tester tout le reste du produit sans dépendre du compte marchand FedaPay en production.
+Un `TestProvider` simule un paiement réussi : il approuve la transaction dès sa création (`Payment.status = approved` à l'issue de `POST /ideas/:id/payments`, `Idea.paidAt` renseigné immédiatement) pour permettre de développer et tester tout le reste du produit sans dépendre du compte marchand FedaPay en production.
 
 ## Implémentation (Phase 6b-1)
 
