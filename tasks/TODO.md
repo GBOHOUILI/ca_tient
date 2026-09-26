@@ -14,7 +14,7 @@
 ## Phase 2 — Moteur financier
 - [x] Implémenter les formules (`docs/FINANCIAL_ENGINE.md`) : `apps/api/src/financial-engine/` (CA, marge brute, résultat estimé, seuil de rentabilité, scénarios prudent/réaliste/ambitieux/crise). Montants en devise choisie par l'utilisateur (XOF par défaut du marché), voir `docs/DECISIONS.md`.
 - [x] Tests unitaires cas nominal / cas limites (`skills/testing.md`) : 31 tests (vitest), TDD, cas nominal/limite/extrême couverts.
-- [ ] Câbler l'API `/ideas/:id/simulate` (`docs/API.md`), reporté à la Phase 3+ (nécessite la persistance des idées/hypothèses).
+- [x] Câbler l'API `/ideas/:id/simulate` (`docs/API.md`), reporté à la Phase 3+ (nécessite la persistance des idées/hypothèses). Sans objet : la simulation est calculée par `POST`/`PUT /ideas` et côté navigateur (package `financial-engine`), endpoint retiré d'`API.md`.
 
 ## Phase 3 — Parcours utilisateur
 - [x] Persistance Postgres (Prisma `Idea`/`Hypothesis`/`Simulation`, `PrismaService` driver adapter `pg`)
@@ -26,7 +26,7 @@
 ## Phase 4 — IA
 - [x] Extraction des hypothèses depuis la description libre (`docs/AI_ENGINE.md`) : `AiModule` (`apps/api/src/ai/`), Google Gemini via `@google/genai` en mode structured output, `POST /ideas/suggest-hypotheses` (stateless, rate-limité 10 req/min/IP), préremplissage automatique de l'écran Hypothèses du wizard avec repli silencieux si l'IA échoue. Voir `docs/superpowers/specs/2026-09-19-phase-4-extraction-ia-design.md` et `docs/DECISIONS.md`.
 - [x] **Dette pré-déploiement notée pendant la revue finale** : `ThrottlerGuard` suit `req.ip`, qui se réduit à une seule IP derrière un reverse proxy sans `app.set('trust proxy', ...)` — à corriger une fois la cible d'hébergement choisie (profondeur de proxy dépendante de l'infra). Corrigé : variable `TRUST_PROXY` (nombre de proxys, `true` ou sous-réseaux) lue au démarrage ; à renseigner selon l'hébergeur.
-- [ ] Dette UX pré-existante (Phase 3) : `<textarea>` de description sans `maxLength` côté client (le serveur plafonne à 2000 caractères) — au-delà, l'échec ne remonte que sur l'écran Hypothèses avec un message générique.
+- [x] Dette UX pré-existante (Phase 3) : `<textarea>` de description sans `maxLength` côté client (le serveur plafonne à 2000 caractères) — au-delà, l'échec ne remonte que sur l'écran Hypothèses avec un message générique. Corrigé : `maxLength` 2000 + compteur sous le champ.
 
 ## Phase 5 — Scénarios
 - [x] Phase 5a — moteur : projection annuelle avec saisonnalité (`packages/financial-engine/src/seasonality.ts`), package partagé du monorepo (`packages/financial-engine`), consommé par `apps/api` via `financial-engine.service.ts`. Voir `docs/superpowers/specs/2026-09-20-phase-5a-moteur-saisonnalite-design.md` et `docs/DECISIONS.md`.

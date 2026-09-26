@@ -6,13 +6,14 @@
 
 - `POST /ideas` — crée une idée (description libre + modèle de business optionnel)
 - `PUT /ideas/:id` — met à jour la même idée (même corps que `POST /ideas`), remplace ses hypothèses et sa simulation d'aperçu, conserve ses blocs de canvas ; utilisé quand l'utilisateur revient en arrière dans le wizard
-- `POST /ideas/:id/hypotheses/suggest` — l'IA propose des variables à partir de la description
-- `PUT /ideas/:id/hypotheses` — l'utilisateur confirme/corrige les hypothèses
+- `GET /ideas/:id` — relit l'idée, ses hypothèses et sa simulation d'aperçu
+- `POST /ideas/suggest-hypotheses` — l'IA propose les 4 hypothèses à partir de la description (sans persistance, `{ available: false }` si l'IA ne répond pas)
+- `POST /ideas/suggest-canvas-blocks` — l'IA propose les 7 blocs qualitatifs du canvas (même contrat)
+- `PATCH /ideas/:id/canvas-blocks` — enregistre les 7 blocs validés/édités par l'utilisateur
 
 ## Simulation
 
-- `POST /ideas/:id/simulate` — calcule un aperçu (CA, marge, seuil de rentabilité) à partir des hypothèses courantes
-- `POST /ideas/:id/scenarios` — génère les scénarios (prudent, réaliste, ambitieux, crise, personnalisé)
+- Pas d'endpoint dédié : l'aperçu (CA, marge, seuil) est calculé par `POST`/`PUT /ideas`, les scénarios et le module « Et si ? » sont recalculés côté navigateur par le package partagé `financial-engine` (voir `docs/DECISIONS.md`, 2026-09-20).
 
 ## Paiement
 
