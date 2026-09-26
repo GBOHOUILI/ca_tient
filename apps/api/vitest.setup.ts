@@ -9,3 +9,8 @@ try {
 } catch {
   // pas de .env local, process.env peut déjà être renseigné autrement
 }
+
+import { resolveTestDatabaseUrl } from "./test/test-database-url.js";
+
+// PrismaService reads DATABASE_URL: point it at the test database before any spec imports it.
+process.env.DATABASE_URL = resolveTestDatabaseUrl(process.env);
