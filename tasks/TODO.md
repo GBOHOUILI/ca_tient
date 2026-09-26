@@ -14,7 +14,7 @@
 ## Phase 2 — Moteur financier
 - [x] Implémenter les formules (`docs/FINANCIAL_ENGINE.md`) : `apps/api/src/financial-engine/` (CA, marge brute, résultat estimé, seuil de rentabilité, scénarios prudent/réaliste/ambitieux/crise). Montants en devise choisie par l'utilisateur (XOF par défaut du marché), voir `docs/DECISIONS.md`.
 - [x] Tests unitaires cas nominal / cas limites (`skills/testing.md`) : 31 tests (vitest), TDD, cas nominal/limite/extrême couverts.
-- [ ] Câbler l'API `/ideas/:id/simulate` (`docs/API.md`), reporté à la Phase 3+ (nécessite la persistance des idées/hypothèses).
+- [x] Câbler l'API `/ideas/:id/simulate` (`docs/API.md`), reporté à la Phase 3+ (nécessite la persistance des idées/hypothèses). Sans objet : la simulation est calculée par `POST`/`PUT /ideas` et côté navigateur (package `financial-engine`), endpoint retiré d'`API.md`.
 
 ## Phase 3 — Parcours utilisateur
 - [x] Persistance Postgres (Prisma `Idea`/`Hypothesis`/`Simulation`, `PrismaService` driver adapter `pg`)
@@ -25,8 +25,8 @@
 
 ## Phase 4 — IA
 - [x] Extraction des hypothèses depuis la description libre (`docs/AI_ENGINE.md`) : `AiModule` (`apps/api/src/ai/`), Google Gemini via `@google/genai` en mode structured output, `POST /ideas/suggest-hypotheses` (stateless, rate-limité 10 req/min/IP), préremplissage automatique de l'écran Hypothèses du wizard avec repli silencieux si l'IA échoue. Voir `docs/superpowers/specs/2026-09-19-phase-4-extraction-ia-design.md` et `docs/DECISIONS.md`.
-- [ ] **Dette pré-déploiement notée pendant la revue finale** : `ThrottlerGuard` suit `req.ip`, qui se réduit à une seule IP derrière un reverse proxy sans `app.set('trust proxy', ...)` — à corriger une fois la cible d'hébergement choisie (profondeur de proxy dépendante de l'infra).
-- [ ] Dette UX pré-existante (Phase 3) : `<textarea>` de description sans `maxLength` côté client (le serveur plafonne à 2000 caractères) — au-delà, l'échec ne remonte que sur l'écran Hypothèses avec un message générique.
+- [x] **Dette pré-déploiement notée pendant la revue finale** : `ThrottlerGuard` suit `req.ip`, qui se réduit à une seule IP derrière un reverse proxy sans `app.set('trust proxy', ...)` — à corriger une fois la cible d'hébergement choisie (profondeur de proxy dépendante de l'infra). Corrigé : variable `TRUST_PROXY` (nombre de proxys, `true` ou sous-réseaux) lue au démarrage ; à renseigner selon l'hébergeur.
+- [x] Dette UX pré-existante (Phase 3) : `<textarea>` de description sans `maxLength` côté client (le serveur plafonne à 2000 caractères) — au-delà, l'échec ne remonte que sur l'écran Hypothèses avec un message générique. Corrigé : `maxLength` 2000 + compteur sous le champ.
 - [x] Rotation de clés et chaîne de providers IA (Gemini → Groq → Mistral), budget 15 s, repli silencieux inchangé. Voir `docs/superpowers/specs/2026-09-26-ia-rotation-providers-design.md`.
 - [ ] Smoke test réel Groq et Mistral avec de vraies clés avant de compter sur eux en production (la chaîne n'a été vérifiée en réel qu'avec Gemini).
 - [ ] Mesurer `thinkingConfig: { thinkingBudget: 0 }` sur gemini-2.5-flash : la latence (~6 s) vient surtout du « thinking », inutile pour extraire 4 entiers ou 7 phrases courtes ; à valider sur la qualité des suggestions avant de l'activer.
@@ -40,7 +40,7 @@
 - [x] Capture des 7 blocs qualitatifs du business model canvas (`apps/web/src/components/wizard/StepCanvas.tsx`), suggestion IA (`apps/api/src/ai/gemini.provider.ts`), persistance (`CanvasBlock`, `PATCH /ideas/:id/canvas-blocks`). Voir `docs/superpowers/specs/2026-09-20-phase-6a-canvas-capture-design.md`.
 - [x] **Dette découverte (vérification bout en bout Phase 6a)** : chaque soumission de l'écran Hypothèses crée une nouvelle `Idea` (comportement Phase 3). Un retour arrière depuis "Ton business model" puis re-soumission laisse une `Idea` orpheline sans `CanvasBlock`. À traiter avant le rapport final (réutiliser l'idée existante ou nettoyer les orphelines). Corrigé : `PUT /ideas/:id` réutilise l'idée existante.
 
-- [ ] **Dette tests (découverte 2026-09-26)** : `ideas.service.spec.ts` et `ideas.controller.spec.ts` font `prisma.idea.deleteMany()` sur la base pointée par `DATABASE_URL`, la même que le dev : chaque `pnpm --filter api test` vide les idées de dev. Prévoir une base de test dédiée (ex. `DATABASE_URL_TEST`).
+- [x] **Dette tests (découverte 2026-09-26)** : `ideas.service.spec.ts` et `ideas.controller.spec.ts` font `prisma.idea.deleteMany()` sur la base pointée par `DATABASE_URL`, la même que le dev : chaque `pnpm --filter api test` vide les idées de dev. Prévoir une base de test dédiée (ex. `DATABASE_URL_TEST`). Corrigé : base `<nom>_test` dérivée de `DATABASE_URL` (ou `DATABASE_URL_TEST`), migrée automatiquement avant `pnpm test`.
 
 ## Phase 6-7 — Analyse complète & Paiement
 - [ ] Écran d'offre à 1 000 FCFA

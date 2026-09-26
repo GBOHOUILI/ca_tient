@@ -1,3 +1,6 @@
+// Mirrors the API limit (CreateIdeaDto.rawDescription @MaxLength(2000)).
+const MAX_DESCRIPTION_LENGTH = 2000;
+
 export function StepDescription({
   value,
   onChange,
@@ -21,9 +24,13 @@ export function StepDescription({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         rows={6}
+        maxLength={MAX_DESCRIPTION_LENGTH}
         placeholder="Ex : je veux vendre des vetements en ligne pour jeunes actifs, livraison a domicile..."
         className="rounded-lg border border-border bg-surface p-4 text-body text-text-primary focus:border-accent-emerald focus:outline-none"
       />
+      <p className="-mt-4 text-right text-micro text-text-secondary">
+        {value.length} / {MAX_DESCRIPTION_LENGTH}
+      </p>
       <div className="flex justify-between">
         <button type="button" onClick={onBack} className="text-body font-medium text-text-secondary">
           Retour
