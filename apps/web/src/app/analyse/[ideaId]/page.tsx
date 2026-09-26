@@ -40,13 +40,20 @@ export default function AnalysePage() {
   // Holds the latest `check` so the setTimeout callback below can call it without
   // referencing `check` before its own declaration (react-hooks/immutability).
   const checkRef = useRef<() => void>(() => {});
+  // Guards every setState/timer re-arm in check() against firing after unmount.
+  // Set to true inside the effect body (not at ref creation) so it survives
+  // React 19 StrictMode's dev-only mount -> cleanup -> remount cycle correctly.
+  const mountedRef = useRef(false);
 
   const check = useCallback(async () => {
     if (pollTimer.current) clearTimeout(pollTimer.current);
     try {
       const payment = await fetchPaymentStatus(ideaId);
+      if (!mountedRef.current) return;
       if (payment.paid) {
-        setView({ kind: "paid", idea: await fetchIdea(ideaId) });
+        const idea = await fetchIdea(ideaId);
+        if (!mountedRef.current) return;
+        setView({ kind: "paid", idea });
         return;
       }
       if (payment.status === "pending") {
@@ -57,6 +64,7 @@ export default function AnalysePage() {
       }
       setView({ kind: "failed" });
     } catch (error) {
+      if (!mountedRef.current) return;
       setView({ kind: error instanceof AccessDeniedError ? "no-access" : "error" });
     }
   }, [ideaId]);
@@ -77,9 +85,11 @@ export default function AnalysePage() {
   // The initial call is deferred to a timer so the effect body itself never calls
   // setState synchronously (react-hooks/set-state-in-effect).
   useEffect(() => {
+    mountedRef.current = true;
     pollStartedAt.current = Date.now();
     const timeout = setTimeout(() => checkRef.current(), 0);
     return () => {
+      mountedRef.current = false;
       clearTimeout(timeout);
       if (pollTimer.current) clearTimeout(pollTimer.current);
     };
