@@ -1,115 +1,10 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { GoogleGenAI, Type } from "@google/genai";
-import type { BusinessModel } from "@prisma/client";
-import type { CurrencyCode } from "financial-engine";
 import type { AiProvider, AiSuggestionInput, SuggestedHypotheses, SuggestedCanvasBlocks } from "./ai-provider.port.js";
 import { CANVAS_BLOCK_KEYS } from "./ai-provider.port.js";
+import { buildCanvasPrompt, buildHypothesesPrompt, parseSuggestedCanvasBlocks, parseSuggestedHypotheses } from "./ai-prompts.js";
 
 const REQUEST_TIMEOUT_MS = 8_000;
-
-const BUSINESS_MODEL_LABELS: Record<BusinessModel, string> = {
-  ECOMMERCE: "e-commerce",
-  FORMATION: "formation en ligne",
-  EBOOK: "e-book",
-  SERVICE: "service",
-  PRODUIT_PHYSIQUE: "produit physique",
-  AUTRE: "autre",
-};
-
-const CURRENCY_UNIT_HINTS: Record<CurrencyCode, string> = {
-  XOF: "le XOF n'a pas de sous-unite : exprime les montants en unites entieres de XOF",
-  EUR: "exprime les montants en centimes d'EUR (1 EUR = 100 centimes)",
-  USD: "exprime les montants en cents USD (1 USD = 100 cents)",
-  GBP: "exprime les montants en pence GBP (1 GBP = 100 pence)",
-  NGN: "exprime les montants en kobo NGN (1 NGN = 100 kobo)",
-  GHS: "exprime les montants en pesewas GHS (1 GHS = 100 pesewas)",
-};
-
-function buildPrompt(input: AiSuggestionInput): string {
-  return [
-    "Tu aides a estimer les hypotheses financieres d'une idee de business, pour un outil qui teste sa viabilite avant de se lancer.",
-    `Modele de business : ${BUSINESS_MODEL_LABELS[input.businessModel]}.`,
-    `Description de l'idee, en langage libre : "${input.rawDescription}"`,
-    `Devise cible : ${input.currency}. ${CURRENCY_UNIT_HINTS[input.currency]}.`,
-    "Propose une estimation raisonnable et realiste des 4 variables suivantes, meme si la description est vague (fais une hypothese plausible plutot que de repondre zero) :",
-    "- price : prix de vente unitaire",
-    "- volume : nombre de ventes estimees par mois",
-    "- variableCostPerUnit : cout qui varie avec chaque vente (matiere, commission, livraison...)",
-    "- fixedCosts : couts fixes mensuels, independants du volume vendu",
-    "Reponds uniquement avec les 4 nombres, tous des entiers positifs ou nuls dans l'unite demandee.",
-  ].join("\n");
-}
-
-function isValidAmount(value: unknown, min: number): value is number {
-  return typeof value === "number" && Number.isInteger(value) && value >= min;
-}
-
-function parseSuggestedHypotheses(text: string | undefined): SuggestedHypotheses | null {
-  if (!text) return null;
-
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(text);
-  } catch {
-    return null;
-  }
-
-  if (typeof parsed !== "object" || parsed === null) return null;
-
-  const { price, volume, variableCostPerUnit, fixedCosts } = parsed as Record<string, unknown>;
-
-  if (
-    !isValidAmount(price, 1) ||
-    !isValidAmount(volume, 0) ||
-    !isValidAmount(variableCostPerUnit, 0) ||
-    !isValidAmount(fixedCosts, 0)
-  ) {
-    return null;
-  }
-
-  return { price, volume, variableCostPerUnit, fixedCosts };
-}
-
-function buildCanvasPrompt(input: AiSuggestionInput): string {
-  return [
-    "Tu aides a remplir un business model canvas (methode Osterwalder) pour une idee de business, en francais.",
-    `Modele de business : ${BUSINESS_MODEL_LABELS[input.businessModel]}.`,
-    `Description de l'idee, en langage libre : "${input.rawDescription}"`,
-    "Propose un texte court (1 a 2 phrases maximum, style note plutot que paragraphe) pour chacun des 7 blocs suivants, meme si la description est vague (fais une hypothese plausible plutot que de repondre par une phrase vide) :",
-    "- valueProposition : la proposition de valeur, ce qui rend cette offre desirable",
-    "- customerSegments : a qui s'adresse cette offre",
-    "- channels : comment les clients decouvrent et achetent l'offre",
-    "- customerRelationships : comment la relation avec les clients est entretenue dans la duree",
-    "- keyResources : les ressources indispensables pour operer (materiel, competences, stock...)",
-    "- keyActivities : les activites cles du quotidien pour faire tourner ce business",
-    "- keyPartners : les partenaires ou fournisseurs cles necessaires",
-    "Reponds uniquement avec les 7 textes, chacun en francais, sans jargon, 500 caracteres maximum par bloc.",
-  ].join("\n");
-}
-
-function parseSuggestedCanvasBlocks(text: string | undefined): SuggestedCanvasBlocks | null {
-  if (!text) return null;
-
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(text);
-  } catch {
-    return null;
-  }
-
-  if (typeof parsed !== "object" || parsed === null) return null;
-
-  const record = parsed as Record<string, unknown>;
-  const result = {} as SuggestedCanvasBlocks;
-
-  for (const key of CANVAS_BLOCK_KEYS) {
-    const value = record[key];
-    if (typeof value !== "string" || value.trim().length === 0 || value.length > 500) return null;
-    result[key] = value.trim();
-  }
-
-  return result;
-}
 
 @Injectable()
 export class GeminiProvider implements AiProvider {
@@ -125,7 +20,7 @@ export class GeminiProvider implements AiProvider {
     try {
       const response = await this.client.models.generateContent({
         model: this.modelName,
-        contents: buildPrompt(input),
+        contents: buildHypothesesPrompt(input),
         config: {
           responseMimeType: "application/json",
           responseSchema: {
