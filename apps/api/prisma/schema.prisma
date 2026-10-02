@@ -29,6 +29,8 @@ model Idea {
   payments        Payment[]
   capitalPlan     CapitalPlan?
   reportSummary   ReportSummary?
+  recoveryCodeHash String?          @unique
+  accessTokens     IdeaAccessToken[]
 }
 
 model Hypothesis {
@@ -117,5 +119,13 @@ model ReportSummary {
   idea      Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
   text      String
   factsHash String
+  createdAt DateTime @default(now())
+}
+
+model IdeaAccessToken {
+  id        String   @id @default(cuid())
+  ideaId    String
+  idea      Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
   createdAt DateTime @default(now())
 }
