@@ -4,10 +4,7 @@ import { PrismaService } from "../prisma/prisma.service.js";
 import { PAYMENT_GATEWAY, type PaymentGateway } from "./payment-gateway.port.js";
 import { nextPaymentStatus } from "./payment-state.js";
 import { analysisPriceXof } from "./pricing.js";
-
-function webAppUrl(): string {
-  return (process.env.WEB_APP_URL ?? "http://localhost:3000").replace(/\/+$/, "");
-}
+import { primaryWebAppUrl } from "../web-app-url.js";
 
 @Injectable()
 export class PaymentService {
@@ -35,7 +32,7 @@ export class PaymentService {
     // Free analysis (ANALYSIS_PRICE_XOF=0, used for tests): unlocked at once, no provider involved.
     if (price === 0) {
       await this.prisma.idea.updateMany({ where: { id: ideaId, paidAt: null }, data: { paidAt: new Date() } });
-      return { paymentId: null, redirectUrl: `${webAppUrl()}/analyse/${ideaId}` };
+      return { paymentId: null, redirectUrl: `${primaryWebAppUrl()}/analyse/${ideaId}` };
     }
 
     const payment = await this.prisma.payment.create({
@@ -50,7 +47,7 @@ export class PaymentService {
         amount: price,
         currency: "XOF",
         description: "Analyse complete Ca tient ?",
-        returnUrl: `${webAppUrl()}/analyse/${ideaId}`,
+        returnUrl: `${primaryWebAppUrl()}/analyse/${ideaId}`,
       });
     } catch (error) {
       // A payment that never reached the provider must not look "pending" forever to the user.
