@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## [Non versionné], landing orientée conversion
+- Audit de la landing : une promesse fausse corrigée (« Et si ? » et les scénarios étaient présentés avant le paiement alors qu'ils sont payants) ; l'aperçu gratuit, principal argument, est désormais mis en avant.
+- Nouvel ordre : hero (promesse concrète + CTA unique « Tester mon idée », « Aperçu gratuit · analyse complète 1 000 FCFA »), pour qui, problème, aperçu réel calculé par le moteur sur un exemple étiqueté, 3 étapes, offre Gratuit / 1 000 FCFA, bénéfices, confiance, FAQ (objections : IA et chiffres, ce qui est gratuit, paiement, changement de téléphone, données, garantie), CTA final.
+- Aucune preuve ni chiffre inventé (aucun utilisateur à ce jour) ; la FAQ dit franchement que la description est envoyée à un service d'IA. Design system inchangé, aucune dépendance.
+- Vérifié dans Chrome (Playwright) : desktop 1440 px et mobile 390 px, thèmes sombre et clair, 0 erreur console, 0 débordement horizontal, CTA → `/commencer`.
+
 ## [Non versionné], dashboard admin
 - `/admin` derrière `ADMIN_KEY` : vue d'ensemble (indicateurs + idées et paiements par jour), marché (types, pays, profils, avancement, médianes par type de business dans une devise), conversion (funnel + taux de paiement par type, source, campagne, pays), revenus (statuts, par jour, par semaine), idées (liste paginée, recherche, filtre payé, fiche complète) et export CSV des contacts consentants.
 - API `AdminModule` en lecture seule (7 routes), agrégations pures testées à part (`admin-stats.ts`), chiffres financiers recalculés par le moteur ; le funnel accepte maintenant 90 jours. 17 tests.

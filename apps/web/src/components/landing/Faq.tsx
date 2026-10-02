@@ -1,21 +1,46 @@
 const faqs = [
   {
+    question: "Qu'est-ce qui est gratuit ?",
+    answer:
+      "Tout jusqu'à l'aperçu : la description de ton idée, les hypothèses proposées par l'IA, ton chiffre d'affaires, ta marge, ton résultat, ton seuil de rentabilité et le verdict. Tu ne paies que pour l'analyse complète.",
+  },
+  {
+    question: "Je n'y connais rien en finance, je vais m'en sortir ?",
+    answer:
+      "Oui. Les questions sont posées simplement (« À combien tu vends une unité ? »), l'IA propose des chiffres de départ et le rapport explique les résultats en phrases simples.",
+  },
+  {
+    question: "L'IA va-t-elle inventer mes chiffres ?",
+    answer:
+      "Non. L'IA propose des hypothèses que tu vérifies et corriges. Tous les résultats sont calculés par des formules fixes, et la synthèse rédigée par l'IA ne contient aucun chiffre.",
+  },
+  {
     question: "Combien de temps ça prend ?",
-    answer: "Quelques minutes pour décrire ton idée et valider les hypothèses, le temps de lire ton rapport ensuite.",
+    answer: "Quelques minutes pour décrire ton idée et vérifier tes chiffres. L'aperçu s'affiche aussitôt.",
   },
   {
-    question: "Je n'ai pas de compétences financières, c'est un problème ?",
+    question: "Comment je paie ?",
     answer:
-      "Non. L'IA t'aide à formuler les bonnes variables, le moteur fait les calculs, le rapport explique les résultats simplement.",
+      "1 000 FCFA, une seule fois, sur la page de paiement sécurisée de FedaPay (mobile money ou carte). Pas d'abonnement, pas de frais cachés.",
   },
   {
-    question: "Le paiement est-il sécurisé ?",
+    question: "Et si je change de téléphone ?",
     answer:
-      "Oui. Le paiement est vérifié côté serveur avant d'ouvrir l'accès à ton analyse, jamais sur la seule confiance de l'écran affiché.",
+      "Après le paiement, tu peux obtenir un code. Il te permet de rouvrir ton analyse depuis n'importe quel téléphone ou navigateur, sur la page « Retrouver mon analyse ».",
   },
   {
-    question: "Et si je veux tester plusieurs idées ?",
-    answer: "Chaque analyse coûte 1 000 FCFA, sans abonnement. Tu ne paies que pour ce que tu testes.",
+    question: "Je veux tester plusieurs idées.",
+    answer: "Chaque idée a son aperçu gratuit. L'analyse complète coûte 1 000 FCFA par idée : tu ne paies que ce que tu approfondis.",
+  },
+  {
+    question: "Que deviennent mes informations ?",
+    answer:
+      "Ta description est envoyée à un service d'IA pour te proposer des hypothèses. Tes chiffres et ton analyse restent chez nous. Ton contact n'est enregistré que si tu coches la case prévue, et il n'est jamais partagé.",
+  },
+  {
+    question: "Si l'analyse dit que ça tient, c'est sûr que ça marchera ?",
+    answer:
+      "Non. C'est une aide à la décision : les résultats dépendent des chiffres que tu donnes. Elle te montre où sont les risques, pas une garantie de succès.",
   },
 ];
 
