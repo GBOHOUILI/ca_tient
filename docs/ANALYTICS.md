@@ -21,6 +21,6 @@ Table d'événements maison (`AnalyticsEvent`), aucune dépendance, aucun cookie
 - **Envoyés par le site** (`POST /analytics/events`, `trackEvent` dans `apps/web/src/lib/analytics.ts`) : `landing_view`, `test_started`, `offer_viewed`, `what_if_used`, `report_viewed`, `report_printed`. Un `sessionId` aléatoire par onglet (`sessionStorage`) : on compte des sessions, pas des personnes.
 - **Lus en base** (fiables, fixés par le serveur) : aperçus générés (`Idea`), paiements initiés (`Payment`), paiements confirmés (`Idea.paidAt`), analyses retrouvées par code (`IdeaAccessToken`).
 - **Comptes distincts** (sessions ou idées) : rechargements et doubles rendus ne gonflent rien.
-- **Consultation** : page `/admin/stats` (non indexée), clé `ADMIN_KEY` côté API (absente = statistiques désactivées). Funnel sur 7 jours, 30 jours ou depuis le début, avec le taux de passage d'une étape à l'autre.
+- **Consultation** : dashboard `/admin` (non indexé, clé `ADMIN_KEY`), onglet Conversion pour le funnel (7, 30, 90 jours ou depuis le début) ; `/admin/stats` y redirige. Le profil déclaré et la source UTM (collecte du 2026-10-02) permettent en plus les ventilations par type, pays et source.
 
 Correspondance avec la liste ci-dessus : « simulations terminées » = aperçus générés ; « scénarios explorés » = « Et si ? » utilisé ; « rapports téléchargés » = rapports imprimés / enregistrés en PDF.

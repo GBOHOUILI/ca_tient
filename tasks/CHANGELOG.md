@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## [Non versionné], dashboard admin
+- `/admin` derrière `ADMIN_KEY` : vue d'ensemble (indicateurs + idées et paiements par jour), marché (types, pays, profils, avancement, médianes par type de business dans une devise), conversion (funnel + taux de paiement par type, source, campagne, pays), revenus (statuts, par jour, par semaine), idées (liste paginée, recherche, filtre payé, fiche complète) et export CSV des contacts consentants.
+- API `AdminModule` en lecture seule (7 routes), agrégations pures testées à part (`admin-stats.ts`), chiffres financiers recalculés par le moteur ; le funnel accepte maintenant 90 jours. 17 tests.
+- `/admin/stats` redirige vers `/admin/conversion`.
+
 ## [Non versionné], collecte du profil et de la source d'arrivée
 - Nouvel écran facultatif « Parle-nous de toi » entre le canvas et l'aperçu : pays, ville, profil, avancement, source déclarée, contact avec case de consentement ; « Passer » toujours possible, un échec d'enregistrement ne bloque jamais l'aperçu.
 - Source d'arrivée capturée sans question (UTM + domaine référent, première source de l'onglet) et enregistrée avec l'idée.

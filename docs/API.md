@@ -41,6 +41,18 @@ Toutes les routes `/ideas/:id…` (sauf `POST /ideas` et les deux routes `sugges
 - `POST /analytics/events` — publique, 60 requêtes/min/IP, `204`. Corps `{ type, sessionId, ideaId? }` ; `type` ∈ `landing_view | test_started | offer_viewed | what_if_used | report_viewed | report_printed` (les paiements ne sont jamais acceptés du navigateur) ; `sessionId` 8–64 caractères `[A-Za-z0-9-]` ; `400` sinon.
 - `GET /admin/stats?period=7d|30d|all` (défaut `30d`) — en-tête `x-admin-key` = `ADMIN_KEY` (comparaison en temps constant). `404` si `ADMIN_KEY` n'est pas configurée, `401` si la clé est fausse, `400` période inconnue. Renvoie `{ period, from, steps: [{ key, count }], reportPrinted, recoveries }`, étapes dans l'ordre du funnel, comptes distincts.
 
+## Dashboard admin
+
+Toutes les routes : en-tête `x-admin-key` = `ADMIN_KEY` (404 si non configurée, 401 si fausse), 60 requêtes/min/IP, lecture seule. Filtres communs : `period=7d|30d|90d|all` (défaut `30d`), `businessModel`, `country`, et `currency` (défaut `XOF`, montants du marché).
+
+- `GET /admin/overview` — indicateurs clés (visites, idées, paiements confirmés, chiffre d'affaires, conversion aperçu → paiement, part des idées qui tiennent) et activité par jour.
+- `GET /admin/market` — répartitions (type, pays, profil, avancement, devises) et médianes par type de business dans la devise choisie.
+- `GET /admin/conversion` — funnel (période seulement) et taux de paiement par type, source déclarée, `utm_source`, pays.
+- `GET /admin/revenue` — paiements XOF : total, statuts, par jour et par semaine (lundi).
+- `GET /admin/ideas?page=&search=&paid=true|false` — liste paginée (20), recherche insensible à la casse dans la description.
+- `GET /admin/ideas/:id` — fiche complète (résultats recalculés par le moteur, canvas, capital, profil, contact seulement si consentement, paiements, parcours) ; 404 si inconnue.
+- `GET /admin/contacts.csv` — CSV (`;`, UTF-8 avec BOM) des seuls contacts consentants, cellules protégées contre l'injection de formules.
+
 ## Historique
 
 - `GET /ideas` — liste des idées/analyses de l'utilisateur (si compte/session persistante)

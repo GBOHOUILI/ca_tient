@@ -55,7 +55,7 @@
 
 ## Dashboard admin
 - [x] Sous-projet A : collecte du profil et de la source d'arrivée (`docs/superpowers/specs/2026-10-02-collecte-profil-design.md`)
-- [ ] Sous-projet B : dashboard admin (`docs/superpowers/specs/2026-10-02-dashboard-admin-design.md`)
+- [x] Sous-projet B : dashboard admin (`docs/superpowers/specs/2026-10-02-dashboard-admin-design.md`)
 - [ ] Outiller la suppression des données d'un utilisateur sur demande (manuelle pour l'instant)
 
 ## Phase 8 — Bêta
