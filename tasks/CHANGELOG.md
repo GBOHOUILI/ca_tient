@@ -1,5 +1,8 @@
 # CHANGELOG.md
 
+## [Non versionné], modèles IA
+- Modèles par défaut remplacés : `gemini-3.5-flash-lite` (Gemini 2.5 fermé aux nouveaux comptes) et `openai/gpt-oss-120b` (Groq a retiré `llama-3.3-70b-versatile`). Découvert en production : l'IA ne répondait plus.
+
 ## [Non versionné], préparation du déploiement
 - `render.yaml` (API sur Render, Frankfurt), `apps/web/netlify.toml` (web sur Netlify), `.nvmrc` (Node 24), guide `docs/DEPLOYMENT.md` (Neon, Render, Netlify, webhook FedaPay sandbox, passage en live).
 - Builds de production simulés dans un clone propre du dépôt : API (install figé, moteur, client Prisma, compilation) et démarrage en `NODE_ENV=production` (migrations, `/health`, `/pricing`), web (`next build`).
