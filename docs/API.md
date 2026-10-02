@@ -6,11 +6,12 @@
 
 Toutes les routes `/ideas/:id…` (sauf `POST /ideas` et les deux routes `suggest-*`, qui n'ont pas encore d'idée) exigent l'en-tête `Authorization: Bearer <accessToken>` (`IdeaAccessGuard`) : en-tête absent → 401 ; jeton faux ou idée inconnue → 404 identique dans les deux cas (ne révèle pas qu'une idée existe).
 
-- `POST /ideas` — crée une idée (description libre + modèle de business optionnel), renvoie en plus `accessToken` (jeton aléatoire, à conserver côté navigateur — voir `docs/DECISIONS.md`)
+- `POST /ideas` — crée une idée (description libre + modèle de business optionnel ; `acquisition` facultatif `{ utmSource?, utmMedium?, utmCampaign?, referrerHost? }`, ignoré par `PUT`), renvoie en plus `accessToken` (jeton aléatoire, à conserver côté navigateur — voir `docs/DECISIONS.md`)
 - `PUT /ideas/:id` — protégée ; met à jour la même idée (même corps que `POST /ideas`), remplace ses hypothèses et sa simulation d'aperçu, conserve ses blocs de canvas ; utilisé quand l'utilisateur revient en arrière dans le wizard
 - `GET /ideas/:id` — protégée ; relit l'idée, ses hypothèses, sa simulation d'aperçu, `paid: boolean` (calculé côté serveur, jamais transmis par le client) et `hasCapitalPlan: boolean`
 - `POST /ideas/suggest-hypotheses` — l'IA propose les 4 hypothèses à partir de la description (sans persistance, `{ available: false }` si l'IA ne répond pas)
 - `POST /ideas/suggest-canvas-blocks` — l'IA propose les 7 blocs qualitatifs du canvas (même contrat)
+- `PUT /ideas/:id/profile` — protégée (jeton d'accès, pas besoin d'avoir payé) ; profil facultatif `{ country?, city?, profile?, stage?, heardFrom?, contact?, contactConsent? }` (valeurs dans des listes fermées, voir `IdeaProfileDto`). `contact` sans `contactConsent: true` → 400 ; retirer le consentement efface le contact. Upsert, `200 { ok: true }`.
 - `PATCH /ideas/:id/canvas-blocks` — protégée ; enregistre les 7 blocs validés/édités par l'utilisateur
 
 ## Récupération d'une analyse payée

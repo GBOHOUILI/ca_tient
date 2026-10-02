@@ -7,6 +7,7 @@
 | 3 | Description | L'utilisateur décrit son idée en langage naturel |
 | 4 | Hypothèses | L'IA propose les variables pertinentes ; l'utilisateur les confirme/corrige |
 | 5 | Ton business model | 7 blocs qualitatifs du canvas (proposition de valeur, segments clients, etc.), suggérés par l'IA, validés/édités par l'utilisateur |
+| 5 bis | Parle-nous de toi | Facultatif : pays, ville, profil, avancement du projet, comment l'utilisateur a connu Ça tient ?, contact avec case de consentement ; « Passer » toujours possible |
 | 6 | Aperçu | CA, coûts, marge, bénéfice, seuil de rentabilité et indicateurs clés — niveau aperçu, gratuit, pas encore l'analyse complète |
 | 7 | Offre analyse complète | Proposition du test complet à 1 000 FCFA, rappel « aide à la décision, pas une garantie », détail de ce qui est inclus |
 | 8 | Paiement | Redirection vers la page hébergée FedaPay → paiement → vérification côté serveur (webhook signé + relecture de la transaction) |

@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## [Non versionné], collecte du profil et de la source d'arrivée
+- Nouvel écran facultatif « Parle-nous de toi » entre le canvas et l'aperçu : pays, ville, profil, avancement, source déclarée, contact avec case de consentement ; « Passer » toujours possible, un échec d'enregistrement ne bloque jamais l'aperçu.
+- Source d'arrivée capturée sans question (UTM + domaine référent, première source de l'onglet) et enregistrée avec l'idée.
+- API : `PUT /ideas/:id/profile`, table `IdeaProfile`, colonnes UTM sur `Idea` ; contact refusé sans consentement, effacé si le consentement est retiré. 9 tests.
+
 ## [Non versionné], Phase 6b-2b : analytics minimal
 - Table `AnalyticsEvent` et `POST /analytics/events` (public, 60/min/IP, liste fermée de 6 types), sans cookie ni donnée personnelle ; `sessionId` aléatoire par onglet.
 - `GET /admin/stats` (clé `ADMIN_KEY`, temps constant, 404 si absente) : funnel visites → tests démarrés → aperçus → offre vue → paiements initiés → paiements confirmés → « Et si ? » → rapports consultés, plus rapports imprimés et analyses retrouvées par code. Comptes distincts ; paiements lus en base.
