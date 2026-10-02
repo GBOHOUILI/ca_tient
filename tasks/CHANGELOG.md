@@ -1,5 +1,8 @@
 # CHANGELOG.md
 
+## [Non versionné], plusieurs adresses pour le site
+- `WEB_APP_URL` accepte une liste séparée par des virgules (domaine personnalisé + adresse Netlify) : toutes autorisées pour CORS (l'API renvoie la seule origine correspondante), la première reçoit le retour après paiement. Auparavant la liste était renvoyée telle quelle et rejetée par les navigateurs.
+
 ## [Non versionné], modèles IA
 - Modèles par défaut remplacés : `gemini-3.5-flash-lite` (Gemini 2.5 fermé aux nouveaux comptes) et `openai/gpt-oss-120b` (Groq a retiré `llama-3.3-70b-versatile`). Découvert en production : l'IA ne répondait plus.
 

@@ -23,7 +23,7 @@ Node 24 partout (`.nvmrc`). pnpm 10.33.2 épinglé via `npx` dans le build Rende
 | Variable | Valeur |
 |---|---|
 | `DATABASE_URL` | chaîne Neon de l'étape 1 |
-| `WEB_APP_URL` | URL Netlify de l'étape 3 (mettre provisoirement `https://example.com`, à corriger après) |
+| `WEB_APP_URL` | adresse(s) du site, séparées par des virgules, sans `/` final (ex. `https://catient.zerotoone.bj,https://catient.netlify.app`). Toutes sont autorisées (CORS) ; la **première** reçoit le retour après paiement. |
 | `FEDAPAY_SECRET_KEY` | clé **sandbox** `sk_sandbox_…` |
 | `FEDAPAY_WEBHOOK_SECRET` | secret du webhook (étape 4 ; provisoirement une valeur quelconque, l'API exige qu'il soit renseigné) |
 | `GEMINI_API_KEY` (+ `_2`… si plusieurs) | clé(s) Gemini |

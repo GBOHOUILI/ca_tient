@@ -7,6 +7,7 @@ import type { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module.js';
 import { analysisPriceXof } from './payments/pricing.js';
 import { parseTrustProxy } from './trust-proxy.js';
+import { corsOrigins } from './web-app-url.js';
 
 // Node charge nativement .env (>= v20.6) ; ni Nest ni ce fichier ne le faisaient
 // jusqu'ici (seul prisma.config.ts le fait, pour la CLI Prisma uniquement).
@@ -26,7 +27,8 @@ async function bootstrap() {
   if (trustProxy !== undefined) {
     app.set('trust proxy', trustProxy);
   }
-  app.enableCors({ origin: process.env.WEB_APP_URL ?? 'http://localhost:3000' });
+  // An array: the cors middleware answers with the one origin that matches the request.
+  app.enableCors({ origin: corsOrigins() });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: true }));
   await app.listen(process.env.PORT ?? 3001);
 }
