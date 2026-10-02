@@ -1,13 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import type { Prisma } from "@prisma/client";
-import {
-  computeBreakEven,
-  computeCapitalNeed,
-  computeResult,
-  type CurrencyCode,
-  type Hypotheses,
-} from "financial-engine";
+import { computeBreakEven, computeCapitalNeed, computeResult } from "financial-engine";
 import { AnalyticsService } from "../analytics/analytics.service.js";
+import { hypothesesFromRows } from "../ideas/hypotheses-from-rows.js";
 import { PrismaService } from "../prisma/prisma.service.js";
 import {
   conversionBy,
@@ -25,22 +20,10 @@ import type { AdminFiltersDto, AdminIdeasQueryDto, AdminPeriod } from "./dto/adm
 const DAY_MS = 24 * 60 * 60 * 1000;
 const PERIOD_DAYS: Record<Exclude<AdminPeriod, "all">, number> = { "7d": 7, "30d": 30, "90d": 90 };
 const PAGE_SIZE = 20;
-const HYPOTHESIS_KEYS = ["price", "volume", "variableCostPerUnit", "fixedCosts"] as const;
 
 const IDEA_INCLUDE = { hypotheses: true, profile: true, capitalPlan: true } satisfies Prisma.IdeaInclude;
 type LoadedIdea = Prisma.IdeaGetPayload<{ include: typeof IDEA_INCLUDE }>;
 
-function hypothesesOf(idea: { currency: string; hypotheses: { key: string; value: number }[] }): Hypotheses | null {
-  const values = new Map(idea.hypotheses.map((row) => [row.key, row.value]));
-  if (!HYPOTHESIS_KEYS.every((key) => values.has(key))) return null;
-  return {
-    currency: idea.currency as CurrencyCode,
-    price: values.get("price")!,
-    volume: values.get("volume")!,
-    variableCostPerUnit: values.get("variableCostPerUnit")!,
-    fixedCosts: values.get("fixedCosts")!,
-  };
-}
 
 function toRow(idea: LoadedIdea): IdeaRow {
   const plan = idea.capitalPlan;
@@ -50,7 +33,7 @@ function toRow(idea: LoadedIdea): IdeaRow {
     businessModel: idea.businessModel,
     currency: idea.currency,
     paidAt: idea.paidAt,
-    hypotheses: hypothesesOf(idea),
+    hypotheses: hypothesesFromRows(idea.currency, idea.hypotheses),
     country: idea.profile?.country ?? null,
     profile: idea.profile?.profile ?? null,
     stage: idea.profile?.stage ?? null,
@@ -212,7 +195,7 @@ export class AdminService {
     });
     if (!idea) throw new NotFoundException(`Idee ${id} introuvable.`);
 
-    const hypotheses = hypothesesOf(idea);
+    const hypotheses = hypothesesFromRows(idea.currency, idea.hypotheses);
     const row = toRow(idea);
     let result = null;
     let breakEven = null;

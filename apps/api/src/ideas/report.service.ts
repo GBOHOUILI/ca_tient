@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, UnprocessableEntityException } from "@nestjs/common";
 import { Prisma, type BusinessModel } from "@prisma/client";
 import {
   applyScenario,
@@ -20,6 +20,7 @@ import {
 import { AI_PROVIDER, type AiProvider, type CanvasBlockKey, type ReportSummaryFacts } from "../ai/ai-provider.port.js";
 import { PrismaService } from "../prisma/prisma.service.js";
 import type { CapitalPlanDto } from "./dto/capital-plan.dto.js";
+import { hypothesesFromRows } from "./hypotheses-from-rows.js";
 import { buildReportFacts, factsHash, templateSummary } from "./report-summary.js";
 
 const SCENARIOS: readonly ScenarioKey[] = ["prudent", "realiste", "ambitieux", "crise"];
@@ -60,7 +61,7 @@ export class ReportService {
     const idea = await this.prisma.idea.findUniqueOrThrow({ where: { id: ideaId }, include: { hypotheses: true } });
     const plan = toPlan(dto);
     // Computed before writing: the engine validates the totals.
-    const capitalNeed = computeCapitalNeed(toHypotheses(idea.currency, idea.hypotheses), plan);
+    const capitalNeed = computeCapitalNeed(requireHypotheses(idea.currency, idea.hypotheses), plan);
     await this.prisma.capitalPlan.upsert({ where: { ideaId }, create: { ideaId, ...plan }, update: plan });
     return { capitalNeed };
   }
@@ -93,7 +94,7 @@ export class ReportService {
       include: { hypotheses: true, canvasBlocks: true, capitalPlan: true, reportSummary: true },
     });
     const currency = idea.currency as CurrencyCode;
-    const hypotheses = toHypotheses(currency, idea.hypotheses);
+    const hypotheses = requireHypotheses(currency, idea.hypotheses);
     const result = computeResult(hypotheses);
     const breakEven = computeBreakEven(hypotheses);
     const plan = idea.capitalPlan ? toPlan(idea.capitalPlan) : null;
@@ -157,15 +158,11 @@ export class ReportService {
   }
 }
 
-function toHypotheses(currency: string, rows: { key: string; value: number }[]): Hypotheses {
-  const value = (key: string) => rows.find((row) => row.key === key)?.value ?? 0;
-  return {
-    currency: currency as CurrencyCode,
-    price: value("price"),
-    volume: value("volume"),
-    variableCostPerUnit: value("variableCostPerUnit"),
-    fixedCosts: value("fixedCosts"),
-  };
+
+function requireHypotheses(currency: string, rows: { key: string; value: number }[]): Hypotheses {
+  const hypotheses = hypothesesFromRows(currency, rows);
+  if (!hypotheses) throw new UnprocessableEntityException("Hypotheses incompletes pour cette idee.");
+  return hypotheses;
 }
 
 function toPlan(source: CapitalPlanInput): CapitalPlanInput {
