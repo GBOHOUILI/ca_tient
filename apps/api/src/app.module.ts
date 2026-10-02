@@ -5,9 +5,10 @@ import { FinancialEngineModule } from './financial-engine/financial-engine.modul
 import { IdeasModule } from './ideas/ideas.module.js';
 import { AiModule } from './ai/ai.module.js';
 import { PaymentsModule } from './payments/payments.module.js';
+import { RecoveryModule } from './recovery/recovery.module.js';
 
 @Module({
-  imports: [FinancialEngineModule, IdeasModule, AiModule, PaymentsModule],
+  imports: [FinancialEngineModule, IdeasModule, AiModule, PaymentsModule, RecoveryModule],
   controllers: [AppController],
   providers: [AppService],
 })
