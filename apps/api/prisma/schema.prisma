@@ -129,3 +129,23 @@ model IdeaAccessToken {
   tokenHash String   @unique
   createdAt DateTime @default(now())
 }
+
+enum AnalyticsEventType {
+  landing_view
+  test_started
+  offer_viewed
+  what_if_used
+  report_viewed
+  report_printed
+}
+
+model AnalyticsEvent {
+  id        String             @id @default(cuid())
+  type      AnalyticsEventType
+  sessionId String
+  // No foreign key: an event must never fail because its idea was deleted.
+  ideaId    String?
+  createdAt DateTime           @default(now())
+
+  @@index([type, createdAt])
+}
