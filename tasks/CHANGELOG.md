@@ -1,5 +1,9 @@
 # CHANGELOG.md
 
+## [Non versionné], vulnérabilités de dépendances
+- 23 alertes Dependabot (1 critique, 8 hautes) → `pnpm audit` : aucune vulnérabilité. Next.js 16.3.8, `@nestjs/mau` retiré, overrides `mysql2` / `deepmerge-ts` pour Prisma.
+- Vérifié : Prisma (génération, validation, état des migrations), moteur 55 tests, API 267 tests, builds, `next build`, parcours complet dans Chrome.
+
 ## [Non versionné], accents dans les textes de l'IA
 - Les consignes envoyées à l'IA sont écrites avec les accents (le modèle imitait le français sans accents) et demandent explicitement « en français correct, avec les accents » pour le canvas et la synthèse. Test qui empêche le retour de mots non accentués dans les consignes.
 
