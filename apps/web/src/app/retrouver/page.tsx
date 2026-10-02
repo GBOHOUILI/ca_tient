@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { RecoveryCodeNotFoundError, TooManyAttemptsError, redeemRecoveryCode } from "@/lib/ideas-api";
+import { RecoveryCodeNotFoundError, TooManyAttemptsError, redeemRecoveryCode } from "@/lib/api/recovery";
 
 export default function RetrouverPage() {
   const router = useRouter();

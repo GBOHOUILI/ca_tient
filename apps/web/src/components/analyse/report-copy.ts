@@ -1,4 +1,4 @@
-import type { ScenarioKey, SensitivityKey, WatchPointCode } from "financial-engine";
+import type { SensitivityKey, WatchPointCode } from "financial-engine";
 
 export const WATCH_POINT_COPY: Record<WatchPointCode, string> = {
   non_positive_unit_margin:
@@ -19,13 +19,6 @@ export const SENSITIVITY_COPY: Record<SensitivityKey, { label: string; up: strin
   volume: { label: "Ventes par mois", up: "Si tu vends 10 % de plus", down: "Si tu vends 10 % de moins" },
   variableCostPerUnit: { label: "Cout par unite", up: "Si ce cout monte de 10 %", down: "S'il baisse de 10 %" },
   fixedCosts: { label: "Charges fixes", up: "Si tes charges montent de 10 %", down: "Si elles baissent de 10 %" },
-};
-
-export const SCENARIO_COPY: Record<ScenarioKey, string> = {
-  prudent: "Prudent",
-  realiste: "Realiste",
-  ambitieux: "Ambitieux",
-  crise: "Crise",
 };
 
 // Osterwalder order: partners -> activities -> resources -> value -> relationships -> channels -> segments -> costs -> revenues.

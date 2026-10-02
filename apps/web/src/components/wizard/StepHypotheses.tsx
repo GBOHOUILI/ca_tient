@@ -1,4 +1,6 @@
-import { CURRENCIES, type BusinessModel, type CurrencyCode, type HypothesesInput } from "@/lib/ideas-api";
+import { SUPPORTED_CURRENCIES, type CurrencyCode } from "financial-engine";
+import type { BusinessModel } from "@/lib/business-models";
+import type { HypothesesInput } from "@/lib/api/ideas";
 
 const HINTS: Record<BusinessModel, string> = {
   ECOMMERCE: "Inclut cout produit, livraison et commissions.",
@@ -57,7 +59,7 @@ export function StepHypotheses({
           onChange={(e) => onCurrencyChange(e.target.value as CurrencyCode)}
           className="rounded-lg border border-border bg-surface p-3 text-body text-text-primary"
         >
-          {CURRENCIES.map((code) => (
+          {SUPPORTED_CURRENCIES.map((code) => (
             <option key={code} value={code}>
               {code}
             </option>

@@ -1,10 +1,11 @@
 "use client";
 
 import type { ReactNode } from "react";
-import type { IdeaReport, ReportSummary } from "@/lib/ideas-api";
+import type { IdeaReport, ReportSummary } from "@/lib/api/report";
 import { formatAmount } from "@/lib/format";
 import { trackEvent } from "@/lib/analytics";
-import { CANVAS_LABELS, SCENARIO_COPY, SENSITIVITY_COPY, WATCH_POINT_COPY } from "./report-copy";
+import { scenarioLabel } from "@/lib/scenarios";
+import { CANVAS_LABELS, SENSITIVITY_COPY, WATCH_POINT_COPY } from "./report-copy";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -160,7 +161,7 @@ export function ReportView({
           <tbody>
             {report.scenarios.map((scenario) => (
               <tr key={scenario.key} className="border-t border-border">
-                <td className="py-2">{SCENARIO_COPY[scenario.key]}</td>
+                <td className="py-2">{scenarioLabel(scenario.key)}</td>
                 <td className="py-2 text-right tabular-nums">{amount(scenario.result.estimatedResult)}</td>
               </tr>
             ))}

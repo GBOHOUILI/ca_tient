@@ -11,20 +11,9 @@ import { StepCanvas } from "@/components/wizard/StepCanvas";
 import { StepProfile } from "@/components/wizard/StepProfile";
 import { TrackEvent } from "@/components/analytics/TrackEvent";
 import { initialWizardState, wizardReducer } from "@/components/wizard/wizard-reducer";
-import {
-  CANVAS_BLOCK_KEYS,
-  createIdea,
-  updateIdea,
-  suggestHypotheses,
-  suggestCanvasBlocks,
-  saveCanvasBlocks,
-  saveProfile,
-  EMPTY_PROFILE,
-  type ProfileInput,
-  startPayment,
-  isAccessTokenPersisted,
-  type CreateIdeaResponse,
-} from "@/lib/ideas-api";
+import { CANVAS_BLOCK_KEYS, createIdea, updateIdea, suggestHypotheses, suggestCanvasBlocks, saveCanvasBlocks, saveProfile, EMPTY_PROFILE, type ProfileInput, type CreateIdeaResponse } from "@/lib/api/ideas";
+import { startPayment } from "@/lib/api/payments";
+import { isAccessTokenPersisted } from "@/lib/api/access-token";
 
 export default function CommencerPage() {
   const [state, dispatch] = useReducer(wizardReducer, initialWizardState);

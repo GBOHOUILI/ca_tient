@@ -3,7 +3,7 @@
 import { useAdminData } from "@/components/admin/AdminContext";
 import { BarTable, Card, DataState, PageTitle } from "@/components/admin/ui";
 import { label, percent } from "@/components/admin/admin-labels";
-import type { Conversion, ConversionRow } from "@/lib/admin-api";
+import type { Conversion, ConversionRow } from "@/lib/api/admin";
 
 const STEP_LABELS: Record<string, string> = {
   landing_view: "Visites (sessions)",

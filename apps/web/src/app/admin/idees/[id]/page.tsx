@@ -7,8 +7,7 @@ import { useAdmin } from "@/components/admin/AdminContext";
 import { Card, PageTitle } from "@/components/admin/ui";
 import { EVENT_LABELS, PAYMENT_STATUS_LABELS, label, shortDate } from "@/components/admin/admin-labels";
 import { CANVAS_LABELS } from "@/components/analyse/report-copy";
-import { AdminKeyRejectedError } from "@/lib/analytics";
-import { AdminNotFoundError, adminGet, type IdeaDetail } from "@/lib/admin-api";
+import { AdminKeyRejectedError, AdminNotFoundError, adminGet, type IdeaDetail } from "@/lib/api/admin";
 import { formatAmount } from "@/lib/format";
 
 function Row({ name, children }: { name: string; children: ReactNode }) {

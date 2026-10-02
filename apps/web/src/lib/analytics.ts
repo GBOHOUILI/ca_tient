@@ -1,4 +1,5 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+import { API_BASE_URL } from "./api/http";
+
 const SESSION_KEY = "ca-tient:analytics-session";
 
 export type AnalyticsEventType =
@@ -38,25 +39,4 @@ export function trackEvent(type: AnalyticsEventType, ideaId?: string): void {
   } catch {
     // crypto.randomUUID or fetch unavailable: skip the event
   }
-}
-
-export type StatsPeriod = "7d" | "30d" | "all";
-
-export interface FunnelStats {
-  period: StatsPeriod;
-  from: string | null;
-  steps: { key: string; count: number }[];
-  reportPrinted: number;
-  recoveries: number;
-}
-
-export class AdminKeyRejectedError extends Error {}
-export class StatsDisabledError extends Error {}
-
-export async function fetchStats(adminKey: string, period: StatsPeriod): Promise<FunnelStats> {
-  const response = await fetch(`${API_BASE_URL}/admin/stats?period=${period}`, { headers: { "x-admin-key": adminKey } });
-  if (response.status === 401) throw new AdminKeyRejectedError();
-  if (response.status === 404) throw new StatsDisabledError();
-  if (!response.ok) throw new Error(`Statistiques indisponibles (${response.status}).`);
-  return (await response.json()) as FunnelStats;
 }

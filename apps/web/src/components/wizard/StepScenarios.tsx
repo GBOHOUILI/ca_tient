@@ -1,18 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import { applyDelta, applyScenario, computeResult, type Hypotheses, type ScenarioKey } from "financial-engine";
-import type { CurrencyCode, HypothesesInput } from "@/lib/ideas-api";
+import { applyDelta, applyScenario, computeResult, type Hypotheses, type CurrencyCode } from "financial-engine";
+import type { HypothesesInput } from "@/lib/api/ideas";
 import { formatAmount } from "@/lib/format";
 import type { WhatIfDeltas } from "./wizard-reducer";
+import { SCENARIO_OPTIONS } from "@/lib/scenarios";
 import { ScenarioComparisonChart, type ScenarioBar } from "./charts/ScenarioComparisonChart";
 
-const SCENARIO_LABELS: { key: ScenarioKey; label: string }[] = [
-  { key: "prudent", label: "Prudent" },
-  { key: "realiste", label: "Realiste" },
-  { key: "ambitieux", label: "Ambitieux" },
-  { key: "crise", label: "Crise" },
-];
 
 export function StepScenarios({
   hypotheses,
@@ -30,7 +25,7 @@ export function StepScenarios({
   const { bars, error } = useMemo(() => {
     const base: Hypotheses = { currency, ...hypotheses };
     try {
-      const fixedBars: ScenarioBar[] = SCENARIO_LABELS.map(({ key, label }) => ({
+      const fixedBars: ScenarioBar[] = SCENARIO_OPTIONS.map(({ key, label }) => ({
         label,
         estimatedResult: computeResult(applyScenario(base, key)).estimatedResult,
       }));

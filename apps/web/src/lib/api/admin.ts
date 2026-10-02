@@ -1,6 +1,15 @@
-import { AdminKeyRejectedError, StatsDisabledError, type FunnelStats } from "./analytics";
+import { API_BASE_URL } from "./http";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+export class AdminKeyRejectedError extends Error {}
+export class StatsDisabledError extends Error {}
+
+export interface FunnelStats {
+  period: AdminPeriod;
+  from: string | null;
+  steps: { key: string; count: number }[];
+  reportPrinted: number;
+  recoveries: number;
+}
 
 export type AdminPeriod = "7d" | "30d" | "90d" | "all";
 

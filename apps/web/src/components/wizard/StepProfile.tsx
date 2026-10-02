@@ -1,4 +1,4 @@
-import type { ProfileInput } from "@/lib/ideas-api";
+import type { ProfileInput } from "@/lib/api/ideas";
 import { COUNTRY_OPTIONS, HEARD_FROM_OPTIONS, PROFILE_KIND_OPTIONS, STAGE_OPTIONS } from "./profile-options";
 
 const fieldClass =

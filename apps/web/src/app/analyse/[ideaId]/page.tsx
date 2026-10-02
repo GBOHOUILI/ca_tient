@@ -11,21 +11,11 @@ import { StepCapital } from "@/components/analyse/StepCapital";
 import { StepEtSi } from "@/components/wizard/StepEtSi";
 import { StepScenarios } from "@/components/wizard/StepScenarios";
 import type { WhatIfDeltas } from "@/components/wizard/wizard-reducer";
-import {
-  AccessDeniedError,
-  fetchIdea,
-  fetchPaymentStatus,
-  fetchReport,
-  fetchReportSummary,
-  hypothesesFromDetail,
-  issueRecoveryCode,
-  saveCapital,
-  startPayment,
-  type CapitalPlanInput,
-  type IdeaDetail,
-  type IdeaReport,
-  type ReportSummary,
-} from "@/lib/ideas-api";
+import { AccessDeniedError } from "@/lib/api/http";
+import { fetchIdea, hypothesesFromDetail, type IdeaDetail } from "@/lib/api/ideas";
+import { fetchPaymentStatus, startPayment } from "@/lib/api/payments";
+import { fetchReport, fetchReportSummary, saveCapital, type CapitalPlanInput, type IdeaReport, type ReportSummary } from "@/lib/api/report";
+import { issueRecoveryCode } from "@/lib/api/recovery";
 import { trackEvent } from "@/lib/analytics";
 
 const POLL_INTERVAL_MS = 3_000;

@@ -1,8 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { AdminKeyRejectedError, StatsDisabledError } from "@/lib/analytics";
-import { adminGet, filterParams, type AdminFilters } from "@/lib/admin-api";
+import { AdminKeyRejectedError, StatsDisabledError, adminGet, filterParams, type AdminFilters } from "@/lib/api/admin";
 
 export interface AdminContextValue {
   adminKey: string;

@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { computeCapitalNeed } from "financial-engine";
-import type { CapitalPlanInput, CurrencyCode } from "@/lib/ideas-api";
+import { computeCapitalNeed, type CurrencyCode } from "financial-engine";
+import type { CapitalPlanInput } from "@/lib/api/report";
 import { formatAmount } from "@/lib/format";
 
 const EMPTY_PLAN: CapitalPlanInput = { equipment: 0, initialStock: 0, openingCosts: 0, other: 0, availableCapital: 0 };

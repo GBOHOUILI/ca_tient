@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useAdminData } from "@/components/admin/AdminContext";
 import { BarTable, Card, DataState, PageTitle } from "@/components/admin/ui";
 import { label, percent } from "@/components/admin/admin-labels";
-import type { Count, Market } from "@/lib/admin-api";
-import { CURRENCIES } from "@/lib/ideas-api";
+import type { Count, Market } from "@/lib/api/admin";
+import { SUPPORTED_CURRENCIES } from "financial-engine";
 import { formatAmount } from "@/lib/format";
 
 function rows(counts: Count[]) {
@@ -47,7 +47,7 @@ export default function AdminMarketPage() {
                   onChange={(event) => setCurrency(event.target.value)}
                   className="rounded-lg border border-border bg-bg px-2 py-1 text-small"
                 >
-                  {CURRENCIES.map((code) => (
+                  {SUPPORTED_CURRENCIES.map((code) => (
                     <option key={code} value={code}>
                       {code}
                     </option>

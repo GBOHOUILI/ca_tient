@@ -1,6 +1,6 @@
 "use client";
 
-import type { CanvasBlockKey, CanvasBlocks } from "@/lib/ideas-api";
+import type { CanvasBlockKey, CanvasBlocks } from "@/lib/api/ideas";
 
 const FIELDS: { key: CanvasBlockKey; label: string; placeholder: string }[] = [
   {

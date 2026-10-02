@@ -3,7 +3,7 @@
 import { useAdminData } from "@/components/admin/AdminContext";
 import { DailyChart } from "@/components/admin/DailyChart";
 import { BarTable, Card, DataState, Kpi, PageTitle } from "@/components/admin/ui";
-import type { Revenue } from "@/lib/admin-api";
+import type { Revenue } from "@/lib/api/admin";
 import { formatAmount } from "@/lib/format";
 
 const xof = (value: number) => formatAmount(value, "XOF");

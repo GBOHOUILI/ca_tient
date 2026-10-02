@@ -1,4 +1,4 @@
-import type { BreakEvenResult, FinancialResult } from "@/lib/ideas-api";
+import type { BreakEvenResult, FinancialResult } from "financial-engine";
 import { formatAmount } from "@/lib/format";
 
 export function StepResults({ result, breakEven }: { result: FinancialResult; breakEven: BreakEvenResult }) {

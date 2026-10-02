@@ -1,4 +1,6 @@
-import type { BusinessModel, CanvasBlockKey, CanvasBlocks, CurrencyCode, HypothesesInput } from "@/lib/ideas-api";
+import type { BusinessModel } from "@/lib/business-models";
+import type { CanvasBlockKey, CanvasBlocks, HypothesesInput } from "@/lib/api/ideas";
+import type { CurrencyCode } from "financial-engine";
 
 export type WizardStep =
   | "business-type"

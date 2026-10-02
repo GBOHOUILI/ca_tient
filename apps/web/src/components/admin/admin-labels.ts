@@ -4,15 +4,8 @@ import {
   PROFILE_KIND_OPTIONS,
   STAGE_OPTIONS,
 } from "@/components/wizard/profile-options";
+import { BUSINESS_MODEL_OPTIONS } from "@/lib/business-models";
 
-export const BUSINESS_MODEL_OPTIONS = [
-  { value: "ECOMMERCE", label: "E-commerce" },
-  { value: "FORMATION", label: "Formation" },
-  { value: "EBOOK", label: "E-book" },
-  { value: "SERVICE", label: "Service" },
-  { value: "PRODUIT_PHYSIQUE", label: "Produit physique" },
-  { value: "AUTRE", label: "Autre" },
-] as const;
 
 export const EVENT_LABELS: Record<string, string> = {
   landing_view: "Page d'accueil vue",

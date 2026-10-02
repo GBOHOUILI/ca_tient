@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useAdmin, useAdminData } from "@/components/admin/AdminContext";
 import { Card, DataState, PageTitle } from "@/components/admin/ui";
 import { label, shortDate } from "@/components/admin/admin-labels";
-import { downloadContactsCsv, type IdeaList } from "@/lib/admin-api";
+import { downloadContactsCsv, type IdeaList } from "@/lib/api/admin";
 
 export default function AdminIdeasPage() {
   const { adminKey } = useAdmin();

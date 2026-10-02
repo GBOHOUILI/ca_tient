@@ -4,7 +4,7 @@ import { useAdminData } from "@/components/admin/AdminContext";
 import { DailyChart } from "@/components/admin/DailyChart";
 import { Card, DataState, Kpi, PageTitle } from "@/components/admin/ui";
 import { percent } from "@/components/admin/admin-labels";
-import type { Overview } from "@/lib/admin-api";
+import type { Overview } from "@/lib/api/admin";
 import { formatAmount } from "@/lib/format";
 
 export default function AdminOverviewPage() {

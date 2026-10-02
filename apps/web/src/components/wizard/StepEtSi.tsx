@@ -9,7 +9,8 @@ import {
   type Hypotheses,
   type SeasonalityProfileKey,
 } from "financial-engine";
-import type { CurrencyCode, HypothesesInput } from "@/lib/ideas-api";
+import type { CurrencyCode } from "financial-engine";
+import type { HypothesesInput } from "@/lib/api/ideas";
 import { formatAmount } from "@/lib/format";
 import type { WhatIfDeltas } from "./wizard-reducer";
 import { BreakEvenChart } from "./charts/BreakEvenChart";

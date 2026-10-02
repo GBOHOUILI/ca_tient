@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { COUNTRY_OPTIONS } from "@/components/wizard/profile-options";
-import type { AdminFilters, AdminPeriod } from "@/lib/admin-api";
+import type { AdminFilters, AdminPeriod } from "@/lib/api/admin";
 import { AdminContext } from "./AdminContext";
-import { BUSINESS_MODEL_OPTIONS } from "./admin-labels";
+import { BUSINESS_MODEL_OPTIONS } from "@/lib/business-models";
 
 const KEY_STORAGE = "ca-tient:admin-key";
 
