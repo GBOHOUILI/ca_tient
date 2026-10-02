@@ -3,7 +3,7 @@ import type { AnalyticsEventType } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service.js";
 import type { ClientEventType, StatsPeriod } from "./dto/track-event.dto.js";
 
-const PERIOD_DAYS: Record<Exclude<StatsPeriod, "all">, number> = { "7d": 7, "30d": 30 };
+const PERIOD_DAYS: Record<Exclude<StatsPeriod, "all">, number> = { "7d": 7, "30d": 30, "90d": 90 };
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export type FunnelStepKey =

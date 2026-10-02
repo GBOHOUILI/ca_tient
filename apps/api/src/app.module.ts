@@ -7,9 +7,10 @@ import { AiModule } from './ai/ai.module.js';
 import { PaymentsModule } from './payments/payments.module.js';
 import { RecoveryModule } from './recovery/recovery.module.js';
 import { AnalyticsModule } from './analytics/analytics.module.js';
+import { AdminModule } from './admin/admin.module.js';
 
 @Module({
-  imports: [FinancialEngineModule, IdeasModule, AiModule, PaymentsModule, RecoveryModule, AnalyticsModule],
+  imports: [FinancialEngineModule, IdeasModule, AiModule, PaymentsModule, RecoveryModule, AnalyticsModule, AdminModule],
   controllers: [AppController],
   providers: [AppService],
 })

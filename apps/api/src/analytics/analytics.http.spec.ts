@@ -137,6 +137,13 @@ describe("Analytics", () => {
     expect(allCounts.preview).toBe(3);
   });
 
+  it("supports a 90-day period", async () => {
+    process.env.ADMIN_KEY = ADMIN_KEY;
+    const { body } = await request(server()).get("/admin/stats?period=90d").set("x-admin-key", ADMIN_KEY).expect(200);
+    const days = (Date.now() - new Date(body.from).getTime()) / DAY_MS;
+    expect(Math.round(days)).toBe(90);
+  });
+
   it("rejects an unknown period", async () => {
     process.env.ADMIN_KEY = ADMIN_KEY;
     await request(server()).get("/admin/stats?period=1y").set("x-admin-key", ADMIN_KEY).expect(400);
