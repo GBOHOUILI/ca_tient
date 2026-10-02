@@ -31,6 +31,11 @@ model Idea {
   reportSummary   ReportSummary?
   recoveryCodeHash String?          @unique
   accessTokens     IdeaAccessToken[]
+  utmSource        String?
+  utmMedium        String?
+  utmCampaign      String?
+  referrerHost     String?
+  profile          IdeaProfile?
 }
 
 model Hypothesis {
@@ -148,4 +153,44 @@ model AnalyticsEvent {
   createdAt DateTime           @default(now())
 
   @@index([type, createdAt])
+}
+
+enum UserProfileKind {
+  etudiant
+  salarie
+  entrepreneur
+  sans_emploi
+  autre
+}
+
+enum ProjectStage {
+  idee
+  preparation
+  lance
+}
+
+enum HeardFrom {
+  whatsapp
+  facebook
+  instagram
+  tiktok
+  bouche_a_oreille
+  recherche
+  autre
+}
+
+model IdeaProfile {
+  id             String           @id @default(cuid())
+  ideaId         String           @unique
+  idea           Idea             @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  country        String?
+  city           String?
+  profile        UserProfileKind?
+  stage          ProjectStage?
+  heardFrom      HeardFrom?
+  // Personal data: only stored together with contactConsent = true (enforced by the API).
+  contact        String?
+  contactConsent Boolean          @default(false)
+  consentAt      DateTime?
+  updatedAt      DateTime         @updatedAt
 }
