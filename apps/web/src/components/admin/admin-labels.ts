@@ -4,30 +4,23 @@ import {
   PROFILE_KIND_OPTIONS,
   STAGE_OPTIONS,
 } from "@/components/wizard/profile-options";
+import { BUSINESS_MODEL_OPTIONS } from "@/lib/business-models";
 
-export const BUSINESS_MODEL_OPTIONS = [
-  { value: "ECOMMERCE", label: "E-commerce" },
-  { value: "FORMATION", label: "Formation" },
-  { value: "EBOOK", label: "E-book" },
-  { value: "SERVICE", label: "Service" },
-  { value: "PRODUIT_PHYSIQUE", label: "Produit physique" },
-  { value: "AUTRE", label: "Autre" },
-] as const;
 
 export const EVENT_LABELS: Record<string, string> = {
   landing_view: "Page d'accueil vue",
-  test_started: "Test demarre",
+  test_started: "Test démarré",
   offer_viewed: "Offre vue",
-  what_if_used: "\"Et si ?\" utilise",
-  report_viewed: "Rapport consulte",
-  report_printed: "Rapport imprime",
+  what_if_used: "\"Et si ?\" utilisé",
+  report_viewed: "Rapport consulté",
+  report_printed: "Rapport imprimé",
 };
 
 export const PAYMENT_STATUS_LABELS: Record<string, string> = {
   pending: "En attente",
-  approved: "Approuve",
-  declined: "Refuse",
-  canceled: "Annule",
+  approved: "Approuvé",
+  declined: "Refusé",
+  canceled: "Annulé",
 };
 
 const ALL_OPTIONS: readonly { value: string; label: string }[] = [
@@ -39,7 +32,7 @@ const ALL_OPTIONS: readonly { value: string; label: string }[] = [
 ];
 
 export function label(value: string | null | undefined): string {
-  if (!value || value === "inconnu") return "Non renseigne";
+  if (!value || value === "inconnu") return "Non renseigné";
   return ALL_OPTIONS.find((option) => option.value === value)?.label ?? value;
 }
 

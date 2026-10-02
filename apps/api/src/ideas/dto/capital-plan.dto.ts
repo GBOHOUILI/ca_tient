@@ -1,7 +1,5 @@
 import { IsInt, Max, Min } from "class-validator";
-
-// Ceiling of a Postgres `Int` column.
-const MAX_DB_INT = 2_147_483_647;
+import { MAX_DB_INT } from "./db-int.js";
 
 export class CapitalPlanDto {
   @IsInt()

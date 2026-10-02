@@ -3,11 +3,11 @@ import type { WizardStep } from "./wizard-reducer";
 const STEPS: { key: WizardStep; label: string }[] = [
   { key: "business-type", label: "Type" },
   { key: "description", label: "Description" },
-  { key: "hypotheses", label: "Hypotheses" },
+  { key: "hypotheses", label: "Hypothèses" },
   { key: "canvas", label: "Ton business model" },
   { key: "profile", label: "Toi" },
-  { key: "results", label: "Apercu" },
-  { key: "offer", label: "Analyse complete" },
+  { key: "results", label: "Aperçu" },
+  { key: "offer", label: "Analyse complète" },
 ];
 
 export function WizardProgress({ currentStep }: { currentStep: WizardStep }) {

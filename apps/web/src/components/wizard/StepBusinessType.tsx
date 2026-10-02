@@ -1,20 +1,11 @@
-import type { BusinessModel } from "@/lib/ideas-api";
-
-const OPTIONS: { value: BusinessModel; label: string }[] = [
-  { value: "ECOMMERCE", label: "E-commerce" },
-  { value: "FORMATION", label: "Formation" },
-  { value: "EBOOK", label: "E-book" },
-  { value: "SERVICE", label: "Service" },
-  { value: "PRODUIT_PHYSIQUE", label: "Produit physique" },
-  { value: "AUTRE", label: "Autre" },
-];
+import { BUSINESS_MODEL_OPTIONS, type BusinessModel } from "@/lib/business-models";
 
 export function StepBusinessType({ onSelect }: { onSelect: (model: BusinessModel) => void }) {
   return (
     <div className="mx-auto flex max-w-2xl flex-col items-center gap-6 text-center">
       <h1 className="text-h2-mobile font-semibold md:text-h2">Quel type de business ?</h1>
       <div className="grid w-full gap-3 sm:grid-cols-2">
-        {OPTIONS.map((option) => (
+        {BUSINESS_MODEL_OPTIONS.map((option) => (
           <button
             key={option.value}
             type="button"

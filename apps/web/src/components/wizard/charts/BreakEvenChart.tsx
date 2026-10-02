@@ -39,7 +39,7 @@ export function BreakEvenChart({
   const clampedOffset = Math.min(Math.max(zeroOffset, 0), 1);
 
   return (
-    <div role="img" aria-label={`Graphique de seuil de rentabilite : marge estimee selon le volume de ventes, de 0 a ${domainMax} unites par mois.`}>
+    <div role="img" aria-label={`Graphique de seuil de rentabilité : marge estimée selon le volume de ventes, de 0 à ${domainMax} unités par mois.`}>
       <ResponsiveContainer width="100%" height={240}>
         <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
           <defs>

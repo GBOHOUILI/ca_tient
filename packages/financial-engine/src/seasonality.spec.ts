@@ -23,7 +23,7 @@ describe("SEASONALITY_PROFILES", () => {
   it("each profile has exactly 12 monthly percentages summing to zero", () => {
     for (const [key, percentages] of Object.entries(SEASONALITY_PROFILES)) {
       expect(percentages, `profile ${key} should have 12 months`).toHaveLength(12);
-      const sum = percentages.reduce((total, value) => total + value, 0);
+      const sum = percentages.reduce<number>((total, value) => total + value, 0);
       expect(sum, `profile ${key} should average to zero`).toBe(0);
     }
   });

@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useAdmin, useAdminData } from "@/components/admin/AdminContext";
 import { Card, DataState, PageTitle } from "@/components/admin/ui";
 import { label, shortDate } from "@/components/admin/admin-labels";
-import { downloadContactsCsv, type IdeaList } from "@/lib/admin-api";
+import { downloadContactsCsv, type IdeaList } from "@/lib/api/admin";
 
 export default function AdminIdeasPage() {
   const { adminKey } = useAdmin();
@@ -21,14 +21,14 @@ export default function AdminIdeasPage() {
     try {
       await downloadContactsCsv(adminKey);
     } catch {
-      setExportError("L'export a echoue.");
+      setExportError("L'export a échoué.");
     }
   }
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <PageTitle>Idees</PageTitle>
+        <PageTitle>Idées</PageTitle>
         <button
           type="button"
           onClick={() => void exportContacts()}
@@ -63,9 +63,9 @@ export default function AdminIdeasPage() {
           }}
           className="rounded-lg border border-border bg-surface px-3 py-2 text-small text-text-primary"
         >
-          <option value="">Payees et non payees</option>
-          <option value="true">Payees</option>
-          <option value="false">Non payees</option>
+          <option value="">Payées et non payées</option>
+          <option value="true">Payées</option>
+          <option value="false">Non payées</option>
         </select>
         <button type="submit" className="rounded-lg border border-border px-4 py-2 text-small font-medium">
           Rechercher
@@ -102,7 +102,7 @@ export default function AdminIdeasPage() {
                       <td className="whitespace-nowrap py-2">
                         {item.holds === null ? "—" : item.holds ? "Tient" : "Ne tient pas"}
                       </td>
-                      <td className="py-2">{item.paid ? "Payee" : "—"}</td>
+                      <td className="py-2">{item.paid ? "Payée" : "—"}</td>
                       <td className="py-2">{item.hasContact ? "Oui" : "—"}</td>
                     </tr>
                   ))}
@@ -116,7 +116,7 @@ export default function AdminIdeasPage() {
                 onClick={() => setPage(page - 1)}
                 className="rounded-lg border border-border px-3 py-1 disabled:opacity-40"
               >
-                Precedent
+                Précédent
               </button>
               <span className="tabular-nums text-text-secondary">
                 Page {list.page} / {Math.max(1, Math.ceil(list.total / list.pageSize))}

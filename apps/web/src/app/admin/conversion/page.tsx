@@ -3,17 +3,17 @@
 import { useAdminData } from "@/components/admin/AdminContext";
 import { BarTable, Card, DataState, PageTitle } from "@/components/admin/ui";
 import { label, percent } from "@/components/admin/admin-labels";
-import type { Conversion, ConversionRow } from "@/lib/admin-api";
+import type { Conversion, ConversionRow } from "@/lib/api/admin";
 
 const STEP_LABELS: Record<string, string> = {
   landing_view: "Visites (sessions)",
-  test_started: "Tests demarres (sessions)",
-  preview: "Apercus generes",
+  test_started: "Tests démarrés (sessions)",
+  preview: "Aperçus générés",
   offer_viewed: "Offre vue",
-  payment_initiated: "Paiements inities",
-  payment_confirmed: "Paiements confirmes",
-  what_if_used: "\"Et si ?\" utilise",
-  report_viewed: "Rapports consultes",
+  payment_initiated: "Paiements initiés",
+  payment_confirmed: "Paiements confirmés",
+  what_if_used: "\"Et si ?\" utilisé",
+  report_viewed: "Rapports consultés",
 };
 
 function conversionRows(rows: ConversionRow[]) {
@@ -36,7 +36,7 @@ export default function AdminConversionPage() {
           const steps = conversion.funnel.steps;
           return (
             <>
-              <Card title="Funnel (periode seulement)">
+              <Card title="Funnel (période seulement)">
                 <BarTable
                   valueLabel="Nombre"
                   extra="Passage"
@@ -51,22 +51,22 @@ export default function AdminConversionPage() {
                   })}
                 />
                 <p className="text-micro text-text-secondary">
-                  Rapports imprimes : {conversion.funnel.reportPrinted} · Analyses retrouvees par code : {conversion.funnel.recoveries}.
+                  Rapports imprimés : {conversion.funnel.reportPrinted} · Analyses retrouvées par code : {conversion.funnel.recoveries}.
                   Les filtres type/pays ne s&apos;appliquent pas au funnel (les visites ne portent ni type ni pays).
                 </p>
               </Card>
               <div className="grid gap-4 lg:grid-cols-2">
                 <Card title="Taux de paiement par type de business">
-                  <BarTable rows={conversionRows(conversion.byBusinessModel)} valueLabel="Taux" extra="Payes / idees" />
+                  <BarTable rows={conversionRows(conversion.byBusinessModel)} valueLabel="Taux" extra="Payés / idées" />
                 </Card>
-                <Card title="Par source declaree">
-                  <BarTable rows={conversionRows(conversion.byHeardFrom)} valueLabel="Taux" extra="Payes / idees" />
+                <Card title="Par source déclarée">
+                  <BarTable rows={conversionRows(conversion.byHeardFrom)} valueLabel="Taux" extra="Payés / idées" />
                 </Card>
                 <Card title="Par campagne (utm_source)">
-                  <BarTable rows={conversionRows(conversion.byUtmSource)} valueLabel="Taux" extra="Payes / idees" />
+                  <BarTable rows={conversionRows(conversion.byUtmSource)} valueLabel="Taux" extra="Payés / idées" />
                 </Card>
                 <Card title="Par pays">
-                  <BarTable rows={conversionRows(conversion.byCountry)} valueLabel="Taux" extra="Payes / idees" />
+                  <BarTable rows={conversionRows(conversion.byCountry)} valueLabel="Taux" extra="Payés / idées" />
                 </Card>
               </div>
             </>

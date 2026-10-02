@@ -49,4 +49,20 @@ describe("CreateIdeaDto", () => {
     const hypothesesError = errors.find((e) => e.property === "hypotheses");
     expect(hypothesesError?.children?.some((c) => c.property === "price")).toBe(true);
   });
+
+  it("rejects a hypothesis above the database integer ceiling, accepts it at the ceiling", async () => {
+    for (const key of ["price", "volume", "variableCostPerUnit", "fixedCosts"] as const) {
+      const over = plainToInstance(CreateIdeaDto, {
+        ...validPayload(),
+        hypotheses: { ...validPayload().hypotheses, [key]: 2_147_483_648 },
+      });
+      expect((await validate(over)).some((e) => e.property === "hypotheses"), key).toBe(true);
+
+      const at = plainToInstance(CreateIdeaDto, {
+        ...validPayload(),
+        hypotheses: { ...validPayload().hypotheses, [key]: 2_147_483_647 },
+      });
+      expect(await validate(at), key).toHaveLength(0);
+    }
+  });
 });

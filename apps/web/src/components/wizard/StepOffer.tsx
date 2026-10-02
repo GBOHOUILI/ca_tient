@@ -14,25 +14,25 @@ export function StepOffer({
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-6 text-center">
       <div>
-        <p className="text-micro font-medium tracking-micro text-text-secondary">Analyse complete</p>
-        <h1 className="text-h2-mobile font-semibold md:text-h2">Va plus loin que l&apos;apercu</h1>
+        <p className="text-micro font-medium tracking-micro text-text-secondary">Analyse complète</p>
+        <h1 className="text-h2-mobile font-semibold md:text-h2">Va plus loin que l&apos;aperçu</h1>
       </div>
       <ul className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-6 text-left text-body">
-        <li>&quot;Et si ?&quot; : change ton prix, tes ventes ou tes couts et vois l&apos;effet en direct, mois par mois selon ta saisonnalite.</li>
-        <li>Les scenarios prudent, realiste, ambitieux et crise, compares cote a cote.</li>
-        <li>Ton rapport complet a imprimer : synthese, capital et besoin financier, variables sensibles, points a surveiller et business model.</li>
+        <li>&quot;Et si ?&quot; : change ton prix, tes ventes ou tes coûts et vois l&apos;effet en direct, mois par mois selon ta saisonnalité.</li>
+        <li>Les scénarios prudent, réaliste, ambitieux et crise, comparés côte à côte.</li>
+        <li>Ton rapport complet à imprimer : synthèse, capital et besoin financier, variables sensibles, points à surveiller et business model.</li>
       </ul>
       <p className="text-h1-mobile font-bold tabular-nums md:text-h1">1 000 FCFA</p>
       <p className="text-small text-text-secondary">
-        Paiement unique, sans abonnement, sur la page securisee FedaPay (mobile money ou carte).
+        Paiement unique, sans abonnement, sur la page sécurisée FedaPay (mobile money ou carte).
       </p>
       <p className="text-small text-text-secondary">
-        Ca tient ? est une aide a la decision, pas une garantie de rentabilite : les resultats dependent des hypotheses que tu fournis.
+        Ça tient ? est une aide à la décision, pas une garantie de rentabilité : les résultats dépendent des hypothèses que tu fournis.
       </p>
       {persistenceWarning ? (
         <p className="rounded-lg border border-warning p-4 text-left text-small text-warning">
-          Ton navigateur bloque l&apos;enregistrement local (navigation privee ?). Apres le paiement, tu risques de ne
-          pas pouvoir revenir a ton analyse. Ouvre Ca tient ? dans une fenetre normale avant de payer.
+          Ton navigateur bloque l&apos;enregistrement local (navigation privée ?). Après le paiement, tu risques de ne
+          pas pouvoir revenir à ton analyse. Ouvre Ça tient ? dans une fenêtre normale avant de payer.
         </p>
       ) : null}
       {error ? <p className="text-small text-error">{error}</p> : null}

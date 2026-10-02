@@ -44,13 +44,13 @@ export function BarTable({
   valueLabel: string;
   extra?: string;
 }) {
-  if (rows.length === 0) return <p className="text-small text-text-secondary">Aucune donnee sur cette periode.</p>;
+  if (rows.length === 0) return <p className="text-small text-text-secondary">Aucune donnée sur cette période.</p>;
   const max = Math.max(...rows.map((row) => row.value), 1);
   return (
     <table className="w-full text-small">
       <thead className="sr-only">
         <tr>
-          <th>Categorie</th>
+          <th>Catégorie</th>
           <th>{valueLabel}</th>
           {extra ? <th>{extra}</th> : null}
         </tr>

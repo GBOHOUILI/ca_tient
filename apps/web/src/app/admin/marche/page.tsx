@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useAdminData } from "@/components/admin/AdminContext";
 import { BarTable, Card, DataState, PageTitle } from "@/components/admin/ui";
 import { label, percent } from "@/components/admin/admin-labels";
-import type { Count, Market } from "@/lib/admin-api";
-import { CURRENCIES } from "@/lib/ideas-api";
+import type { Count, Market } from "@/lib/api/admin";
+import { SUPPORTED_CURRENCIES } from "financial-engine";
 import { formatAmount } from "@/lib/format";
 
 function rows(counts: Count[]) {
@@ -19,27 +19,27 @@ export default function AdminMarketPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageTitle>Marche</PageTitle>
+      <PageTitle>Marché</PageTitle>
       <DataState data={data}>
         {(market) => (
           <>
-            <p className="text-small text-text-secondary">{market.total} idees sur la periode.</p>
+            <p className="text-small text-text-secondary">{market.total} idées sur la période.</p>
             <div className="grid gap-4 lg:grid-cols-2">
               <Card title="Types de business">
-                <BarTable rows={rows(market.byBusinessModel)} valueLabel="Idees" />
+                <BarTable rows={rows(market.byBusinessModel)} valueLabel="Idées" />
               </Card>
               <Card title="Pays">
-                <BarTable rows={rows(market.byCountry)} valueLabel="Idees" />
+                <BarTable rows={rows(market.byCountry)} valueLabel="Idées" />
               </Card>
               <Card title="Profils">
-                <BarTable rows={rows(market.byProfile)} valueLabel="Idees" />
+                <BarTable rows={rows(market.byProfile)} valueLabel="Idées" />
               </Card>
               <Card title="Avancement du projet">
-                <BarTable rows={rows(market.byStage)} valueLabel="Idees" />
+                <BarTable rows={rows(market.byStage)} valueLabel="Idées" />
               </Card>
             </div>
             <Card
-              title="Chiffres types par type de business (medianes, par mois)"
+              title="Chiffres types par type de business (médianes, par mois)"
               action={
                 <select
                   aria-label="Devise des montants"
@@ -47,7 +47,7 @@ export default function AdminMarketPage() {
                   onChange={(event) => setCurrency(event.target.value)}
                   className="rounded-lg border border-border bg-bg px-2 py-1 text-small"
                 >
-                  {CURRENCIES.map((code) => (
+                  {SUPPORTED_CURRENCIES.map((code) => (
                     <option key={code} value={code}>
                       {code}
                     </option>
@@ -60,12 +60,12 @@ export default function AdminMarketPage() {
                   <thead>
                     <tr className="text-left text-text-secondary">
                       <th className="py-2 font-medium">Type</th>
-                      <th className="py-2 text-right font-medium">Idees</th>
+                      <th className="py-2 text-right font-medium">Idées</th>
                       <th className="py-2 text-right font-medium">Prix</th>
                       <th className="py-2 text-right font-medium">Ventes</th>
                       <th className="py-2 text-right font-medium">Charges fixes</th>
                       <th className="py-2 text-right font-medium">Tiennent</th>
-                      <th className="py-2 text-right font-medium">Capital necessaire</th>
+                      <th className="py-2 text-right font-medium">Capital nécessaire</th>
                       <th className="py-2 text-right font-medium">Besoin de financement</th>
                     </tr>
                   </thead>
@@ -88,8 +88,8 @@ export default function AdminMarketPage() {
                 </table>
               </div>
               <p className="text-micro text-text-secondary">
-                Montants calcules uniquement sur les idees en {currency} ({market.currencies.map((c) => `${c.key} : ${c.count}`).join(", ") || "aucune"}).
-                Entre parentheses : nombre d&apos;idees ayant saisi leur capital. « Tiennent » porte sur toutes les devises.
+                Montants calculés uniquement sur les idées en {currency} ({market.currencies.map((c) => `${c.key} : ${c.count}`).join(", ") || "aucune"}).
+                Entre parenthèses : nombre d&apos;idées ayant saisi leur capital. « Tiennent » porte sur toutes les devises.
               </p>
             </Card>
           </>

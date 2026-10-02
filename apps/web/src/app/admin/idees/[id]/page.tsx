@@ -7,8 +7,7 @@ import { useAdmin } from "@/components/admin/AdminContext";
 import { Card, PageTitle } from "@/components/admin/ui";
 import { EVENT_LABELS, PAYMENT_STATUS_LABELS, label, shortDate } from "@/components/admin/admin-labels";
 import { CANVAS_LABELS } from "@/components/analyse/report-copy";
-import { AdminKeyRejectedError } from "@/lib/analytics";
-import { AdminNotFoundError, adminGet, type IdeaDetail } from "@/lib/admin-api";
+import { AdminKeyRejectedError, AdminNotFoundError, adminGet, type IdeaDetail } from "@/lib/api/admin";
 import { formatAmount } from "@/lib/format";
 
 function Row({ name, children }: { name: string; children: ReactNode }) {
@@ -35,8 +34,8 @@ export default function AdminIdeaPage() {
       })
       .catch((error: unknown) => {
         if (cancelled) return;
-        if (error instanceof AdminKeyRejectedError) logout("Cle incorrecte.");
-        else setState({ status: "error", message: error instanceof AdminNotFoundError ? "Idee introuvable." : "Donnees indisponibles." });
+        if (error instanceof AdminKeyRejectedError) logout("Clé incorrecte.");
+        else setState({ status: "error", message: error instanceof AdminNotFoundError ? "Idée introuvable." : "Données indisponibles." });
       });
     return () => {
       cancelled = true;
@@ -52,13 +51,13 @@ export default function AdminIdeaPage() {
   return (
     <div className="flex flex-col gap-6">
       <Link href="/admin/idees" className="text-small text-text-secondary">
-        ← Toutes les idees
+        ← Toutes les idées
       </Link>
       <div>
         <PageTitle>{label(detail.idea.businessModel)}</PageTitle>
         <p className="mt-1 text-small text-text-secondary">
-          Creee le {shortDate(detail.idea.createdAt)} · {detail.idea.paidAt ? `payee le ${shortDate(detail.idea.paidAt)}` : "non payee"}
-          {detail.recoveries > 0 ? ` · retrouvee ${detail.recoveries} fois par code` : ""}
+          Créée le {shortDate(detail.idea.createdAt)} · {detail.idea.paidAt ? `payée le ${shortDate(detail.idea.paidAt)}` : "non payée"}
+          {detail.recoveries > 0 ? ` · retrouvée ${detail.recoveries} fois par code` : ""}
         </p>
       </div>
       <Card title="Description">
@@ -66,40 +65,40 @@ export default function AdminIdeaPage() {
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card title="Hypotheses et resultats (par mois)">
+        <Card title="Hypothèses et résultats (par mois)">
           {detail.hypotheses ? (
             <dl className="text-small">
               <Row name="Prix de vente">{money(detail.hypotheses.price)}</Row>
               <Row name="Ventes">{detail.hypotheses.volume}</Row>
-              <Row name="Cout par unite">{money(detail.hypotheses.variableCostPerUnit)}</Row>
+              <Row name="Coût par unité">{money(detail.hypotheses.variableCostPerUnit)}</Row>
               <Row name="Charges fixes">{money(detail.hypotheses.fixedCosts)}</Row>
               {detail.result ? (
                 <>
                   <Row name="Chiffre d'affaires">{money(detail.result.revenue)}</Row>
                   <Row name="Marge brute">{money(detail.result.grossMargin)}</Row>
-                  <Row name="Resultat estime">
+                  <Row name="Résultat estimé">
                     <span className={detail.result.estimatedResult >= 0 ? "text-success" : "text-error"}>
                       {money(detail.result.estimatedResult)} · {detail.result.estimatedResult >= 0 ? "Tient" : "Ne tient pas"}
                     </span>
                   </Row>
-                  <Row name="Seuil de rentabilite">
+                  <Row name="Seuil de rentabilité">
                     {detail.breakEven?.reachable ? `${detail.breakEven.volumeUnits} ventes` : "Inatteignable"}
                   </Row>
                 </>
               ) : null}
             </dl>
           ) : (
-            <p className="text-small text-text-secondary">Hypotheses incompletes.</p>
+            <p className="text-small text-text-secondary">Hypothèses incomplètes.</p>
           )}
         </Card>
 
         <Card title="Profil et source">
           <dl className="text-small">
             <Row name="Pays">{label(detail.profile?.country)}</Row>
-            <Row name="Ville">{detail.profile?.city || "Non renseigne"}</Row>
+            <Row name="Ville">{detail.profile?.city || "Non renseigné"}</Row>
             <Row name="Profil">{label(detail.profile?.profile)}</Row>
             <Row name="Avancement">{label(detail.profile?.stage)}</Row>
-            <Row name="Source declaree">{label(detail.profile?.heardFrom)}</Row>
+            <Row name="Source déclarée">{label(detail.profile?.heardFrom)}</Row>
             <Row name="Campagne">
               {[detail.acquisition.utmSource, detail.acquisition.utmMedium, detail.acquisition.utmCampaign].filter(Boolean).join(" / ") || "—"}
             </Row>
@@ -123,9 +122,9 @@ export default function AdminIdeaPage() {
       {detail.capital ? (
         <Card title="Capital">
           <dl className="text-small">
-            <Row name="Depenses de depart">{money(detail.capital.need.startupCosts)}</Row>
-            <Row name="Reserve (3 mois)">{money(detail.capital.need.cashReserve)}</Row>
-            <Row name="Capital necessaire">{money(detail.capital.need.capitalNeeded)}</Row>
+            <Row name="Dépenses de départ">{money(detail.capital.need.startupCosts)}</Row>
+            <Row name="Réserve (3 mois)">{money(detail.capital.need.cashReserve)}</Row>
+            <Row name="Capital nécessaire">{money(detail.capital.need.capitalNeeded)}</Row>
             <Row name="Capital disponible">{money(detail.capital.plan.availableCapital)}</Row>
             <Row name="Besoin de financement">{money(detail.capital.need.financingGap)}</Row>
           </dl>
@@ -163,7 +162,7 @@ export default function AdminIdeaPage() {
         </Card>
         <Card title="Parcours">
           {detail.events.length === 0 ? (
-            <p className="text-small text-text-secondary">Aucun evenement rattache a cette idee.</p>
+            <p className="text-small text-text-secondary">Aucun événement rattaché à cette idée.</p>
           ) : (
             <dl className="text-small">
               {detail.events.map((event, index) => (

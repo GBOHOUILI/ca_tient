@@ -4,25 +4,25 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { COUNTRY_OPTIONS } from "@/components/wizard/profile-options";
-import type { AdminFilters, AdminPeriod } from "@/lib/admin-api";
+import type { AdminFilters, AdminPeriod } from "@/lib/api/admin";
 import { AdminContext } from "./AdminContext";
-import { BUSINESS_MODEL_OPTIONS } from "./admin-labels";
+import { BUSINESS_MODEL_OPTIONS } from "@/lib/business-models";
 
 const KEY_STORAGE = "ca-tient:admin-key";
 
 const NAV = [
   { href: "/admin", label: "Vue d'ensemble" },
-  { href: "/admin/marche", label: "Marche" },
+  { href: "/admin/marche", label: "Marché" },
   { href: "/admin/conversion", label: "Conversion" },
   { href: "/admin/revenus", label: "Revenus" },
-  { href: "/admin/idees", label: "Idees" },
+  { href: "/admin/idees", label: "Idées" },
 ];
 
 const PERIODS: { value: AdminPeriod; label: string }[] = [
   { value: "7d", label: "7 jours" },
   { value: "30d", label: "30 jours" },
   { value: "90d", label: "90 jours" },
-  { value: "all", label: "Depuis le debut" },
+  { value: "all", label: "Depuis le début" },
 ];
 
 const selectClass = "rounded-lg border border-border bg-surface px-3 py-2 text-small text-text-primary";
@@ -84,7 +84,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
             type="password"
             value={keyInput}
             onChange={(event) => setKeyInput(event.target.value)}
-            placeholder="Cle d'administration"
+            placeholder="Clé d'administration"
             autoComplete="off"
             className="rounded-lg border border-border bg-surface p-3 text-body text-text-primary focus:border-accent-emerald focus:outline-none"
           />
@@ -122,14 +122,14 @@ export function AdminShell({ children }: { children: ReactNode }) {
             ))}
           </ul>
           <button type="button" onClick={() => logout()} className="mt-4 hidden px-3 text-small text-text-secondary md:block">
-            Se deconnecter
+            Se déconnecter
           </button>
         </nav>
 
         <div className="flex min-w-0 flex-1 flex-col gap-6">
           <div className="flex flex-wrap items-center gap-3">
             <select
-              aria-label="Periode"
+              aria-label="Période"
               value={filters.period}
               onChange={(event) => setFilters({ ...filters, period: event.target.value as AdminPeriod })}
               className={selectClass}
@@ -167,7 +167,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
               ))}
             </select>
             <button type="button" onClick={() => logout()} className="text-small text-text-secondary md:hidden">
-              Se deconnecter
+              Se déconnecter
             </button>
           </div>
           {children}
