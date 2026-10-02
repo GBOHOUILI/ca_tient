@@ -1,5 +1,8 @@
 # CHANGELOG.md
 
+## [Non versionné], accents dans les textes de l'IA
+- Les consignes envoyées à l'IA sont écrites avec les accents (le modèle imitait le français sans accents) et demandent explicitement « en français correct, avec les accents » pour le canvas et la synthèse. Test qui empêche le retour de mots non accentués dans les consignes.
+
 ## [Non versionné], plusieurs adresses pour le site
 - `WEB_APP_URL` accepte une liste séparée par des virgules (domaine personnalisé + adresse Netlify) : toutes autorisées pour CORS (l'API renvoie la seule origine correspondante), la première reçoit le retour après paiement. Auparavant la liste était renvoyée telle quelle et rejetée par les navigateurs.
 
