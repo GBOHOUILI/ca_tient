@@ -45,7 +45,8 @@
 ## Phase 6-7 — Analyse complète & Paiement
 - [x] Écran d'offre à 1 000 FCFA
 - [x] Phase 6b-1 : jeton d'accès par idée, paiement après l'aperçu, `PaymentService` + providers `test`/`fedapay`, page `/analyse/[ideaId]` (`docs/PAYMENT.md`, `docs/superpowers/specs/2026-09-26-phase-6b1-acces-paiement-design.md`)
-- [ ] Test réel FedaPay sandbox (clés sandbox + URL publique pour le webhook)
+- [x] Test réel FedaPay sandbox, parcours complet (2026-10-02) : transaction créée, paiement "MoMo test" approuvé, analyse débloquée au retour par relecture serveur du statut, sans webhook.
+- [ ] Test réel du webhook FedaPay sandbox (URL publique via tunnel + `FEDAPAY_WEBHOOK_SECRET` du dashboard)
 - [ ] Phase 6b-2 : écran capital, besoin financier, rapport complet, analytics
 - [ ] Rapport final
 
