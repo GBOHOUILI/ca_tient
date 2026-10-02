@@ -5,10 +5,11 @@ import { createPaymentGateway } from "./payment-gateway.factory.js";
 import { PAYMENT_GATEWAY } from "./payment-gateway.port.js";
 import { PaymentService } from "./payment.service.js";
 import { PaymentsController } from "./payments.controller.js";
+import { PricingController } from "./pricing.controller.js";
 
 @Module({
   imports: [ThrottlerModule.forRoot([{ name: "default", ttl: 60_000, limit: 10 }])],
-  controllers: [PaymentsController, FedaPayWebhookController],
+  controllers: [PaymentsController, FedaPayWebhookController, PricingController],
   providers: [PaymentService, { provide: PAYMENT_GATEWAY, useFactory: () => createPaymentGateway() }],
 })
 export class PaymentsModule {}

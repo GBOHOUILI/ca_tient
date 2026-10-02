@@ -6,7 +6,7 @@ import request from "supertest";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { IdeasModule } from "../ideas/ideas.module.js";
 import { PrismaService } from "../prisma/prisma.service.js";
-import { PAYMENT_GATEWAY, PaymentGatewayError, type PaymentGateway } from "./payment-gateway.port.js";
+import { PAYMENT_GATEWAY, PaymentGatewayError, type CheckoutRequest, type PaymentGateway } from "./payment-gateway.port.js";
 import { PaymentsModule } from "./payments.module.js";
 import { TestPaymentGateway } from "./test-payment.gateway.js";
 
@@ -33,10 +33,12 @@ class FakeFedaPayGateway implements PaymentGateway {
   // Per-transaction override, for tests where different pending payments must resolve differently.
   statusByTransactionId: Record<string, PaymentStatus> = {};
   failCheckout = false;
+  lastCheckout: CheckoutRequest | null = null;
   readonly fetchStatus = vi.fn(async (transactionId: string) => this.statusByTransactionId[transactionId] ?? this.status);
   private counter = 0;
 
-  async createCheckout() {
+  async createCheckout(request: CheckoutRequest) {
+    this.lastCheckout = request;
     if (this.failCheckout) throw new PaymentGatewayError("fedapay: indisponible");
     this.counter += 1;
     return { providerTransactionId: `tx_${this.counter}`, redirectUrl: "https://process.fedapay.com/tok", initialStatus: "pending" as const };
@@ -126,6 +128,7 @@ describe("Payments with FedaPay (fake gateway) and its webhook", () => {
     gateway.status = "pending";
     gateway.statusByTransactionId = {};
     gateway.failCheckout = false;
+    gateway.lastCheckout = null;
     gateway.fetchStatus.mockClear();
   });
 
@@ -158,6 +161,42 @@ describe("Payments with FedaPay (fake gateway) and its webhook", () => {
       .set("X-FEDAPAY-SIGNATURE", header ?? signedHeader(body))
       .send(body);
   }
+
+  describe("configurable price (ANALYSIS_PRICE_XOF)", () => {
+    const previousPrice = process.env.ANALYSIS_PRICE_XOF;
+    afterEach(() => {
+      if (previousPrice === undefined) delete process.env.ANALYSIS_PRICE_XOF;
+      else process.env.ANALYSIS_PRICE_XOF = previousPrice;
+    });
+
+    it("exposes the price publicly", async () => {
+      process.env.ANALYSIS_PRICE_XOF = "2500";
+      await request(app.getHttpServer()).get("/pricing").expect(200, { analysisPriceXof: 2500 });
+    });
+
+    it("charges the configured price at FedaPay and records it", async () => {
+      process.env.ANALYSIS_PRICE_XOF = "2500";
+      const { id, auth } = await createIdea(app);
+      const started = await request(app.getHttpServer()).post(`/ideas/${id}/payments`).set(...auth).expect(201);
+
+      expect(gateway.lastCheckout?.amount).toBe(2500);
+      expect((await prisma.payment.findUniqueOrThrow({ where: { id: started.body.paymentId } })).amount).toBe(2500);
+    });
+
+    it("unlocks the analysis at once without FedaPay when the price is 0", async () => {
+      process.env.ANALYSIS_PRICE_XOF = "0";
+      const { id, auth } = await createIdea(app);
+
+      const started = await request(app.getHttpServer()).post(`/ideas/${id}/payments`).set(...auth).expect(201);
+
+      const webAppUrl = (process.env.WEB_APP_URL ?? "http://localhost:3000").replace(/\/+$/, "");
+      expect(started.body).toEqual({ paymentId: null, redirectUrl: `${webAppUrl}/analyse/${id}` });
+      expect(gateway.lastCheckout).toBeNull();
+      expect(await prisma.payment.count({ where: { ideaId: id } })).toBe(0);
+      const status = await request(app.getHttpServer()).get(`/ideas/${id}/payment`).set(...auth).expect(200);
+      expect(status.body).toEqual({ paid: true, status: "approved" });
+    });
+  });
 
   it("stays pending until FedaPay confirms, re-reading FedaPay on status polls", async () => {
     const { id, auth } = await startPending();
