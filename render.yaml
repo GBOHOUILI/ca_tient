@@ -1,0 +1,45 @@
+# Render Blueprint for the API (NestJS). Secrets use `sync: false`: Render asks for them when the
+# Blueprint is created; they are never stored in this repository. See docs/DEPLOYMENT.md.
+services:
+  - type: web
+    name: ca-tient-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: >-
+      corepack enable &&
+      pnpm install --frozen-lockfile &&
+      pnpm --filter financial-engine build &&
+      pnpm --filter api exec prisma generate &&
+      pnpm --filter api build
+    # Migrations are applied before every start, so a deploy never runs code against an older schema.
+    startCommand: pnpm --filter api exec prisma migrate deploy && pnpm --filter api start:prod
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      # Render puts one proxy in front of the service: trust it so the rate limiter sees the client IP.
+      - key: TRUST_PROXY
+        value: "1"
+      - key: ANALYSIS_PRICE_XOF
+        value: "1000"
+      - key: PAYMENT_PROVIDER
+        value: fedapay
+      - key: FEDAPAY_ENV
+        value: sandbox
+      - key: ADMIN_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: WEB_APP_URL
+        sync: false
+      - key: FEDAPAY_SECRET_KEY
+        sync: false
+      - key: FEDAPAY_WEBHOOK_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: MISTRAL_API_KEY
+        sync: false
