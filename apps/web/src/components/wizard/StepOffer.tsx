@@ -3,11 +3,13 @@ export function StepOffer({
   onBack,
   paying,
   error,
+  persistenceWarning,
 }: {
   onPay: () => void;
   onBack: () => void;
   paying: boolean;
   error: string | null;
+  persistenceWarning?: boolean;
 }) {
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-6 text-center">
@@ -27,6 +29,12 @@ export function StepOffer({
       <p className="text-small text-text-secondary">
         Ca tient ? est une aide a la decision, pas une garantie de rentabilite : les resultats dependent des hypotheses que tu fournis.
       </p>
+      {persistenceWarning ? (
+        <p className="rounded-lg border border-warning p-4 text-left text-small text-warning">
+          Ton navigateur bloque l&apos;enregistrement local (navigation privee ?). Apres le paiement, tu risques de ne
+          pas pouvoir revenir a ton analyse. Ouvre Ca tient ? dans une fenetre normale avant de payer.
+        </p>
+      ) : null}
       {error ? <p className="text-small text-error">{error}</p> : null}
       <div className="flex justify-between">
         <button type="button" onClick={onBack} className="text-body font-medium text-text-secondary">
