@@ -3,6 +3,8 @@ import { CANVAS_BLOCK_KEYS } from "./ai-provider.port.js";
 import {
   buildCanvasPrompt,
   buildHypothesesPrompt,
+  buildReportSummaryPrompt,
+  parseReportSummary,
   parseSuggestedCanvasBlocks,
   parseSuggestedHypotheses,
 } from "./ai-prompts.js";
@@ -107,5 +109,39 @@ describe("parseSuggestedCanvasBlocks", () => {
 
   it("returns null when a block exceeds 500 characters", () => {
     expect(parseSuggestedCanvasBlocks(JSON.stringify({ ...validCanvasBlocks(), channels: "a".repeat(501) }))).toBeNull();
+  });
+});
+
+describe("parseReportSummary", () => {
+  it("accepts a plain summary and trims it", () => {
+    expect(parseReportSummary('{"summary": "  Ton idee tient sur le papier.  "}')).toBe("Ton idee tient sur le papier.");
+  });
+
+  it("rejects a summary containing a digit", () => {
+    expect(parseReportSummary('{"summary": "Tu gagnes 50 000 FCFA par mois."}')).toBeNull();
+  });
+
+  it("rejects empty, too long or malformed answers", () => {
+    expect(parseReportSummary('{"summary": "   "}')).toBeNull();
+    expect(parseReportSummary(JSON.stringify({ summary: "a".repeat(1201) }))).toBeNull();
+    expect(parseReportSummary("pas du json")).toBeNull();
+  });
+});
+
+describe("buildReportSummaryPrompt", () => {
+  it("passes qualitative facts only and forbids numbers", () => {
+    const prompt = buildReportSummaryPrompt({
+      businessModel: "SERVICE",
+      holds: false,
+      breakEvenReachable: true,
+      watchPoints: ["below_break_even", "financing_gap"],
+      mostSensitive: ["price", "volume"],
+      financing: "gap",
+      valueProposition: "Cours a domicile",
+      customerSegments: "Parents d'eleves",
+    });
+    expect(prompt).toContain("ne couvre pas encore ses couts");
+    expect(prompt).toContain("aucun chiffre");
+    expect(prompt).toContain("Cours a domicile");
   });
 });

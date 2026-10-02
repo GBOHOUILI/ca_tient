@@ -210,3 +210,25 @@ describe("FallbackAiProvider", () => {
     expect(await new FallbackAiProvider([gemini], now).suggestCanvasBlocks(input())).toEqual(CANVAS);
   });
 });
+
+describe("FallbackAiProvider.writeReportSummary", () => {
+  it("moves to the next backend when a summary contains a digit", async () => {
+    const { pool, now } = setup();
+    const gemini = new FakeBackend("gemini", pool("g1"), async () => '{"summary": "Tu gagnes 50 000 FCFA."}');
+    const groq = new FakeBackend("groq", pool("q1"), async () => '{"summary": "Ton idee tient."}');
+
+    const summary = await new FallbackAiProvider([gemini, groq], now).writeReportSummary({
+      businessModel: "SERVICE",
+      holds: true,
+      breakEvenReachable: true,
+      watchPoints: [],
+      mostSensitive: ["price", "volume"],
+      financing: "unknown",
+      valueProposition: null,
+      customerSegments: null,
+    });
+
+    expect(summary).toBe("Ton idee tient.");
+    expect(groq.calls).toEqual(["q1"]);
+  });
+});

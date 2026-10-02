@@ -1,11 +1,20 @@
 import { Logger } from "@nestjs/common";
-import type { AiProvider, AiSuggestionInput, SuggestedCanvasBlocks, SuggestedHypotheses } from "./ai-provider.port.js";
+import type {
+  AiProvider,
+  AiSuggestionInput,
+  ReportSummaryFacts,
+  SuggestedCanvasBlocks,
+  SuggestedHypotheses,
+} from "./ai-provider.port.js";
 import {
   buildCanvasPrompt,
   buildHypothesesPrompt,
+  buildReportSummaryPrompt,
   CANVAS_JSON_SCHEMA,
   HYPOTHESES_JSON_SCHEMA,
+  parseReportSummary,
   parseSuggestedCanvasBlocks,
+  REPORT_SUMMARY_JSON_SCHEMA,
   parseSuggestedHypotheses,
   type JsonSchema,
 } from "./ai-prompts.js";
@@ -48,6 +57,15 @@ export class FallbackAiProvider implements AiProvider {
       prompt: buildCanvasPrompt(input),
       schema: CANVAS_JSON_SCHEMA,
       parse: parseSuggestedCanvasBlocks,
+    });
+  }
+
+  writeReportSummary(facts: ReportSummaryFacts): Promise<string | null> {
+    return this.run({
+      label: "synthese",
+      prompt: buildReportSummaryPrompt(facts),
+      schema: REPORT_SUMMARY_JSON_SCHEMA,
+      parse: parseReportSummary,
     });
   }
 

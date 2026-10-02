@@ -3,6 +3,7 @@ import type { CurrencyCode } from "financial-engine";
 import {
   CANVAS_BLOCK_KEYS,
   type AiSuggestionInput,
+  type ReportSummaryFacts,
   type SuggestedCanvasBlocks,
   type SuggestedHypotheses,
 } from "./ai-provider.port.js";
@@ -20,6 +21,13 @@ export const HYPOTHESES_JSON_SCHEMA: JsonSchema = {
 export const CANVAS_JSON_SCHEMA: JsonSchema = {
   properties: Object.fromEntries(CANVAS_BLOCK_KEYS.map((key) => [key, "string" as const])),
   required: CANVAS_BLOCK_KEYS,
+};
+
+export const MAX_SUMMARY_LENGTH = 1200;
+
+export const REPORT_SUMMARY_JSON_SCHEMA: JsonSchema = {
+  properties: { summary: "string" },
+  required: ["summary"],
 };
 
 const BUSINESS_MODEL_LABELS: Record<BusinessModel, string> = {
@@ -136,4 +144,55 @@ export function parseSuggestedCanvasBlocks(text: string | undefined): SuggestedC
   }
 
   return result;
+}
+
+const WATCH_POINT_FACTS: Record<string, string> = {
+  non_positive_unit_margin: "chaque vente coute autant ou plus qu'elle ne rapporte",
+  below_break_even: "le volume de ventes prevu est sous le seuil de rentabilite",
+  thin_gross_margin: "la marge sur chaque vente est faible",
+  prudent_scenario_loss: "dans un scenario prudent, l'idee perdrait de l'argent",
+  financing_gap: "le capital disponible ne couvre pas le lancement et la reserve de securite",
+  no_cash_reserve: "le capital disponible ne couvre meme pas les depenses de depart",
+};
+
+const SENSITIVITY_FACTS: Record<string, string> = {
+  price: "le prix de vente",
+  volume: "le volume de ventes",
+  variableCostPerUnit: "le cout de chaque unite",
+  fixedCosts: "les charges fixes",
+};
+
+const FINANCING_FACTS: Record<ReportSummaryFacts["financing"], string> = {
+  gap: "il manque du capital pour se lancer",
+  covered: "le capital disponible couvre le lancement et une reserve de securite",
+  unknown: "le capital n'a pas encore ete renseigne",
+};
+
+export function buildReportSummaryPrompt(facts: ReportSummaryFacts): string {
+  const points = facts.watchPoints.map((code) => WATCH_POINT_FACTS[code]).filter(Boolean);
+  return [
+    "Tu rediges la synthese d'un rapport qui teste la viabilite d'une idee de business, pour un entrepreneur sans bagage financier.",
+    `Modele de business : ${BUSINESS_MODEL_LABELS[facts.businessModel]}.`,
+    facts.valueProposition ? `Proposition de valeur : "${facts.valueProposition}"` : "",
+    facts.customerSegments ? `Clients vises : "${facts.customerSegments}"` : "",
+    `Verdict du calcul : ${facts.holds ? "l'idee degage un resultat positif chaque mois" : "l'idee ne couvre pas encore ses couts chaque mois"}.`,
+    `Seuil de rentabilite : ${facts.breakEvenReachable ? "atteignable" : "inatteignable tant que le prix ne depasse pas le cout de chaque unite"}.`,
+    points.length > 0 ? `Points a surveiller : ${points.join(" ; ")}.` : "Aucun point d'alerte particulier.",
+    `Variables qui pesent le plus sur le resultat : ${facts.mostSensitive.map((key) => SENSITIVITY_FACTS[key]).join(", ")}.`,
+    `Capital : ${FINANCING_FACTS[facts.financing]}.`,
+    "Ecris 3 a 5 phrases simples, en tutoyant, sans jargon. N'ecris aucun chiffre ni montant ni pourcentage. Ne promets jamais la rentabilite : c'est une aide a la decision.",
+    `Reponds uniquement avec un objet JSON de la forme ${jsonShape(REPORT_SUMMARY_JSON_SCHEMA)}.`,
+  ]
+    .filter((line) => line.length > 0)
+    .join("\n");
+}
+
+// Rule CLAUDE.md #3: no figure may come from the AI, so any digit rejects the answer.
+export function parseReportSummary(text: string | undefined): string | null {
+  const record = parseJsonObject(text);
+  const summary = record?.summary;
+  if (typeof summary !== "string") return null;
+  const trimmed = summary.trim();
+  if (trimmed.length === 0 || trimmed.length > MAX_SUMMARY_LENGTH || /\d/.test(trimmed)) return null;
+  return trimmed;
 }

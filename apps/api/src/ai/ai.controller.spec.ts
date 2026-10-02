@@ -15,7 +15,7 @@ function validPayload() {
 
 describe("AiController (HTTP) — suggestion", () => {
   let app: INestApplication;
-  const aiProvider: AiProvider = { suggestHypotheses: vi.fn(), suggestCanvasBlocks: vi.fn() };
+  const aiProvider: AiProvider = { suggestHypotheses: vi.fn(), suggestCanvasBlocks: vi.fn(), writeReportSummary: vi.fn() };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [AiModule] })
@@ -74,6 +74,7 @@ describe("AiController (HTTP) — rate limiting", () => {
   const aiProvider: AiProvider = {
     suggestHypotheses: vi.fn().mockResolvedValue(null),
     suggestCanvasBlocks: vi.fn().mockResolvedValue(null),
+    writeReportSummary: vi.fn().mockResolvedValue(null),
   };
 
   beforeAll(async () => {
@@ -101,7 +102,7 @@ describe("AiController (HTTP) — rate limiting", () => {
 
 describe("AiController (HTTP) — suggestion canvas", () => {
   let app: INestApplication;
-  const aiProvider: AiProvider = { suggestHypotheses: vi.fn(), suggestCanvasBlocks: vi.fn() };
+  const aiProvider: AiProvider = { suggestHypotheses: vi.fn(), suggestCanvasBlocks: vi.fn(), writeReportSummary: vi.fn() };
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [AiModule] })
