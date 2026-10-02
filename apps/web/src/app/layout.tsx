@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { AcquisitionCapture } from "@/components/analytics/AcquisitionCapture";
 import { themeInitScript } from "@/components/theme/theme-script";
 import "./globals.css";
 
@@ -29,6 +30,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col bg-bg text-text-primary font-sans">
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <AcquisitionCapture />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

@@ -6,11 +6,12 @@
 
 Toutes les routes `/ideas/:id…` (sauf `POST /ideas` et les deux routes `suggest-*`, qui n'ont pas encore d'idée) exigent l'en-tête `Authorization: Bearer <accessToken>` (`IdeaAccessGuard`) : en-tête absent → 401 ; jeton faux ou idée inconnue → 404 identique dans les deux cas (ne révèle pas qu'une idée existe).
 
-- `POST /ideas` — crée une idée (description libre + modèle de business optionnel), renvoie en plus `accessToken` (jeton aléatoire, à conserver côté navigateur — voir `docs/DECISIONS.md`)
+- `POST /ideas` — crée une idée (description libre + modèle de business optionnel ; `acquisition` facultatif `{ utmSource?, utmMedium?, utmCampaign?, referrerHost? }`, ignoré par `PUT`), renvoie en plus `accessToken` (jeton aléatoire, à conserver côté navigateur — voir `docs/DECISIONS.md`)
 - `PUT /ideas/:id` — protégée ; met à jour la même idée (même corps que `POST /ideas`), remplace ses hypothèses et sa simulation d'aperçu, conserve ses blocs de canvas ; utilisé quand l'utilisateur revient en arrière dans le wizard
 - `GET /ideas/:id` — protégée ; relit l'idée, ses hypothèses, sa simulation d'aperçu, `paid: boolean` (calculé côté serveur, jamais transmis par le client) et `hasCapitalPlan: boolean`
 - `POST /ideas/suggest-hypotheses` — l'IA propose les 4 hypothèses à partir de la description (sans persistance, `{ available: false }` si l'IA ne répond pas)
 - `POST /ideas/suggest-canvas-blocks` — l'IA propose les 7 blocs qualitatifs du canvas (même contrat)
+- `PUT /ideas/:id/profile` — protégée (jeton d'accès, pas besoin d'avoir payé) ; profil facultatif `{ country?, city?, profile?, stage?, heardFrom?, contact?, contactConsent? }` (valeurs dans des listes fermées, voir `IdeaProfileDto`). `contact` sans `contactConsent: true` → 400 ; retirer le consentement efface le contact. Upsert, `200 { ok: true }`.
 - `PATCH /ideas/:id/canvas-blocks` — protégée ; enregistre les 7 blocs validés/édités par l'utilisateur
 
 ## Récupération d'une analyse payée
@@ -39,6 +40,18 @@ Toutes les routes `/ideas/:id…` (sauf `POST /ideas` et les deux routes `sugges
 
 - `POST /analytics/events` — publique, 60 requêtes/min/IP, `204`. Corps `{ type, sessionId, ideaId? }` ; `type` ∈ `landing_view | test_started | offer_viewed | what_if_used | report_viewed | report_printed` (les paiements ne sont jamais acceptés du navigateur) ; `sessionId` 8–64 caractères `[A-Za-z0-9-]` ; `400` sinon.
 - `GET /admin/stats?period=7d|30d|all` (défaut `30d`) — en-tête `x-admin-key` = `ADMIN_KEY` (comparaison en temps constant). `404` si `ADMIN_KEY` n'est pas configurée, `401` si la clé est fausse, `400` période inconnue. Renvoie `{ period, from, steps: [{ key, count }], reportPrinted, recoveries }`, étapes dans l'ordre du funnel, comptes distincts.
+
+## Dashboard admin
+
+Toutes les routes : en-tête `x-admin-key` = `ADMIN_KEY` (404 si non configurée, 401 si fausse), 60 requêtes/min/IP, lecture seule. Filtres communs : `period=7d|30d|90d|all` (défaut `30d`), `businessModel`, `country`, et `currency` (défaut `XOF`, montants du marché).
+
+- `GET /admin/overview` — indicateurs clés (visites, idées, paiements confirmés, chiffre d'affaires, conversion aperçu → paiement, part des idées qui tiennent) et activité par jour.
+- `GET /admin/market` — répartitions (type, pays, profil, avancement, devises) et médianes par type de business dans la devise choisie.
+- `GET /admin/conversion` — funnel (période seulement) et taux de paiement par type, source déclarée, `utm_source`, pays.
+- `GET /admin/revenue` — paiements XOF : total, statuts, par jour et par semaine (lundi).
+- `GET /admin/ideas?page=&search=&paid=true|false` — liste paginée (20), recherche insensible à la casse dans la description.
+- `GET /admin/ideas/:id` — fiche complète (résultats recalculés par le moteur, canvas, capital, profil, contact seulement si consentement, paiements, parcours) ; 404 si inconnue.
+- `GET /admin/contacts.csv` — CSV (`;`, UTF-8 avec BOM) des seuls contacts consentants, cellules protégées contre l'injection de formules.
 
 ## Historique
 

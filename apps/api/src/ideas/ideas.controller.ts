@@ -3,6 +3,7 @@ import { IdeasService } from "./ideas.service.js";
 import { CreateIdeaDto } from "./dto/create-idea.dto.js";
 import { UpdateCanvasBlocksDto } from "./dto/update-canvas-blocks.dto.js";
 import { CapitalPlanDto } from "./dto/capital-plan.dto.js";
+import { IdeaProfileDto } from "./dto/idea-profile.dto.js";
 import { IdeaAccessGuard } from "./idea-access.guard.js";
 import { PaidIdeaGuard } from "./paid-idea.guard.js";
 import { ReportService } from "./report.service.js";
@@ -39,6 +40,13 @@ export class IdeasController {
   @UseGuards(IdeaAccessGuard)
   async updateCanvasBlocks(@Param("id") id: string, @Body() dto: UpdateCanvasBlocksDto) {
     await this.ideasService.updateCanvasBlocks(id, dto);
+    return { ok: true };
+  }
+
+  @Put(":id/profile")
+  @UseGuards(IdeaAccessGuard)
+  async saveProfile(@Param("id") id: string, @Body() dto: IdeaProfileDto) {
+    await this.ideasService.saveProfile(id, dto);
     return { ok: true };
   }
 

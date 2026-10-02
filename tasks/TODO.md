@@ -53,5 +53,10 @@
 - [ ] **Dette (découverte 2026-10-02)** : `HypothesesDto` n'a pas de `@Max` alors que `Hypothesis.value` est un `Int` Postgres (plafond 2 147 483 647) : un montant plus grand échoue en 500 au lieu d'un 400.
 - [ ] **Dette (découverte 2026-10-02)** : `formatAmount` affiche les montants tels quels alors que le moteur les définit dans la plus petite unité de la devise (centimes pour EUR/USD/GBP/NGN/GHS) ; sans incidence en XOF, à clarifier avant d'ouvrir d'autres devises.
 
+## Dashboard admin
+- [x] Sous-projet A : collecte du profil et de la source d'arrivée (`docs/superpowers/specs/2026-10-02-collecte-profil-design.md`)
+- [x] Sous-projet B : dashboard admin (`docs/superpowers/specs/2026-10-02-dashboard-admin-design.md`)
+- [ ] Outiller la suppression des données d'un utilisateur sur demande (manuelle pour l'instant)
+
 ## Phase 8 — Bêta
 - [ ] Recruter 10–20 utilisateurs réels

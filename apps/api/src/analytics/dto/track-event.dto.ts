@@ -29,7 +29,7 @@ export class TrackEventDto {
   ideaId?: string;
 }
 
-export const STATS_PERIODS = ["7d", "30d", "all"] as const;
+export const STATS_PERIODS = ["7d", "30d", "90d", "all"] as const;
 export type StatsPeriod = (typeof STATS_PERIODS)[number];
 
 export class StatsQueryDto {

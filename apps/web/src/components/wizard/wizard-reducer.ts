@@ -5,6 +5,7 @@ export type WizardStep =
   | "description"
   | "hypotheses"
   | "canvas"
+  | "profile"
   | "results"
   | "offer";
 

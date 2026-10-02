@@ -1,7 +1,8 @@
 import { Type } from "class-transformer";
-import { IsEnum, IsIn, IsNotEmpty, IsString, MaxLength, ValidateNested } from "class-validator";
+import { IsEnum, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength, ValidateNested } from "class-validator";
 import { BusinessModel } from "@prisma/client";
 import { SUPPORTED_CURRENCIES, type CurrencyCode } from "financial-engine";
+import { AcquisitionDto } from "./acquisition.dto.js";
 import { HypothesesDto } from "./hypotheses.dto.js";
 
 export class CreateIdeaDto {
@@ -19,4 +20,10 @@ export class CreateIdeaDto {
   @ValidateNested()
   @Type(() => HypothesesDto)
   hypotheses!: HypothesesDto;
+
+  // Only read on creation: the source is where the idea came from, not where it was last edited.
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => AcquisitionDto)
+  acquisition?: AcquisitionDto;
 }
