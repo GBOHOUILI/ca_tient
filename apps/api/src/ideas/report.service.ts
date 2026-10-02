@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import type { BusinessModel } from "@prisma/client";
+import { Prisma, type BusinessModel } from "@prisma/client";
 import {
   applyScenario,
   computeBreakEven,
@@ -38,11 +38,19 @@ export interface IdeaReport {
     costStructure: { variableCostPerUnit: number; fixedCosts: number; startupCosts: number | null };
     revenueStreams: { price: number; volume: number; revenue: number };
   };
-  summary: { text: string; source: "ai" | "template" };
+}
+
+export interface ReportSummary {
+  text: string;
+  source: "ai" | "template";
 }
 
 @Injectable()
 export class ReportService {
+  // In-flight AI summaries, keyed by idea + facts hash: simultaneous requests for the same
+  // report share one AI call. Process-local, which is enough for the single MVP API instance.
+  private readonly pendingSummaries = new Map<string, Promise<ReportSummary>>();
+
   constructor(
     private readonly prisma: PrismaService,
     @Inject(AI_PROVIDER) private readonly ai: AiProvider,
@@ -58,6 +66,28 @@ export class ReportService {
   }
 
   async getReport(ideaId: string): Promise<IdeaReport> {
+    return (await this.loadReport(ideaId)).report;
+  }
+
+  async getSummary(ideaId: string): Promise<ReportSummary> {
+    const { facts, storedSummary } = await this.loadReport(ideaId);
+    const hash = factsHash(facts);
+    if (storedSummary?.factsHash === hash) return { text: storedSummary.text, source: "ai" };
+
+    const key = `${ideaId}:${hash}`;
+    const pending = this.pendingSummaries.get(key);
+    if (pending) return pending;
+
+    const generation = this.generateSummary(ideaId, facts, hash).finally(() => this.pendingSummaries.delete(key));
+    this.pendingSummaries.set(key, generation);
+    return generation;
+  }
+
+  private async loadReport(ideaId: string): Promise<{
+    report: IdeaReport;
+    facts: ReportSummaryFacts;
+    storedSummary: { text: string; factsHash: string } | null;
+  }> {
     const idea = await this.prisma.idea.findUniqueOrThrow({
       where: { id: ideaId },
       include: { hypotheses: true, canvasBlocks: true, capitalPlan: true, reportSummary: true },
@@ -85,7 +115,7 @@ export class ReportService {
       customerSegments: blocks.customerSegments ?? null,
     });
 
-    return {
+    const report: IdeaReport = {
       idea: { id: idea.id, businessModel: idea.businessModel, rawDescription: idea.rawDescription, currency },
       hypotheses,
       result,
@@ -103,28 +133,26 @@ export class ReportService {
         },
         revenueStreams: { price: hypotheses.price, volume: hypotheses.volume, revenue: result.revenue },
       },
-      summary: await this.resolveSummary(ideaId, facts, idea.reportSummary),
     };
+    return { report, facts, storedSummary: idea.reportSummary };
   }
 
   // Only an AI summary is stored: a template fallback is rebuilt on each request so the AI
   // gets another chance next time.
-  private async resolveSummary(
-    ideaId: string,
-    facts: ReportSummaryFacts,
-    stored: { text: string; factsHash: string } | null,
-  ): Promise<IdeaReport["summary"]> {
-    const hash = factsHash(facts);
-    if (stored?.factsHash === hash) return { text: stored.text, source: "ai" };
-
+  private async generateSummary(ideaId: string, facts: ReportSummaryFacts, hash: string): Promise<ReportSummary> {
     const text = await this.ai.writeReportSummary(facts);
     if (!text) return { text: templateSummary(facts), source: "template" };
 
-    await this.prisma.reportSummary.upsert({
-      where: { ideaId },
-      create: { ideaId, text, factsHash: hash },
-      update: { text, factsHash: hash },
-    });
+    try {
+      await this.prisma.reportSummary.upsert({
+        where: { ideaId },
+        create: { ideaId, text, factsHash: hash },
+        update: { text, factsHash: hash },
+      });
+    } catch (error) {
+      // Another API process stored a summary at the same moment: theirs is as good as ours.
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002")) throw error;
+    }
     return { text, source: "ai" };
   }
 }

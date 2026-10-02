@@ -57,12 +57,14 @@ describe("Capital and report", () => {
     const { id } = await createIdea(true);
     await request(app.getHttpServer()).put(`/ideas/${id}/capital`).send(CAPITAL).expect(401);
     await request(app.getHttpServer()).get(`/ideas/${id}/report`).expect(401);
+    await request(app.getHttpServer()).get(`/ideas/${id}/report/summary`).expect(401);
   });
 
   it("refuses an unpaid idea with 403", async () => {
     const { id, auth } = await createIdea(false);
     await request(app.getHttpServer()).put(`/ideas/${id}/capital`).set(...auth).send(CAPITAL).expect(403);
     await request(app.getHttpServer()).get(`/ideas/${id}/report`).set(...auth).expect(403);
+    await request(app.getHttpServer()).get(`/ideas/${id}/report/summary`).set(...auth).expect(403);
   });
 
   it("validates the capital plan", async () => {
@@ -110,8 +112,18 @@ describe("Capital and report", () => {
     expect(body.canvas.blocks).toEqual({});
     expect(body.canvas.costStructure).toEqual({ variableCostPerUnit: 2000, fixedCosts: 100000, startupCosts: null });
     expect(body.canvas.revenueStreams).toEqual({ price: 5000, volume: 50, revenue: 250000 });
-    expect(body.summary.source).toBe("template");
-    expect(body.summary.text).not.toMatch(/\d/);
+    expect(body).not.toHaveProperty("summary");
+    expect(ai.writeReportSummary).not.toHaveBeenCalled();
+  });
+
+  it("falls back to a template summary that is not stored", async () => {
+    ai.writeReportSummary.mockResolvedValue(null);
+    const { id, auth } = await createIdea(true);
+
+    const { body } = await request(app.getHttpServer()).get(`/ideas/${id}/report/summary`).set(...auth).expect(200);
+
+    expect(body.source).toBe("template");
+    expect(body.text).not.toMatch(/\d/);
     expect(await prisma.reportSummary.count()).toBe(0);
   });
 
@@ -138,23 +150,40 @@ describe("Capital and report", () => {
     ai.writeReportSummary.mockResolvedValue("Ton idee tient sur le papier.");
     const { id, auth } = await createIdea(true);
 
-    const first = await request(app.getHttpServer()).get(`/ideas/${id}/report`).set(...auth).expect(200);
-    const second = await request(app.getHttpServer()).get(`/ideas/${id}/report`).set(...auth).expect(200);
+    const first = await request(app.getHttpServer()).get(`/ideas/${id}/report/summary`).set(...auth).expect(200);
+    const second = await request(app.getHttpServer()).get(`/ideas/${id}/report/summary`).set(...auth).expect(200);
 
-    expect(first.body.summary).toEqual({ text: "Ton idee tient sur le papier.", source: "ai" });
-    expect(second.body.summary).toEqual({ text: "Ton idee tient sur le papier.", source: "ai" });
+    expect(first.body).toEqual({ text: "Ton idee tient sur le papier.", source: "ai" });
+    expect(second.body).toEqual({ text: "Ton idee tient sur le papier.", source: "ai" });
     expect(ai.writeReportSummary).toHaveBeenCalledTimes(1);
   });
 
   it("regenerates summary when facts change", async () => {
     ai.writeReportSummary.mockResolvedValueOnce("Premiere synthese.").mockResolvedValueOnce("Seconde synthese.");
     const { id, auth } = await createIdea(true);
-    await request(app.getHttpServer()).get(`/ideas/${id}/report`).set(...auth).expect(200);
+    await request(app.getHttpServer()).get(`/ideas/${id}/report/summary`).set(...auth).expect(200);
 
     await request(app.getHttpServer()).put(`/ideas/${id}/capital`).set(...auth).send(CAPITAL).expect(200);
-    const { body } = await request(app.getHttpServer()).get(`/ideas/${id}/report`).set(...auth).expect(200);
+    const { body } = await request(app.getHttpServer()).get(`/ideas/${id}/report/summary`).set(...auth).expect(200);
 
-    expect(body.summary.text).toBe("Seconde synthese.");
+    expect(body.text).toBe("Seconde synthese.");
     expect(ai.writeReportSummary).toHaveBeenCalledTimes(2);
+  });
+
+  it("serves simultaneous summary requests with a single AI call", async () => {
+    ai.writeReportSummary.mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve("Synthese partagee."), 100)),
+    );
+    const { id, auth } = await createIdea(true);
+    const get = () => request(app.getHttpServer()).get(`/ideas/${id}/report/summary`).set(...auth);
+
+    const responses = await Promise.all([get(), get(), get()]);
+
+    for (const response of responses) {
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ text: "Synthese partagee.", source: "ai" });
+    }
+    expect(ai.writeReportSummary).toHaveBeenCalledTimes(1);
+    expect(await prisma.reportSummary.count({ where: { ideaId: id } })).toBe(1);
   });
 });

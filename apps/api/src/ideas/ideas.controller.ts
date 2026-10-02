@@ -53,4 +53,10 @@ export class IdeasController {
   getReport(@Param("id") id: string) {
     return this.reportService.getReport(id);
   }
+
+  @Get(":id/report/summary")
+  @UseGuards(IdeaAccessGuard, PaidIdeaGuard)
+  getReportSummary(@Param("id") id: string) {
+    return this.reportService.getSummary(id);
+  }
 }
