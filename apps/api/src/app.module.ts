@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller.js';
-import { AppService } from './app.service.js';
+import { HealthController } from './health.controller.js';
 import { FinancialEngineModule } from './financial-engine/financial-engine.module.js';
 import { IdeasModule } from './ideas/ideas.module.js';
 import { AiModule } from './ai/ai.module.js';
@@ -11,7 +10,6 @@ import { AdminModule } from './admin/admin.module.js';
 
 @Module({
   imports: [FinancialEngineModule, IdeasModule, AiModule, PaymentsModule, RecoveryModule, AnalyticsModule, AdminModule],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [HealthController],
 })
 export class AppModule {}
