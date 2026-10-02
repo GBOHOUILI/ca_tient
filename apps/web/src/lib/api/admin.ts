@@ -142,7 +142,7 @@ async function adminRequest(adminKey: string, path: string): Promise<Response> {
   if (response.status === 401) throw new AdminKeyRejectedError();
   if (response.status === 404 && path.startsWith("/admin/ideas/")) throw new AdminNotFoundError();
   if (response.status === 404) throw new StatsDisabledError();
-  if (!response.ok) throw new Error(`Donnees indisponibles (${response.status}).`);
+  if (!response.ok) throw new Error(`Données indisponibles (${response.status}).`);
   return response;
 }
 

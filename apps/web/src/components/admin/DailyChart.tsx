@@ -19,7 +19,7 @@ export function DailyChart({
 }) {
   const total = data.reduce((sum, day) => sum + day.value, 0);
   return (
-    <div role="img" aria-label={`${label} par jour, total ${format(total)} sur la periode.`}>
+    <div role="img" aria-label={`${label} par jour, total ${format(total)} sur la période.`}>
       <ResponsiveContainer width="100%" height={180}>
         <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }} barCategoryGap={2}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />

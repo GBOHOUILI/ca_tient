@@ -9,7 +9,7 @@ export function authHeaders(ideaId: string): Record<string, string> {
 
 export class AccessDeniedError extends Error {
   constructor() {
-    super("Acces a cette analyse refuse depuis ce navigateur.");
+    super("Accès à cette analyse refusé depuis ce navigateur.");
     this.name = "AccessDeniedError";
   }
 }

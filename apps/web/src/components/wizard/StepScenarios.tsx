@@ -30,20 +30,20 @@ export function StepScenarios({
         estimatedResult: computeResult(applyScenario(base, key)).estimatedResult,
       }));
       const customBar: ScenarioBar = {
-        label: "Personnalise",
+        label: "Personnalisé",
         estimatedResult: computeResult(applyDelta(base, whatIfDeltas)).estimatedResult,
       };
       return { bars: [...fixedBars, customBar], error: null as string | null };
     } catch {
-      return { bars: null, error: "Impossible de calculer les scenarios avec ces reglages." };
+      return { bars: null, error: "Impossible de calculer les scénarios avec ces réglages." };
     }
   }, [currency, hypotheses, whatIfDeltas]);
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-8">
-      <h1 className="text-center text-h2-mobile font-semibold md:text-h2">Tes scenarios</h1>
+      <h1 className="text-center text-h2-mobile font-semibold md:text-h2">Tes scénarios</h1>
       <p className="text-center text-body text-text-secondary">
-        Comment ton idee tient dans differentes situations, y compris tes propres reglages.
+        Comment ton idée tient dans différentes situations, y compris tes propres réglages.
       </p>
       {error ? (
         <p className="text-small text-error">{error}</p>

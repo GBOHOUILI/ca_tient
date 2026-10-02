@@ -29,7 +29,7 @@ export function RecoveryCodeBox({
     <aside className="no-print mx-auto flex w-full max-w-3xl flex-col gap-3 rounded-2xl border border-border bg-surface p-6">
       <h2 className="text-body font-semibold">Ton code pour revoir ton analyse</h2>
       <p className="text-small text-text-secondary">
-        Note-le : il te permet de rouvrir cette analyse depuis un autre telephone ou un autre navigateur, sur la page
+        Note-le : il te permet de rouvrir cette analyse depuis un autre téléphone ou un autre navigateur, sur la page
         « Retrouver mon analyse ».
       </p>
       {code ? (
@@ -50,7 +50,7 @@ export function RecoveryCodeBox({
           disabled={issuing}
           className="rounded-lg border border-border px-4 py-2 text-small font-medium text-text-primary disabled:opacity-40"
         >
-          {issuing ? "Generation..." : code ? "Generer un nouveau code" : "Obtenir mon code"}
+          {issuing ? "Génération..." : code ? "Générer un nouveau code" : "Obtenir mon code"}
         </button>
         {code ? (
           <p className="mt-2 text-micro text-text-secondary">Un nouveau code remplace celui-ci : l&apos;ancien ne marchera plus.</p>

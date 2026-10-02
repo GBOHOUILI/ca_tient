@@ -11,7 +11,7 @@ import {
 } from "@/lib/api/report";
 
 const SUMMARY_UNAVAILABLE: ReportSummary = {
-  text: "La synthese n'a pas pu etre redigee pour le moment. Le reste du rapport est complet.",
+  text: "La synthèse n'a pas pu être rédigée pour le moment. Le reste du rapport est complet.",
   source: "template",
 };
 
@@ -69,7 +69,7 @@ export function useReport(ideaId: string, hasCapitalPlan: boolean) {
         if (!reloaded) throw new Error("report unavailable");
         return true;
       } catch {
-        setError("L'enregistrement n'a pas abouti. Reessaie : tes montants sont conserves.");
+        setError("L'enregistrement n'a pas abouti. Réessaie : tes montants sont conservés.");
         return false;
       } finally {
         setSaving(false);

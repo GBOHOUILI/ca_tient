@@ -8,11 +8,11 @@ import { formatAmount } from "@/lib/format";
 const EMPTY_PLAN: CapitalPlanInput = { equipment: 0, initialStock: 0, openingCosts: 0, other: 0, availableCapital: 0 };
 
 const FIELDS: { key: keyof CapitalPlanInput; label: string }[] = [
-  { key: "equipment", label: "Combien pour le materiel ou l'equipement ?" },
-  { key: "initialStock", label: "Combien pour ton stock de depart ?" },
-  { key: "openingCosts", label: "Combien pour ouvrir (local, demarches, site) ?" },
-  { key: "other", label: "Autres depenses de depart ?" },
-  { key: "availableCapital", label: "Combien as-tu deja de cote pour ce projet ?" },
+  { key: "equipment", label: "Combien pour le matériel ou l'équipement ?" },
+  { key: "initialStock", label: "Combien pour ton stock de départ ?" },
+  { key: "openingCosts", label: "Combien pour ouvrir (local, démarches, site) ?" },
+  { key: "other", label: "Autres dépenses de départ ?" },
+  { key: "availableCapital", label: "Combien as-tu déjà de côté pour ce projet ?" },
 ];
 
 export function StepCapital({
@@ -48,7 +48,7 @@ export function StepCapital({
       <div className="text-center">
         <h1 className="text-h2-mobile font-semibold md:text-h2">Ton capital</h1>
         <p className="mt-2 text-body text-text-secondary">
-          Ce qu&apos;il te faut pour te lancer, et ce que tu as deja.
+          Ce qu&apos;il te faut pour te lancer, et ce que tu as déjà.
         </p>
       </div>
       {FIELDS.map((field) => (
@@ -66,15 +66,15 @@ export function StepCapital({
       {need ? (
         <dl className="flex flex-col gap-2 rounded-2xl border border-border bg-surface p-6 text-body">
           <div className="flex justify-between gap-4">
-            <dt className="text-text-secondary">Depenses de depart</dt>
+            <dt className="text-text-secondary">Dépenses de départ</dt>
             <dd className="tabular-nums">{formatAmount(need.startupCosts, currency)}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-text-secondary">Reserve (3 mois de charges)</dt>
+            <dt className="text-text-secondary">Réserve (3 mois de charges)</dt>
             <dd className="tabular-nums">{formatAmount(need.cashReserve, currency)}</dd>
           </div>
           <div className="flex justify-between gap-4 font-semibold">
-            <dt>Capital necessaire</dt>
+            <dt>Capital nécessaire</dt>
             <dd className="tabular-nums">{formatAmount(need.capitalNeeded, currency)}</dd>
           </div>
           <div className="flex justify-between gap-4">

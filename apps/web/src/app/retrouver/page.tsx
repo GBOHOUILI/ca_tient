@@ -20,11 +20,11 @@ export default function RetrouverPage() {
     } catch (caught) {
       setSubmitting(false);
       if (caught instanceof RecoveryCodeNotFoundError) {
-        setError("Ce code ne correspond a aucune analyse. Verifie-le et reessaie.");
+        setError("Ce code ne correspond à aucune analyse. Vérifie-le et réessaie.");
       } else if (caught instanceof TooManyAttemptsError) {
-        setError("Trop d'essais, attends une minute avant de reessayer.");
+        setError("Trop d'essais, attends une minute avant de réessayer.");
       } else {
-        setError("Service momentanement indisponible, reessaie dans un instant.");
+        setError("Service momentanément indisponible, réessaie dans un instant.");
       }
     }
   }
@@ -34,7 +34,7 @@ export default function RetrouverPage() {
       <div className="text-center">
         <h1 className="text-h2-mobile font-semibold md:text-h2">Retrouver mon analyse</h1>
         <p className="mt-2 text-body text-text-secondary">
-          Saisis le code obtenu apres ton paiement (il commence par CT-).
+          Saisis le code obtenu après ton paiement (il commence par CT-).
         </p>
       </div>
       <form onSubmit={(event) => void submit(event)} className="flex flex-col gap-4">

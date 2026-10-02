@@ -72,7 +72,7 @@ export default function CommencerPage() {
       }
       dispatch({ type: "GO_TO_STEP", step: "canvas" });
     } catch {
-      setError("Le calcul a echoue. Verifie tes valeurs et reessaie.");
+      setError("Le calcul a échoué. Vérifie tes valeurs et réessaie.");
     } finally {
       setSubmitting(false);
     }
@@ -90,7 +90,7 @@ export default function CommencerPage() {
       );
       dispatch({ type: "GO_TO_STEP", step: "profile" });
     } catch {
-      setError("L'enregistrement a echoue. Reessaie.");
+      setError("L'enregistrement a échoué. Réessaie.");
     } finally {
       setSubmitting(false);
     }
@@ -105,7 +105,7 @@ export default function CommencerPage() {
       dispatch({ type: "GO_TO_STEP", step: "results" });
     } catch {
       // Never blocks the free preview: the user can fix the contact or skip.
-      setError("On n'a pas pu enregistrer tes reponses : verifie ton contact, ou passe cette etape.");
+      setError("On n'a pas pu enregistrer tes réponses : vérifie ton contact, ou passe cette étape.");
     } finally {
       setSubmitting(false);
     }
@@ -119,7 +119,7 @@ export default function CommencerPage() {
       const { redirectUrl } = await startPayment(response.ideaId);
       window.location.assign(redirectUrl);
     } catch {
-      setError("Le paiement n'a pas pu demarrer. Reessaie.");
+      setError("Le paiement n'a pas pu démarrer. Réessaie.");
       setPaying(false);
     }
   }
@@ -193,7 +193,7 @@ export default function CommencerPage() {
             onClick={() => dispatch({ type: "GO_TO_STEP", step: "offer" })}
             className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white"
           >
-            Voir l&apos;analyse complete
+            Voir l&apos;analyse complète
           </button>
         </div>
       )}

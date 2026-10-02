@@ -3,7 +3,7 @@ import { API_BASE_URL, authHeaders } from "./http";
 
 export class RecoveryCodeNotFoundError extends Error {
   constructor() {
-    super("Ce code ne correspond a aucune analyse.");
+    super("Ce code ne correspond à aucune analyse.");
     this.name = "RecoveryCodeNotFoundError";
   }
 }
@@ -22,7 +22,7 @@ export async function issueRecoveryCode(ideaId: string): Promise<string> {
   });
 
   if (!response.ok) {
-    throw new Error(`Le code n'a pas pu etre genere (${response.status}).`);
+    throw new Error(`Le code n'a pas pu être généré (${response.status}).`);
   }
 
   return ((await response.json()) as { code: string }).code;
@@ -42,7 +42,7 @@ export async function redeemRecoveryCode(code: string): Promise<{ ideaId: string
     throw new TooManyAttemptsError();
   }
   if (!response.ok) {
-    throw new Error(`La recuperation a echoue (${response.status}).`);
+    throw new Error(`La récupération a échoué (${response.status}).`);
   }
 
   const body = (await response.json()) as { ideaId: string; accessToken: string };

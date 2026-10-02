@@ -35,11 +35,11 @@ export function useAdminData<T>(path: string, extra: Record<string, string | num
       .catch((error: unknown) => {
         if (cancelled) return;
         if (error instanceof AdminKeyRejectedError) {
-          logout("Cle incorrecte.");
+          logout("Clé incorrecte.");
         } else if (error instanceof StatsDisabledError) {
-          setState({ status: "error", message: "Dashboard desactive : ADMIN_KEY n'est pas configuree sur l'API." });
+          setState({ status: "error", message: "Dashboard désactivé : ADMIN_KEY n'est pas configurée sur l'API." });
         } else {
-          setState({ status: "error", message: "Donnees indisponibles pour le moment." });
+          setState({ status: "error", message: "Données indisponibles pour le moment." });
         }
       });
     return () => {

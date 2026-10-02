@@ -5,33 +5,33 @@ import type { CanvasBlockKey, CanvasBlocks } from "@/lib/api/ideas";
 const FIELDS: { key: CanvasBlockKey; label: string; placeholder: string }[] = [
   {
     key: "valueProposition",
-    label: "Qu'est-ce que tu offres, et pourquoi c'est interessant ?",
-    placeholder: "Ex : des sacs faits main, livres en 24h a Cotonou",
+    label: "Qu'est-ce que tu offres, et pourquoi c'est intéressant ?",
+    placeholder: "Ex : des sacs faits main, livrés en 24h à Cotonou",
   },
   {
     key: "customerSegments",
-    label: "A qui tu vends ?",
+    label: "À qui tu vends ?",
     placeholder: "Ex : jeunes actifs urbains, 20-35 ans",
   },
   {
     key: "channels",
-    label: "Comment tes clients te trouvent et achetent ?",
-    placeholder: "Ex : Instagram, bouche-a-oreille, marche local",
+    label: "Comment tes clients te trouvent et achètent ?",
+    placeholder: "Ex : Instagram, bouche-à-oreille, marché local",
   },
   {
     key: "customerRelationships",
-    label: "Comment tu gardes le contact avec eux dans la duree ?",
-    placeholder: "Ex : WhatsApp, newsletter, programme de fidelite",
+    label: "Comment tu gardes le contact avec eux dans la durée ?",
+    placeholder: "Ex : WhatsApp, newsletter, programme de fidélité",
   },
   {
     key: "keyResources",
     label: "De quoi tu as absolument besoin pour fonctionner ?",
-    placeholder: "Ex : machine a coudre, stock de tissu, local",
+    placeholder: "Ex : machine à coudre, stock de tissu, local",
   },
   {
     key: "keyActivities",
-    label: "Qu'est-ce que tu dois faire au quotidien pour faire tourner ca ?",
-    placeholder: "Ex : production, livraison, reseaux sociaux",
+    label: "Qu'est-ce que tu dois faire au quotidien pour faire tourner ça ?",
+    placeholder: "Ex : production, livraison, réseaux sociaux",
   },
   {
     key: "keyPartners",
@@ -65,7 +65,7 @@ export function StepCanvas({
       <h1 className="text-center text-h2-mobile font-semibold md:text-h2">Ton business model</h1>
       {wasSuggested ? (
         <p className="text-center text-small text-accent-emerald">
-          Suggere par l&apos;IA a partir de ta description : verifie et corrige si besoin.
+          Suggéré par l&apos;IA à partir de ta description : vérifie et corrige si besoin.
         </p>
       ) : null}
       {FIELDS.map((field) => (

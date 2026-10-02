@@ -17,17 +17,17 @@ import { BreakEvenChart } from "./charts/BreakEvenChart";
 import { MonthlyRevenueChart } from "./charts/MonthlyRevenueChart";
 
 const SEASONALITY_OPTIONS: { value: SeasonalityProfileKey; label: string }[] = [
-  { value: "stable", label: "Stable toute l'annee" },
-  { value: "fetes_fin_annee", label: "Pic en fin d'annee (fetes)" },
-  { value: "ete", label: "Pic en ete" },
-  { value: "rentree_scolaire", label: "Pic a la rentree scolaire" },
+  { value: "stable", label: "Stable toute l'année" },
+  { value: "fetes_fin_annee", label: "Pic en fin d'année (fêtes)" },
+  { value: "ete", label: "Pic en été" },
+  { value: "rentree_scolaire", label: "Pic à la rentrée scolaire" },
 ];
 
 const SLIDER_CONFIG: { key: keyof WhatIfDeltas; label: string; min: number; max: number }[] = [
   { key: "price", label: "Prix de vente", min: -50, max: 100 },
   { key: "volume", label: "Volume de ventes", min: -100, max: 200 },
-  { key: "variableCostPerUnit", label: "Cout variable par unite", min: -100, max: 200 },
-  { key: "fixedCosts", label: "Couts fixes", min: -100, max: 200 },
+  { key: "variableCostPerUnit", label: "Coût variable par unité", min: -100, max: 200 },
+  { key: "fixedCosts", label: "Coûts fixes", min: -100, max: 200 },
 ];
 
 export function StepEtSi({
@@ -65,7 +65,7 @@ export function StepEtSi({
         adjusted: null,
         breakEvenVolume: null,
         result: null,
-        error: "Ces reglages donnent des valeurs impossibles (prix ou couts a zero). Ajuste un curseur.",
+        error: "Ces réglages donnent des valeurs impossibles (prix ou coûts à zéro). Ajuste un curseur.",
       };
     }
   }, [currency, hypotheses, whatIfDeltas]);
@@ -79,7 +79,7 @@ export function StepEtSi({
     <div className="mx-auto flex max-w-2xl flex-col gap-8">
       <h1 className="text-center text-h2-mobile font-semibold md:text-h2">Et si... ?</h1>
       <p className="text-center text-body text-text-secondary">
-        Bouge les curseurs pour voir l&apos;impact sur ta rentabilite, en temps reel.
+        Bouge les curseurs pour voir l&apos;impact sur ta rentabilité, en temps réel.
       </p>
 
       <div className="grid gap-4">
@@ -105,7 +105,7 @@ export function StepEtSi({
       </div>
 
       <label className="flex flex-col gap-2 text-small text-text-secondary">
-        Saisonnalite
+        Saisonnalité
         <select
           value={seasonalityProfile}
           onChange={(e) => onSeasonalityChange(e.target.value as SeasonalityProfileKey)}
@@ -134,15 +134,15 @@ export function StepEtSi({
                 currency={currency}
               />
               <p className="mt-2 text-small text-text-secondary">
-                Resultat estime a ton volume actuel :{" "}
+                Résultat estimé à ton volume actuel :{" "}
                 <span className="tabular-nums text-text-primary">{formatAmount(result!.estimatedResult, currency)}</span>.{" "}
                 {breakEvenVolume !== null ? (
                   <>
-                    Seuil de rentabilite : <span className="tabular-nums text-text-primary">{breakEvenVolume}</span>{" "}
+                    Seuil de rentabilité : <span className="tabular-nums text-text-primary">{breakEvenVolume}</span>{" "}
                     unites/mois.
                   </>
                 ) : (
-                  "Seuil de rentabilite non atteignable avec ces reglages."
+                  "Seuil de rentabilité non atteignable avec ces réglages."
                 )}
               </p>
             </div>
@@ -150,7 +150,7 @@ export function StepEtSi({
               <div className="rounded-2xl border border-border bg-surface p-4">
                 <MonthlyRevenueChart projection={projection} currency={currency} />
                 <p className="mt-2 text-small text-text-secondary">
-                  Chiffre d&apos;affaires estime : de{" "}
+                  Chiffre d&apos;affaires estimé : de{" "}
                   <span className="tabular-nums text-text-primary">
                     {formatAmount(Math.min(...projection.map((m) => m.result.revenue)), currency)}
                   </span>{" "}
@@ -179,7 +179,7 @@ export function StepEtSi({
           onClick={onNext}
           className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white"
         >
-          Voir les scenarios
+          Voir les scénarios
         </button>
       </div>
     </div>

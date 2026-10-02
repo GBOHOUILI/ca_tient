@@ -139,7 +139,7 @@ export async function saveCanvasBlocks(
   });
 
   if (!response.ok) {
-    throw new Error(`L'enregistrement du canvas a echoue (${response.status}).`);
+    throw new Error(`L'enregistrement du canvas a échoué (${response.status}).`);
   }
 }
 
@@ -207,6 +207,6 @@ export async function saveProfile(ideaId: string, profile: ProfileInput): Promis
   });
 
   if (!response.ok) {
-    throw new Error(`L'enregistrement du profil a echoue (${response.status}).`);
+    throw new Error(`L'enregistrement du profil a échoué (${response.status}).`);
   }
 }

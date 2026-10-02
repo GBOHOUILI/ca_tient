@@ -43,7 +43,7 @@ export async function saveCapital(ideaId: string, plan: CapitalPlanInput): Promi
     throw new AccessDeniedError();
   }
   if (!response.ok) {
-    throw new Error(`L'enregistrement du capital a echoue (${response.status}).`);
+    throw new Error(`L'enregistrement du capital a échoué (${response.status}).`);
   }
 }
 
@@ -64,7 +64,7 @@ export async function fetchReportSummary(ideaId: string): Promise<ReportSummary>
   const response = await fetch(`${API_BASE_URL}/ideas/${ideaId}/report/summary`, { headers: authHeaders(ideaId) });
 
   if (!response.ok) {
-    throw new Error(`La synthese est indisponible (${response.status}).`);
+    throw new Error(`La synthèse est indisponible (${response.status}).`);
   }
 
   return (await response.json()) as ReportSummary;

@@ -56,7 +56,7 @@ export function PaidAnalysis({ ideaId, idea }: { ideaId: string; idea: IdeaDetai
     try {
       setRecoveryCode(await issueRecoveryCode(ideaId));
     } catch {
-      setCodeError("Le code n'a pas pu etre genere. Reessaie.");
+      setCodeError("Le code n'a pas pu être généré. Réessaie.");
     } finally {
       setIssuingCode(false);
     }

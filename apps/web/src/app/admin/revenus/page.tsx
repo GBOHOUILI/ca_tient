@@ -18,9 +18,9 @@ export default function AdminRevenuePage() {
           <>
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
               <Kpi label="Chiffre d'affaires" value={xof(revenue.total)} />
-              <Kpi label="Approuves" value={String(revenue.approved)} />
-              <Kpi label="Refuses" value={String(revenue.declined)} />
-              <Kpi label="Annules" value={String(revenue.canceled)} />
+              <Kpi label="Approuvés" value={String(revenue.approved)} />
+              <Kpi label="Refusés" value={String(revenue.declined)} />
+              <Kpi label="Annulés" value={String(revenue.canceled)} />
               <Kpi label="En attente" value={String(revenue.pending)} />
             </div>
             <Card title="Chiffre d'affaires par jour">

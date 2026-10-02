@@ -26,14 +26,14 @@ export function PaymentStatusView({
         <>
           <h1 className="text-h2-mobile font-semibold md:text-h2">Analyse introuvable</h1>
           <p className="text-body text-text-secondary">
-            Ce navigateur n&apos;a pas acces a cette analyse. Si tu as paye, utilise le code que tu as note pour la
+            Ce navigateur n&apos;a pas accès à cette analyse. Si tu as payé, utilise le code que tu as noté pour la
             retrouver.
           </p>
           <Link href="/retrouver" className={primaryButton}>
             Retrouver mon analyse
           </Link>
           <Link href="/commencer" className="text-body font-medium text-text-secondary">
-            Tester une idee
+            Tester une idée
           </Link>
         </>
       )}
@@ -43,12 +43,12 @@ export function PaymentStatusView({
           <h1 className="text-h2-mobile font-semibold md:text-h2">Paiement en cours de confirmation</h1>
           <p className="text-body text-text-secondary">
             {view.timedOut
-              ? "Le paiement n'est pas encore confirme. S'il a bien ete debite, il sera pris en compte des la confirmation de FedaPay."
-              : "On attend la confirmation de FedaPay, ca prend en general quelques secondes."}
+              ? "Le paiement n'est pas encore confirmé. S'il a bien été débité, il sera pris en compte dès la confirmation de FedaPay."
+              : "On attend la confirmation de FedaPay, ça prend en général quelques secondes."}
           </p>
           {view.timedOut ? (
             <button type="button" onClick={onCheckAgain} className={primaryButton}>
-              Verifier a nouveau
+              Vérifier à nouveau
             </button>
           ) : null}
         </>
@@ -57,18 +57,18 @@ export function PaymentStatusView({
       {view.kind === "failed" && (
         <>
           <h1 className="text-h2-mobile font-semibold md:text-h2">Le paiement n&apos;a pas abouti</h1>
-          <p className="text-body text-text-secondary">Rien n&apos;a ete perdu : tes hypotheses sont enregistrees. Tu peux reessayer.</p>
+          <p className="text-body text-text-secondary">Rien n&apos;a été perdu : tes hypothèses sont enregistrées. Tu peux réessayer.</p>
           <button type="button" onClick={onRetryPayment} disabled={retrying} className={primaryButton}>
-            {retrying ? "Redirection..." : "Reessayer le paiement"}
+            {retrying ? "Redirection..." : "Réessayer le paiement"}
           </button>
         </>
       )}
 
       {view.kind === "error" && (
         <>
-          <h1 className="text-h2-mobile font-semibold md:text-h2">Service momentanement indisponible</h1>
+          <h1 className="text-h2-mobile font-semibold md:text-h2">Service momentanément indisponible</h1>
           <button type="button" onClick={onCheckAgain} className={primaryButton}>
-            Reessayer
+            Réessayer
           </button>
         </>
       )}

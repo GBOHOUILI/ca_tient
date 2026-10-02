@@ -16,16 +16,16 @@ export function StepDescription({
 }) {
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
-      <h1 className="text-center text-h2-mobile font-semibold md:text-h2">Decris ton idee</h1>
+      <h1 className="text-center text-h2-mobile font-semibold md:text-h2">Décris ton idée</h1>
       <p className="text-center text-body text-text-secondary">
-        Quelques phrases suffisent. Ca t&apos;aidera plus tard quand l&apos;IA proposera des hypotheses.
+        Quelques phrases suffisent. Ça t&apos;aidera plus tard quand l&apos;IA proposera des hypothèses.
       </p>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
         rows={6}
         maxLength={MAX_DESCRIPTION_LENGTH}
-        placeholder="Ex : je veux vendre des vetements en ligne pour jeunes actifs, livraison a domicile..."
+        placeholder="Ex : je veux vendre des vêtements en ligne pour jeunes actifs, livraison à domicile..."
         className="rounded-lg border border-border bg-surface p-4 text-body text-text-primary focus:border-accent-emerald focus:outline-none"
       />
       <p className="-mt-4 text-right text-micro text-text-secondary">

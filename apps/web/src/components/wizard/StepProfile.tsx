@@ -19,7 +19,7 @@ function Select({
     <label className="flex flex-col gap-2 text-small text-text-secondary">
       {label}
       <select value={value} onChange={(e) => onChange(e.target.value)} className={fieldClass}>
-        <option value="">Je prefere ne pas dire</option>
+        <option value="">Je préfère ne pas dire</option>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
@@ -56,7 +56,7 @@ export function StepProfile({
       <div className="text-center">
         <h1 className="text-h2-mobile font-semibold md:text-h2">Parle-nous de toi</h1>
         <p className="mt-2 text-body text-text-secondary">
-          Tout est facultatif. Ca nous aide a ameliorer Ca tient ? pour des projets comme le tien.
+          Tout est facultatif. Ça nous aide à améliorer Ça tient ? pour des projets comme le tien.
         </p>
       </div>
 
@@ -66,9 +66,9 @@ export function StepProfile({
         <input value={profile.city} maxLength={80} onChange={(e) => set("city", e.target.value)} className={fieldClass} />
       </label>
       <Select label="Tu es..." value={profile.profile} options={PROFILE_KIND_OPTIONS} onChange={(v) => set("profile", v)} />
-      <Select label="Ton projet en est ou ?" value={profile.stage} options={STAGE_OPTIONS} onChange={(v) => set("stage", v)} />
+      <Select label="Ton projet en est où ?" value={profile.stage} options={STAGE_OPTIONS} onChange={(v) => set("stage", v)} />
       <Select
-        label="Comment as-tu connu Ca tient ?"
+        label="Comment as-tu connu Ça tient ?"
         value={profile.heardFrom}
         options={HEARD_FROM_OPTIONS}
         onChange={(v) => set("heardFrom", v)}
@@ -76,7 +76,7 @@ export function StepProfile({
 
       <div className="flex flex-col gap-2 rounded-2xl border border-border bg-surface p-4">
         <label className="flex flex-col gap-2 text-small text-text-secondary">
-          Ton e-mail ou ton numero WhatsApp
+          Ton e-mail ou ton numéro WhatsApp
           <input
             value={profile.contact}
             maxLength={120}
@@ -92,9 +92,9 @@ export function StepProfile({
             onChange={(e) => set("contactConsent", e.target.checked)}
             className="mt-1"
           />
-          J&apos;accepte d&apos;etre recontacte par Ca tient ?
+          J&apos;accepte d&apos;être recontacté par Ça tient ?
         </label>
-        <p className="text-micro text-text-secondary">Uniquement pour te recontacter au sujet de Ca tient ?, jamais partage.</p>
+        <p className="text-micro text-text-secondary">Uniquement pour te recontacter au sujet de Ça tient ?, jamais partagé.</p>
         {contactWithoutConsent ? (
           <p className="text-small text-warning">Coche la case pour qu&apos;on garde ton contact, ou laisse le champ vide.</p>
         ) : null}
@@ -120,7 +120,7 @@ export function StepProfile({
             disabled={submitting || contactWithoutConsent}
             className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white disabled:opacity-40"
           >
-            {submitting ? "Enregistrement..." : "Voir mes resultats"}
+            {submitting ? "Enregistrement..." : "Voir mes résultats"}
           </button>
         </div>
       </div>

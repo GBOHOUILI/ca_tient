@@ -15,7 +15,7 @@ export async function startPayment(ideaId: string): Promise<{ redirectUrl: strin
     throw new AccessDeniedError();
   }
   if (!response.ok) {
-    throw new Error(`Le paiement n'a pas pu demarrer (${response.status}).`);
+    throw new Error(`Le paiement n'a pas pu démarrer (${response.status}).`);
   }
 
   const body = (await response.json()) as { redirectUrl: string };
