@@ -18,6 +18,7 @@ import {
   suggestCanvasBlocks,
   saveCanvasBlocks,
   startPayment,
+  isAccessTokenPersisted,
   type CreateIdeaResponse,
 } from "@/lib/ideas-api";
 
@@ -181,6 +182,7 @@ export default function CommencerPage() {
           onBack={() => dispatch({ type: "GO_TO_STEP", step: "results" })}
           paying={paying}
           error={error}
+          persistenceWarning={!isAccessTokenPersisted(response.ideaId)}
         />
       )}
     </main>
