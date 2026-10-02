@@ -140,8 +140,33 @@ describe("buildReportSummaryPrompt", () => {
       valueProposition: "Cours a domicile",
       customerSegments: "Parents d'eleves",
     });
-    expect(prompt).toContain("ne couvre pas encore ses couts");
+    expect(prompt).toContain("ne couvre pas encore ses coûts");
     expect(prompt).toContain("aucun chiffre");
     expect(prompt).toContain("Cours a domicile");
+  });
+});
+
+describe("French accents in prompts", () => {
+  const input = { businessModel: "SERVICE" as const, rawDescription: "Cours à domicile", currency: "XOF" as const };
+  const facts = {
+    businessModel: "SERVICE" as const,
+    holds: true,
+    breakEvenReachable: true,
+    watchPoints: [],
+    mostSensitive: ["price", "volume"],
+    financing: "unknown" as const,
+    valueProposition: null,
+    customerSegments: null,
+  };
+
+  it("asks for correct French with accents wherever the AI writes text", () => {
+    expect(buildCanvasPrompt(input)).toContain("avec les accents");
+    expect(buildReportSummaryPrompt(facts)).toContain("avec les accents");
+  });
+
+  it("writes its own instructions with accents, so the model does not imitate unaccented French", () => {
+    for (const prompt of [buildHypothesesPrompt(input), buildCanvasPrompt(input), buildReportSummaryPrompt(facts)]) {
+      expect(prompt).not.toMatch(/\b(idee|hypotheses|resultat|cout|couts|activites|rentabilite|redige|reponds|ecris)\b/i);
+    }
   });
 });
