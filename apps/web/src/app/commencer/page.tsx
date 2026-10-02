@@ -8,6 +8,7 @@ import { StepHypotheses } from "@/components/wizard/StepHypotheses";
 import { StepResults } from "@/components/wizard/StepResults";
 import { StepOffer } from "@/components/wizard/StepOffer";
 import { StepCanvas } from "@/components/wizard/StepCanvas";
+import { TrackEvent } from "@/components/analytics/TrackEvent";
 import { initialWizardState, wizardReducer } from "@/components/wizard/wizard-reducer";
 import {
   CANVAS_BLOCK_KEYS,
@@ -115,6 +116,7 @@ export default function CommencerPage() {
 
   return (
     <main className="mx-auto flex max-w-4xl flex-col gap-12 px-4 py-16 sm:px-6">
+      <TrackEvent type="test_started" />
       <WizardProgress currentStep={state.step} />
 
       {state.step === "business-type" && (
@@ -170,6 +172,8 @@ export default function CommencerPage() {
           </button>
         </div>
       )}
+
+      {state.step === "offer" && response && <TrackEvent type="offer_viewed" ideaId={response.ideaId} />}
 
       {state.step === "offer" && response && (
         <StepOffer

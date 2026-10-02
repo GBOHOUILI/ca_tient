@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { SeasonalityProfileKey } from "financial-engine";
+import { TrackEvent } from "@/components/analytics/TrackEvent";
 import { RecoveryCodeBox } from "@/components/analyse/RecoveryCodeBox";
 import { ReportView } from "@/components/analyse/ReportView";
 import { StepCapital } from "@/components/analyse/StepCapital";
@@ -25,6 +26,7 @@ import {
   type IdeaReport,
   type ReportSummary,
 } from "@/lib/ideas-api";
+import { trackEvent } from "@/lib/analytics";
 
 const POLL_INTERVAL_MS = 3_000;
 const POLL_TIMEOUT_MS = 120_000;
@@ -53,6 +55,7 @@ export default function AnalysePage() {
   const [capitalError, setCapitalError] = useState<string | null>(null);
   const [deltas, setDeltas] = useState<WhatIfDeltas>(NO_DELTAS);
   const [profile, setProfile] = useState<SeasonalityProfileKey>("stable");
+  const whatIfTracked = useRef(false);
   const pollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollStartedAt = useRef<number>(0);
   // Holds the latest `check` so the setTimeout callback below can call it without
@@ -261,7 +264,13 @@ export default function AnalysePage() {
           currency={view.idea.currency}
           whatIfDeltas={deltas}
           seasonalityProfile={profile}
-          onDeltaChange={(key, value) => setDeltas((current) => ({ ...current, [key]: value }))}
+          onDeltaChange={(key, value) => {
+            if (!whatIfTracked.current) {
+              whatIfTracked.current = true;
+              trackEvent("what_if_used", ideaId);
+            }
+            setDeltas((current) => ({ ...current, [key]: value }));
+          }}
           onSeasonalityChange={setProfile}
           onNext={() => setScreen("scenarios")}
         />
@@ -292,6 +301,8 @@ export default function AnalysePage() {
           onBack={() => setScreen(report ? "report" : "scenarios")}
         />
       )}
+
+      {view.kind === "paid" && screen === "report" && report && <TrackEvent type="report_viewed" ideaId={ideaId} />}
 
       {view.kind === "paid" && screen === "report" && report && (
         <ReportView

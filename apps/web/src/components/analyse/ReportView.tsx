@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import type { IdeaReport, ReportSummary } from "@/lib/ideas-api";
 import { formatAmount } from "@/lib/format";
+import { trackEvent } from "@/lib/analytics";
 import { CANVAS_LABELS, SCENARIO_COPY, SENSITIVITY_COPY, WATCH_POINT_COPY } from "./report-copy";
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -72,7 +73,10 @@ export function ReportView({
         </button>
         <button
           type="button"
-          onClick={() => window.print()}
+          onClick={() => {
+            trackEvent("report_printed", report.idea.id);
+            window.print();
+          }}
           className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-4 py-2 text-small font-semibold text-white"
         >
           Imprimer / Enregistrer en PDF
