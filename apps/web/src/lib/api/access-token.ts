@@ -33,3 +33,12 @@ export function isAccessTokenPersisted(ideaId: string): boolean {
     return false;
   }
 }
+
+export function forgetAccessToken(ideaId: string): void {
+  memoryTokens.delete(ideaId);
+  try {
+    window.localStorage.removeItem(`${ACCESS_KEY_PREFIX}${ideaId}`);
+  } catch {
+    // nothing stored
+  }
+}

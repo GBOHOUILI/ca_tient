@@ -1,7 +1,7 @@
 import type { BreakEvenResult, CurrencyCode, FinancialResult } from "financial-engine";
 import { readAcquisition } from "../acquisition";
 import type { BusinessModel } from "../business-models";
-import { saveAccessToken } from "./access-token";
+import { forgetAccessToken, saveAccessToken } from "./access-token";
 import { AccessDeniedError, API_BASE_URL, authHeaders } from "./http";
 
 export interface HypothesesInput {
@@ -209,4 +209,13 @@ export async function saveProfile(ideaId: string, profile: ProfileInput): Promis
   if (!response.ok) {
     throw new Error(`L'enregistrement du profil a échoué (${response.status}).`);
   }
+}
+
+// Deletes the analysis and everything attached to it, then forgets its token in this browser.
+export async function deleteIdea(ideaId: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/ideas/${ideaId}`, { method: "DELETE", headers: authHeaders(ideaId) });
+  if (!response.ok && response.status !== 404) {
+    throw new Error(`La suppression a échoué (${response.status}).`);
+  }
+  forgetAccessToken(ideaId);
 }

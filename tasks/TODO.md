@@ -56,10 +56,11 @@
 ## Dashboard admin
 - [x] Sous-projet A : collecte du profil et de la source d'arrivée (`docs/superpowers/specs/2026-10-02-collecte-profil-design.md`)
 - [x] Sous-projet B : dashboard admin (`docs/superpowers/specs/2026-10-02-dashboard-admin-design.md`)
-- [ ] Outiller la suppression des données d'un utilisateur sur demande (manuelle pour l'instant)
+- [x] Suppression des données sur demande (utilisateur et admin) + page Confidentialité (2026-10-03)
 
 ## Sécurité
 - [x] Vulnérabilités de dépendances corrigées (2026-10-03), `pnpm audit` à zéro
+- [ ] Alerte `braces` ≤ 3.0.3 (haute) : aucun correctif publié ; dépendance d'outillage du web uniquement (pas en production). Mettre à jour dès qu'une version corrigée sort.
 
 ## Phase 8 — Bêta
 - [ ] Recruter 10–20 utilisateurs réels

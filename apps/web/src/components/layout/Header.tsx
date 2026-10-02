@@ -28,7 +28,19 @@ export function Header() {
             Ça tient ?
           </span>
         </Link>
-        <ThemeToggle />
+        <nav aria-label="Navigation principale" className="flex items-center gap-3 sm:gap-4">
+          <Link href="/retrouver" className="text-small font-medium text-text-secondary hover:text-text-primary">
+            <span className="sm:hidden">Retrouver</span>
+            <span className="hidden sm:inline">Retrouver mon analyse</span>
+          </Link>
+          <Link
+            href="/commencer"
+            className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-3 py-2 text-small font-semibold text-white sm:px-4"
+          >
+            Tester mon idée
+          </Link>
+          <ThemeToggle />
+        </nav>
       </div>
     </header>
   );

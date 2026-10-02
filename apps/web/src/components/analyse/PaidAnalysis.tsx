@@ -9,6 +9,7 @@ import type { WhatIfDeltas } from "@/components/wizard/wizard-reducer";
 import { trackEvent } from "@/lib/analytics";
 import { hypothesesFromDetail, type IdeaDetail } from "@/lib/api/ideas";
 import { issueRecoveryCode } from "@/lib/api/recovery";
+import { DeleteAnalysis } from "./DeleteAnalysis";
 import { RecoveryCodeBox } from "./RecoveryCodeBox";
 import { ReportView } from "./ReportView";
 import { StepCapital } from "./StepCapital";
@@ -120,6 +121,7 @@ export function PaidAnalysis({ ideaId, idea }: { ideaId: string; idea: IdeaDetai
         ))}
 
       <RecoveryCodeBox code={recoveryCode} issuing={issuingCode} error={codeError} onIssue={() => void issueCode()} />
+      <DeleteAnalysis ideaId={ideaId} />
     </>
   );
 }

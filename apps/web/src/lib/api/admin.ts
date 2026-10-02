@@ -165,3 +165,12 @@ export async function downloadContactsCsv(adminKey: string): Promise<void> {
   link.click();
   URL.revokeObjectURL(url);
 }
+
+export async function deleteAdminIdea(adminKey: string, id: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/admin/ideas/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+    headers: { "x-admin-key": adminKey },
+  });
+  if (response.status === 401) throw new AdminKeyRejectedError();
+  if (!response.ok && response.status !== 404) throw new Error(`Suppression impossible (${response.status}).`);
+}

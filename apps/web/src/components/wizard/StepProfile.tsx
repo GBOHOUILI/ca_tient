@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ProfileInput } from "@/lib/api/ideas";
 import { COUNTRY_OPTIONS, HEARD_FROM_OPTIONS, PROFILE_KIND_OPTIONS, STAGE_OPTIONS } from "./profile-options";
 
@@ -94,7 +95,12 @@ export function StepProfile({
           />
           J&apos;accepte d&apos;être recontacté par Ça tient ?
         </label>
-        <p className="text-micro text-text-secondary">Uniquement pour te recontacter au sujet de Ça tient ?, jamais partagé.</p>
+        <p className="text-micro text-text-secondary">
+          Uniquement pour te recontacter au sujet de Ça tient ?, jamais partagé.{" "}
+          <Link href="/confidentialite" target="_blank" className="underline underline-offset-2">
+            En savoir plus
+          </Link>
+        </p>
         {contactWithoutConsent ? (
           <p className="text-small text-warning">Coche la case pour qu&apos;on garde ton contact, ou laisse le champ vide.</p>
         ) : null}

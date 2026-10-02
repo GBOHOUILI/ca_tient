@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## [Non versionné], suppression des données, confidentialité, header
+- Suppression complète d'une analyse par l'utilisateur (« Supprimer mon analyse ») ou par l'admin sur demande (fiche idée, confirmation `SUPPRIMER`) ; recherche admin par e-mail ou numéro.
+- Page `/confidentialite` (ZeroToOne, contact@zerotoone.bj), liens dans le pied de page et à côté du consentement de contact.
+- Header : « Retrouver mon analyse » et « Tester mon idée » sur toutes les pages.
+- 4 nouveaux tests API ; vérifié dans Chrome (mobile et desktop).
+
 ## [Non versionné], vulnérabilités de dépendances
 - 23 alertes Dependabot (1 critique, 8 hautes) → `pnpm audit` : aucune vulnérabilité. Next.js 16.3.8, `@nestjs/mau` retiré, overrides `mysql2` / `deepmerge-ts` pour Prisma.
 - Vérifié : Prisma (génération, validation, état des migrations), moteur 55 tests, API 267 tests, builds, `next build`, parcours complet dans Chrome.
