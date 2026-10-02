@@ -86,6 +86,16 @@ describe("Capital and report", () => {
     expect(await prisma.capitalPlan.count({ where: { ideaId: id } })).toBe(1);
   });
 
+  it("tells the idea detail whether a capital plan exists", async () => {
+    const { id, auth } = await createIdea(true);
+    const before = await request(app.getHttpServer()).get(`/ideas/${id}`).set(...auth).expect(200);
+    expect(before.body.hasCapitalPlan).toBe(false);
+
+    await request(app.getHttpServer()).put(`/ideas/${id}/capital`).set(...auth).send(CAPITAL).expect(200);
+    const after = await request(app.getHttpServer()).get(`/ideas/${id}`).set(...auth).expect(200);
+    expect(after.body.hasCapitalPlan).toBe(true);
+  });
+
   it("report without canvas blocks and without capital", async () => {
     ai.writeReportSummary.mockResolvedValue(null);
     const { id, auth } = await createIdea(true);

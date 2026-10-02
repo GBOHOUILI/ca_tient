@@ -13,6 +13,7 @@ export interface IdeaDetail {
   rawDescription: string;
   currency: string;
   paid: boolean;
+  hasCapitalPlan: boolean;
   hypotheses: { key: string; label: string; value: number; unit: string | null }[];
   simulation: { type: string; inputsSnapshot: unknown; result: unknown; breakEven: unknown; createdAt: Date } | null;
 }
@@ -106,6 +107,7 @@ export class IdeasService {
       include: {
         hypotheses: true,
         simulations: { orderBy: { createdAt: "desc" }, take: 1 },
+        capitalPlan: { select: { id: true } },
       },
     });
 
@@ -117,6 +119,7 @@ export class IdeasService {
       rawDescription: idea.rawDescription,
       currency: idea.currency,
       paid: idea.paidAt !== null,
+      hasCapitalPlan: idea.capitalPlan !== null,
       hypotheses: idea.hypotheses.map((h) => ({ key: h.key, label: h.label, value: h.value, unit: h.unit })),
       simulation: idea.simulations[0]
         ? {
