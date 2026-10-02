@@ -13,6 +13,11 @@ Toutes les routes `/ideas/:id…` (sauf `POST /ideas` et les deux routes `sugges
 - `POST /ideas/suggest-canvas-blocks` — l'IA propose les 7 blocs qualitatifs du canvas (même contrat)
 - `PATCH /ideas/:id/canvas-blocks` — protégée ; enregistre les 7 blocs validés/édités par l'utilisateur
 
+## Récupération d'une analyse payée
+
+- `POST /ideas/:id/recovery-code` — protégée (jeton d'accès) et réservée aux idées payées (403). Génère un nouveau code `CT-XXXXX-XXXXX`, remplace l'ancien, renvoie `201 { code }` (le code n'est jamais réaffichable : seul son hash est stocké).
+- `POST /recovery` — publique, 5 requêtes/min/IP (429 au-delà). Corps `{ code }` (casse, espaces et tirets ignorés). Renvoie `200 { ideaId, accessToken }` (nouveau jeton, l'ancien reste valide) ; `404` pour un code inconnu, mal formé ou d'une idée non payée ; `400` si `code` est absent.
+
 ## Simulation
 
 - Pas d'endpoint dédié : l'aperçu (CA, marge, seuil) est calculé par `POST`/`PUT /ideas`, les scénarios et le module « Et si ? » sont recalculés côté navigateur par le package partagé `financial-engine` (voir `docs/DECISIONS.md`, 2026-09-20).

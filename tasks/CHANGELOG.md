@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## [Non versionné], code de récupération d'une analyse payée
+- Sur une analyse payée, « Obtenir mon code » génère un code `CT-XXXXX-XXXXX` (copiable, imprimé en tête du rapport) ; un nouveau code remplace l'ancien.
+- Page `/retrouver` (liens depuis le pied de page et l'écran « Analyse introuvable ») : le code rouvre l'analyse depuis n'importe quel navigateur, avec un jeton d'accès supplémentaire ; le navigateur d'origine garde le sien.
+- API : `POST /ideas/:id/recovery-code` (réservée aux idées payées), `POST /recovery` (5 essais/min/IP, 404 neutre), table `IdeaAccessToken`, `IdeaAccessGuard` étendu. Code stocké uniquement haché. 16 tests.
+
 ## [Non versionné], Phase 6b-2a : capital et rapport complet
 - Moteur (`packages/financial-engine`) : `computeCapitalNeed` (dépenses de départ + réserve de 3 mois de charges, besoin de financement ou excédent), `computeSensitivity` (±10 % par hypothèse, classées par impact), `computeWatchPoints` (6 règles déterministes). 55 tests.
 - API : modèles `CapitalPlan` et `ReportSummary`, `PUT /ideas/:id/capital` et `GET /ideas/:id/report` réservées aux idées payées (`PaidIdeaGuard`, 403), `hasCapitalPlan` dans `GET /ideas/:id`. Rapport assemblé côté serveur ; synthèse rédigée par la chaîne IA existante à partir de faits sans montant, rejetée si elle contient un chiffre, repli sur une synthèse modèle, stockée par empreinte des faits.
