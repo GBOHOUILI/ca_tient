@@ -1,0 +1,47 @@
+# Render Blueprint for the API (NestJS). Secrets use `sync: false`: Render asks for them when the
+# Blueprint is created; they are never stored in this repository. See docs/DEPLOYMENT.md.
+services:
+  - type: web
+    name: ca-tient-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    # pnpm is pinned through npx (same version as package.json "packageManager"): it does not rely
+    # on corepack being available on the build image.
+    buildCommand: >-
+      npx --yes pnpm@10.33.2 install --frozen-lockfile &&
+      npx --yes pnpm@10.33.2 --filter financial-engine build &&
+      npx --yes pnpm@10.33.2 --filter api exec prisma generate &&
+      npx --yes pnpm@10.33.2 --filter api build
+    # No package manager at runtime. Migrations are applied before every start, so a deploy never
+    # runs code against an older schema.
+    startCommand: cd apps/api && ./node_modules/.bin/prisma migrate deploy && NODE_ENV=production node dist/main
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      # Render puts one proxy in front of the service: trust it so the rate limiter sees the client IP.
+      - key: TRUST_PROXY
+        value: "1"
+      - key: ANALYSIS_PRICE_XOF
+        value: "1000"
+      - key: PAYMENT_PROVIDER
+        value: fedapay
+      - key: FEDAPAY_ENV
+        value: sandbox
+      - key: ADMIN_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: WEB_APP_URL
+        sync: false
+      - key: FEDAPAY_SECRET_KEY
+        sync: false
+      - key: FEDAPAY_WEBHOOK_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: MISTRAL_API_KEY
+        sync: false

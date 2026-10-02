@@ -1,0 +1,8 @@
+# Netlify settings for the web app. In the Netlify UI: base directory = repository root (empty),
+# package directory = apps/web. Commands run from the repository root. See docs/DEPLOYMENT.md.
+[build]
+  command = "pnpm --filter financial-engine build && pnpm --filter web build"
+  publish = "apps/web/.next"
+
+[build.environment]
+  NODE_VERSION = "24"

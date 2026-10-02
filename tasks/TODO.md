@@ -9,7 +9,7 @@
 - [x] Mettre en place les tokens de design (`design/COLORS.md`, `design/TYPOGRAPHY.md`) dans Tailwind (`apps/web/src/app/globals.css`)
 - [x] Landing page statique avec hero Three.js (voir `design/PROMPTS.md`), copy FR en dur, i18n et sélecteur de langue non implémentés (voir note ci-dessous)
 - [ ] i18n (FR/EN, `next-intl`), reporté volontairement lors de la landing page, à faire avant la bêta (`design/UX_PRINCIPLES.md`)
-- [ ] Déploiement (hébergement front/back + PostgreSQL free-tier, voir `docs/ROADMAP.md` "Budget minimal")
+- [ ] Déploiement : configuration prête (`render.yaml`, `apps/web/netlify.toml`, `docs/DEPLOYMENT.md`), reste à créer les comptes Neon / Render / Netlify et à vérifier le parcours en ligne
 
 ## Phase 2 — Moteur financier
 - [x] Implémenter les formules (`docs/FINANCIAL_ENGINE.md`) : `apps/api/src/financial-engine/` (CA, marge brute, résultat estimé, seuil de rentabilité, scénarios prudent/réaliste/ambitieux/crise). Montants en devise choisie par l'utilisateur (XOF par défaut du marché), voir `docs/DECISIONS.md`.
