@@ -4,6 +4,7 @@ import { PrismaService } from "../prisma/prisma.service.js";
 import { FinancialEngineService } from "../financial-engine/financial-engine.service.js";
 import { generateAccessToken } from "./access-token.js";
 import type { CreateIdeaDto } from "./dto/create-idea.dto.js";
+import { deleteIdeaWithData } from "./delete-idea.js";
 import type { IdeaProfileDto } from "./dto/idea-profile.dto.js";
 import type { UpdateCanvasBlocksDto } from "./dto/update-canvas-blocks.dto.js";
 import type { Hypotheses } from "financial-engine";
@@ -136,6 +137,10 @@ export class IdeasService {
           }
         : null,
     };
+  }
+
+  async remove(ideaId: string): Promise<void> {
+    await deleteIdeaWithData(this.prisma, ideaId);
   }
 
   async saveProfile(ideaId: string, dto: IdeaProfileDto): Promise<void> {

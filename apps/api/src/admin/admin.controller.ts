@@ -1,4 +1,4 @@
-import { Controller, Get, Header, Param, Query, UseGuards } from "@nestjs/common";
+import { Controller, Delete, Get, Header, HttpCode, HttpStatus, Param, Query, UseGuards } from "@nestjs/common";
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
 import { AdminKeyGuard } from "../analytics/admin-key.guard.js";
 import { AdminService } from "./admin.service.js";
@@ -39,6 +39,12 @@ export class AdminController {
   @Get("ideas/:id")
   idea(@Param("id") id: string) {
     return this.admin.idea(id);
+  }
+
+  @Delete("ideas/:id")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteIdea(@Param("id") id: string) {
+    return this.admin.deleteIdea(id);
   }
 
   @Get("contacts.csv")
