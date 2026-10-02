@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import type { IdeaReport } from "@/lib/ideas-api";
+import type { IdeaReport, ReportSummary } from "@/lib/ideas-api";
 import { formatAmount } from "@/lib/format";
 import { CANVAS_LABELS, SCENARIO_COPY, SENSITIVITY_COPY, WATCH_POINT_COPY } from "./report-copy";
 
@@ -25,10 +25,13 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
 
 export function ReportView({
   report,
+  summary,
   onEditCapital,
   onBackToAnalysis,
 }: {
   report: IdeaReport;
+  // null while the summary is being written (it never blocks the rest of the report).
+  summary: ReportSummary | null;
   onEditCapital: () => void;
   onBackToAnalysis: () => void;
 }) {
@@ -81,7 +84,13 @@ export function ReportView({
       </div>
 
       <Section title="Synthese">
-        <p className="text-body">{report.summary.text}</p>
+        {summary ? (
+          <p className="text-body">{summary.text}</p>
+        ) : (
+          <p className="text-body text-text-secondary" aria-live="polite">
+            Redaction de ta synthese...
+          </p>
+        )}
         <p className="text-small text-text-secondary">
           Ca tient ? est une aide a la decision, pas une garantie de rentabilite : les resultats dependent des hypotheses
           que tu fournis.

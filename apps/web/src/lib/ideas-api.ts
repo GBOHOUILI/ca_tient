@@ -276,7 +276,11 @@ export interface IdeaReport {
     costStructure: { variableCostPerUnit: number; fixedCosts: number; startupCosts: number | null };
     revenueStreams: { price: number; volume: number; revenue: number };
   };
-  summary: { text: string; source: "ai" | "template" };
+}
+
+export interface ReportSummary {
+  text: string;
+  source: "ai" | "template";
 }
 
 export async function saveCapital(ideaId: string, plan: CapitalPlanInput): Promise<void> {
@@ -305,4 +309,14 @@ export async function fetchReport(ideaId: string): Promise<IdeaReport> {
   }
 
   return (await response.json()) as IdeaReport;
+}
+
+export async function fetchReportSummary(ideaId: string): Promise<ReportSummary> {
+  const response = await fetch(`${API_BASE_URL}/ideas/${ideaId}/report/summary`, { headers: authHeaders(ideaId) });
+
+  if (!response.ok) {
+    throw new Error(`La synthese est indisponible (${response.status}).`);
+  }
+
+  return (await response.json()) as ReportSummary;
 }

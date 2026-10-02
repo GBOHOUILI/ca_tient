@@ -14,12 +14,14 @@ import {
   fetchIdea,
   fetchPaymentStatus,
   fetchReport,
+  fetchReportSummary,
   hypothesesFromDetail,
   saveCapital,
   startPayment,
   type CapitalPlanInput,
   type IdeaDetail,
   type IdeaReport,
+  type ReportSummary,
 } from "@/lib/ideas-api";
 
 const POLL_INTERVAL_MS = 3_000;
@@ -40,6 +42,7 @@ export default function AnalysePage() {
   const [retrying, setRetrying] = useState(false);
   const [screen, setScreen] = useState<"et-si" | "scenarios" | "capital" | "report">("et-si");
   const [report, setReport] = useState<IdeaReport | null>(null);
+  const [summary, setSummary] = useState<ReportSummary | null>(null);
   const [loadingReport, setLoadingReport] = useState(false);
   const [savingCapital, setSavingCapital] = useState(false);
   const [capitalError, setCapitalError] = useState<string | null>(null);
@@ -67,6 +70,7 @@ export default function AnalysePage() {
         if (idea.hasCapitalPlan) {
           const loaded = await fetchReport(ideaId);
           if (!mountedRef.current) return;
+          setSummary(null);
           setReport(loaded);
           setScreen("report");
         }
@@ -112,6 +116,27 @@ export default function AnalysePage() {
     };
   }, []);
 
+  // The summary may wait for the AI (several seconds): it is loaded after the report is shown.
+  useEffect(() => {
+    if (!report) return;
+    let cancelled = false;
+    fetchReportSummary(ideaId)
+      .then((loaded) => {
+        if (!cancelled) setSummary(loaded);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSummary({
+            text: "La synthese n'a pas pu etre redigee pour le moment. Le reste du rapport est complet.",
+            source: "template",
+          });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [ideaId, report]);
+
   async function openCapital() {
     setCapitalError(null);
     setScreen("capital");
@@ -133,7 +158,9 @@ export default function AnalysePage() {
     setCapitalError(null);
     try {
       await saveCapital(ideaId, plan);
-      setReport(await fetchReport(ideaId));
+      const loaded = await fetchReport(ideaId);
+      setSummary(null);
+      setReport(loaded);
       setScreen("report");
     } catch {
       setCapitalError("L'enregistrement n'a pas abouti. Reessaie : tes montants sont conserves.");
@@ -246,7 +273,7 @@ export default function AnalysePage() {
       )}
 
       {view.kind === "paid" && screen === "report" && report && (
-        <ReportView report={report} onEditCapital={() => void openCapital()} onBackToAnalysis={() => setScreen("et-si")} />
+        <ReportView report={report} summary={summary} onEditCapital={() => void openCapital()} onBackToAnalysis={() => setScreen("et-si")} />
       )}
     </main>
   );
