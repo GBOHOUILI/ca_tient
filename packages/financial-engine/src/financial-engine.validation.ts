@@ -1,7 +1,7 @@
 import { FinancialEngineInputError } from "./financial-engine.errors.js";
 import { SUPPORTED_CURRENCIES, type Hypotheses } from "./financial-engine.types.js";
 
-function assertSafeNonNegativeInteger(value: number, field: string): void {
+export function assertSafeNonNegativeInteger(value: number, field: string): void {
   if (!Number.isInteger(value)) {
     throw new FinancialEngineInputError(`${field} doit être un entier (plus petite unité de la devise).`);
   }

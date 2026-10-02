@@ -47,8 +47,11 @@
 - [x] Phase 6b-1 : jeton d'accès par idée, paiement après l'aperçu, `PaymentService` + providers `test`/`fedapay`, page `/analyse/[ideaId]` (`docs/PAYMENT.md`, `docs/superpowers/specs/2026-09-26-phase-6b1-acces-paiement-design.md`)
 - [x] Test réel FedaPay sandbox, parcours complet (2026-10-02) : transaction créée, paiement "MoMo test" approuvé, analyse débloquée au retour par relecture serveur du statut, sans webhook.
 - [ ] Test réel du webhook FedaPay sandbox (URL publique via tunnel + `FEDAPAY_WEBHOOK_SECRET` du dashboard)
-- [ ] Phase 6b-2 : écran capital, besoin financier, rapport complet, analytics
-- [ ] Rapport final
+- [x] Phase 6b-2a : écran capital, besoin financier, rapport complet imprimable (`docs/superpowers/specs/2026-10-02-phase-6b2a-capital-rapport-design.md`)
+- [x] Code de récupération d'une analyse payée (`/retrouver`, `docs/superpowers/specs/2026-10-02-code-recuperation-design.md`)
+- [x] Phase 6b-2b : analytics minimal, page `/admin/stats` (`docs/superpowers/specs/2026-10-02-phase-6b2b-analytics-design.md`). Configurer `ADMIN_KEY` au déploiement.
+- [ ] **Dette (découverte 2026-10-02)** : `HypothesesDto` n'a pas de `@Max` alors que `Hypothesis.value` est un `Int` Postgres (plafond 2 147 483 647) : un montant plus grand échoue en 500 au lieu d'un 400.
+- [ ] **Dette (découverte 2026-10-02)** : `formatAmount` affiche les montants tels quels alors que le moteur les définit dans la plus petite unité de la devise (centimes pour EUR/USD/GBP/NGN/GHS) ; sans incidence en XOF, à clarifier avant d'ouvrir d'autres devises.
 
 ## Phase 8 — Bêta
 - [ ] Recruter 10–20 utilisateurs réels

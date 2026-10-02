@@ -19,11 +19,13 @@ export function StepScenarios({
   currency,
   whatIfDeltas,
   onBack,
+  onNext,
 }: {
   hypotheses: HypothesesInput;
   currency: CurrencyCode;
   whatIfDeltas: WhatIfDeltas;
   onBack: () => void;
+  onNext?: () => void;
 }) {
   const { bars, error } = useMemo(() => {
     const base: Hypotheses = { currency, ...hypotheses };
@@ -65,10 +67,19 @@ export function StepScenarios({
           </div>
         )
       )}
-      <div className="flex justify-start">
+      <div className="flex justify-between">
         <button type="button" onClick={onBack} className="text-body font-medium text-text-secondary">
           Retour
         </button>
+        {onNext ? (
+          <button
+            type="button"
+            onClick={onNext}
+            className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white"
+          >
+            Continuer
+          </button>
+        ) : null}
       </div>
     </div>
   );

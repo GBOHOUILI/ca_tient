@@ -26,6 +26,23 @@ Chaque scénario applique un jeu de variations prédéfinies aux hypothèses de 
 
 *(Ces coefficients sont un point de départ — à valider/ajuster avant implémentation finale, éventuellement par modèle de business.)*
 
+## Capital, sensibilité, points à surveiller (Phase 6b-2a)
+
+Fonctions pures de `packages/financial-engine` (`capital.ts`, `sensitivity.ts`, `watch-points.ts`).
+
+- **Capital nécessaire** = dépenses de départ (matériel + stock de départ + frais d'ouverture + autres) + réserve de trésorerie de `CASH_RESERVE_MONTHS` = **3 mois** de charges fixes. **Besoin de financement** = max(0, capital nécessaire − capital disponible) ; sinon **excédent** = capital disponible − capital nécessaire. Forfait plutôt que cumul des pertes jusqu'au point mort : le moteur n'a pas de montée en charge, ce cumul vaudrait 0 dès que le mois type est rentable.
+- **Variables sensibles** : chaque hypothèse (prix, volume, coût variable, charges fixes) varie de ±`SENSITIVITY_PERCENT` = **10 %** ; impact = plus grand écart du résultat mensuel ; tri par impact décroissant (égalité : prix, volume, coût variable, charges fixes).
+- **Points à surveiller** (codes, texte côté web) :
+
+| Code | Règle |
+|---|---|
+| `non_positive_unit_margin` | prix − coût variable unitaire ≤ 0 |
+| `below_break_even` | marge unitaire > 0 et volume < seuil de rentabilité |
+| `thin_gross_margin` | marge unitaire > 0, CA > 0 et marge brute < `THIN_MARGIN_PERCENT` = **20 %** du CA (comparaison en entiers) |
+| `prudent_scenario_loss` | résultat de base ≥ 0 et résultat du scénario prudent < 0 |
+| `financing_gap` | capital saisi et besoin de financement > 0 |
+| `no_cash_reserve` | capital saisi et capital disponible < dépenses de départ |
+
 ## Points de robustesse à respecter dans l'implémentation
 
 - **Précision des calculs** : ne pas utiliser l'arithmétique flottante native pour les montants (FCFA étant une devise sans décimales, travailler en entiers/centimes ou avec une librairie de précision décimale pour éviter les erreurs d'arrondi cumulées).

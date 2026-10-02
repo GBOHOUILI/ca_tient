@@ -110,3 +110,29 @@ body {
     background-color 200ms ease,
     color 200ms ease;
 }
+
+/* Report printing (Phase 6b-2a): light tokens whatever the theme, no chrome, no split blocks. */
+@media print {
+  :root,
+  .dark {
+    --color-bg: #fafafa;
+    --color-surface: #f4f4f5;
+    --color-border: #e4e4e7;
+    --color-text-primary: #18181b;
+    --color-text-secondary: #71717a;
+    --color-accent-cyan: #0fa890;
+    --color-success: #16a34a;
+    --color-warning: #d97706;
+    --color-error: #dc2626;
+  }
+
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  .report-section {
+    break-inside: avoid;
+  }
+}

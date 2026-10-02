@@ -4,6 +4,10 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { SeasonalityProfileKey } from "financial-engine";
+import { TrackEvent } from "@/components/analytics/TrackEvent";
+import { RecoveryCodeBox } from "@/components/analyse/RecoveryCodeBox";
+import { ReportView } from "@/components/analyse/ReportView";
+import { StepCapital } from "@/components/analyse/StepCapital";
 import { StepEtSi } from "@/components/wizard/StepEtSi";
 import { StepScenarios } from "@/components/wizard/StepScenarios";
 import type { WhatIfDeltas } from "@/components/wizard/wizard-reducer";
@@ -11,10 +15,18 @@ import {
   AccessDeniedError,
   fetchIdea,
   fetchPaymentStatus,
+  fetchReport,
+  fetchReportSummary,
   hypothesesFromDetail,
+  issueRecoveryCode,
+  saveCapital,
   startPayment,
+  type CapitalPlanInput,
   type IdeaDetail,
+  type IdeaReport,
+  type ReportSummary,
 } from "@/lib/ideas-api";
+import { trackEvent } from "@/lib/analytics";
 
 const POLL_INTERVAL_MS = 3_000;
 const POLL_TIMEOUT_MS = 120_000;
@@ -32,9 +44,18 @@ export default function AnalysePage() {
   const { ideaId } = useParams<{ ideaId: string }>();
   const [view, setView] = useState<View>({ kind: "loading" });
   const [retrying, setRetrying] = useState(false);
-  const [screen, setScreen] = useState<"et-si" | "scenarios">("et-si");
+  const [screen, setScreen] = useState<"et-si" | "scenarios" | "capital" | "report">("et-si");
+  const [report, setReport] = useState<IdeaReport | null>(null);
+  const [summary, setSummary] = useState<ReportSummary | null>(null);
+  const [recoveryCode, setRecoveryCode] = useState<string | null>(null);
+  const [issuingCode, setIssuingCode] = useState(false);
+  const [codeError, setCodeError] = useState<string | null>(null);
+  const [loadingReport, setLoadingReport] = useState(false);
+  const [savingCapital, setSavingCapital] = useState(false);
+  const [capitalError, setCapitalError] = useState<string | null>(null);
   const [deltas, setDeltas] = useState<WhatIfDeltas>(NO_DELTAS);
   const [profile, setProfile] = useState<SeasonalityProfileKey>("stable");
+  const whatIfTracked = useRef(false);
   const pollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pollStartedAt = useRef<number>(0);
   // Holds the latest `check` so the setTimeout callback below can call it without
@@ -53,6 +74,14 @@ export default function AnalysePage() {
       if (payment.paid) {
         const idea = await fetchIdea(ideaId);
         if (!mountedRef.current) return;
+        // Coming back after entering the capital: the report is the natural landing screen.
+        if (idea.hasCapitalPlan) {
+          const loaded = await fetchReport(ideaId);
+          if (!mountedRef.current) return;
+          setSummary(null);
+          setReport(loaded);
+          setScreen("report");
+        }
         setView({ kind: "paid", idea });
         return;
       }
@@ -95,6 +124,71 @@ export default function AnalysePage() {
     };
   }, []);
 
+  // The summary may wait for the AI (several seconds): it is loaded after the report is shown.
+  useEffect(() => {
+    if (!report) return;
+    let cancelled = false;
+    fetchReportSummary(ideaId)
+      .then((loaded) => {
+        if (!cancelled) setSummary(loaded);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSummary({
+            text: "La synthese n'a pas pu etre redigee pour le moment. Le reste du rapport est complet.",
+            source: "template",
+          });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [ideaId, report]);
+
+  async function issueCode() {
+    setIssuingCode(true);
+    setCodeError(null);
+    try {
+      setRecoveryCode(await issueRecoveryCode(ideaId));
+    } catch {
+      setCodeError("Le code n'a pas pu etre genere. Reessaie.");
+    } finally {
+      setIssuingCode(false);
+    }
+  }
+
+  async function openCapital() {
+    setCapitalError(null);
+    setScreen("capital");
+    // Pre-fill with the saved plan if the report was not loaded yet (direct jump from Scenarios).
+    if (!report && view.kind === "paid" && view.idea.hasCapitalPlan) {
+      setLoadingReport(true);
+      try {
+        setReport(await fetchReport(ideaId));
+      } catch {
+        // the form simply starts empty
+      } finally {
+        setLoadingReport(false);
+      }
+    }
+  }
+
+  async function submitCapital(plan: CapitalPlanInput) {
+    setSavingCapital(true);
+    setCapitalError(null);
+    try {
+      await saveCapital(ideaId, plan);
+      const loaded = await fetchReport(ideaId);
+      setSummary(null);
+      setReport(loaded);
+      setScreen("report");
+    } catch {
+      setCapitalError("L'enregistrement n'a pas abouti. Reessaie : tes montants sont conserves.");
+    } finally {
+      setSavingCapital(false);
+    }
+  }
+
   async function retryPayment() {
     setRetrying(true);
     try {
@@ -117,9 +211,13 @@ export default function AnalysePage() {
         <div className="mx-auto flex max-w-xl flex-col items-center gap-4 text-center">
           <h1 className="text-h2-mobile font-semibold md:text-h2">Analyse introuvable</h1>
           <p className="text-body text-text-secondary">
-            Cette analyse n&apos;est accessible que depuis le navigateur qui l&apos;a creee.
+            Ce navigateur n&apos;a pas acces a cette analyse. Si tu as paye, utilise le code que tu as note pour la
+            retrouver.
           </p>
-          <Link href="/commencer" className={primaryButton}>
+          <Link href="/retrouver" className={primaryButton}>
+            Retrouver mon analyse
+          </Link>
+          <Link href="/commencer" className="text-body font-medium text-text-secondary">
             Tester une idee
           </Link>
         </div>
@@ -166,7 +264,13 @@ export default function AnalysePage() {
           currency={view.idea.currency}
           whatIfDeltas={deltas}
           seasonalityProfile={profile}
-          onDeltaChange={(key, value) => setDeltas((current) => ({ ...current, [key]: value }))}
+          onDeltaChange={(key, value) => {
+            if (!whatIfTracked.current) {
+              whatIfTracked.current = true;
+              trackEvent("what_if_used", ideaId);
+            }
+            setDeltas((current) => ({ ...current, [key]: value }));
+          }}
           onSeasonalityChange={setProfile}
           onNext={() => setScreen("scenarios")}
         />
@@ -178,7 +282,38 @@ export default function AnalysePage() {
           currency={view.idea.currency}
           whatIfDeltas={deltas}
           onBack={() => setScreen("et-si")}
+          onNext={() => void openCapital()}
         />
+      )}
+
+      {view.kind === "paid" && screen === "capital" && loadingReport && (
+        <p className="text-center text-body text-text-secondary">Chargement de ton capital...</p>
+      )}
+
+      {view.kind === "paid" && screen === "capital" && !loadingReport && (
+        <StepCapital
+          currency={view.idea.currency}
+          fixedCosts={hypothesesFromDetail(view.idea).fixedCosts}
+          initialPlan={report?.capital?.plan ?? null}
+          saving={savingCapital}
+          error={capitalError}
+          onSubmit={(plan) => void submitCapital(plan)}
+          onBack={() => setScreen(report ? "report" : "scenarios")}
+        />
+      )}
+
+      {view.kind === "paid" && screen === "report" && report && <TrackEvent type="report_viewed" ideaId={ideaId} />}
+
+      {view.kind === "paid" && screen === "report" && report && (
+        <ReportView
+          report={report}
+          summary={summary}
+          recoveryCode={recoveryCode}
+          onEditCapital={() => void openCapital()} onBackToAnalysis={() => setScreen("et-si")} />
+      )}
+
+      {view.kind === "paid" && (
+        <RecoveryCodeBox code={recoveryCode} issuing={issuingCode} error={codeError} onIssue={() => void issueCode()} />
       )}
     </main>
   );

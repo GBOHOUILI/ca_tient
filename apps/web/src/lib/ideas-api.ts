@@ -1,3 +1,5 @@
+import type { CapitalNeed, ScenarioKey, SensitivityEntry, WatchPointCode } from "financial-engine";
+
 export const BUSINESS_MODELS = ["ECOMMERCE", "FORMATION", "EBOOK", "SERVICE", "PRODUIT_PHYSIQUE", "AUTRE"] as const;
 export type BusinessModel = (typeof BUSINESS_MODELS)[number];
 
@@ -210,6 +212,7 @@ export interface IdeaDetail {
   currency: CurrencyCode;
   hypotheses: { key: string; value: number }[];
   paid: boolean;
+  hasCapitalPlan: boolean;
 }
 
 export async function startPayment(ideaId: string): Promise<{ redirectUrl: string }> {
@@ -266,4 +269,120 @@ export function hypothesesFromDetail(detail: IdeaDetail): HypothesesInput {
     variableCostPerUnit: value("variableCostPerUnit"),
     fixedCosts: value("fixedCosts"),
   };
+}
+
+export interface CapitalPlanInput {
+  equipment: number;
+  initialStock: number;
+  openingCosts: number;
+  other: number;
+  availableCapital: number;
+}
+
+export interface IdeaReport {
+  idea: { id: string; businessModel: BusinessModel; rawDescription: string; currency: CurrencyCode };
+  hypotheses: HypothesesInput & { currency: CurrencyCode };
+  result: FinancialResult;
+  breakEven: BreakEvenResult;
+  scenarios: { key: ScenarioKey; result: FinancialResult }[];
+  capital: { plan: CapitalPlanInput; need: CapitalNeed } | null;
+  sensitivity: SensitivityEntry[];
+  watchPoints: WatchPointCode[];
+  canvas: {
+    blocks: Partial<Record<CanvasBlockKey, string>>;
+    costStructure: { variableCostPerUnit: number; fixedCosts: number; startupCosts: number | null };
+    revenueStreams: { price: number; volume: number; revenue: number };
+  };
+}
+
+export interface ReportSummary {
+  text: string;
+  source: "ai" | "template";
+}
+
+export async function saveCapital(ideaId: string, plan: CapitalPlanInput): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/ideas/${ideaId}/capital`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeaders(ideaId) },
+    body: JSON.stringify(plan),
+  });
+
+  if (response.status === 401 || response.status === 404) {
+    throw new AccessDeniedError();
+  }
+  if (!response.ok) {
+    throw new Error(`L'enregistrement du capital a echoue (${response.status}).`);
+  }
+}
+
+export async function fetchReport(ideaId: string): Promise<IdeaReport> {
+  const response = await fetch(`${API_BASE_URL}/ideas/${ideaId}/report`, { headers: authHeaders(ideaId) });
+
+  if (response.status === 401 || response.status === 404) {
+    throw new AccessDeniedError();
+  }
+  if (!response.ok) {
+    throw new Error(`Le rapport est indisponible (${response.status}).`);
+  }
+
+  return (await response.json()) as IdeaReport;
+}
+
+export async function fetchReportSummary(ideaId: string): Promise<ReportSummary> {
+  const response = await fetch(`${API_BASE_URL}/ideas/${ideaId}/report/summary`, { headers: authHeaders(ideaId) });
+
+  if (!response.ok) {
+    throw new Error(`La synthese est indisponible (${response.status}).`);
+  }
+
+  return (await response.json()) as ReportSummary;
+}
+
+export class RecoveryCodeNotFoundError extends Error {
+  constructor() {
+    super("Ce code ne correspond a aucune analyse.");
+    this.name = "RecoveryCodeNotFoundError";
+  }
+}
+
+export class TooManyAttemptsError extends Error {
+  constructor() {
+    super("Trop d'essais.");
+    this.name = "TooManyAttemptsError";
+  }
+}
+
+export async function issueRecoveryCode(ideaId: string): Promise<string> {
+  const response = await fetch(`${API_BASE_URL}/ideas/${ideaId}/recovery-code`, {
+    method: "POST",
+    headers: authHeaders(ideaId),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Le code n'a pas pu etre genere (${response.status}).`);
+  }
+
+  return ((await response.json()) as { code: string }).code;
+}
+
+export async function redeemRecoveryCode(code: string): Promise<{ ideaId: string }> {
+  const response = await fetch(`${API_BASE_URL}/recovery`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code }),
+  });
+
+  if (response.status === 404 || response.status === 400) {
+    throw new RecoveryCodeNotFoundError();
+  }
+  if (response.status === 429) {
+    throw new TooManyAttemptsError();
+  }
+  if (!response.ok) {
+    throw new Error(`La recuperation a echoue (${response.status}).`);
+  }
+
+  const body = (await response.json()) as { ideaId: string; accessToken: string };
+  saveAccessToken(body.ideaId, body.accessToken);
+  return { ideaId: body.ideaId };
 }

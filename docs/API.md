@@ -8,10 +8,15 @@ Toutes les routes `/ideas/:id…` (sauf `POST /ideas` et les deux routes `sugges
 
 - `POST /ideas` — crée une idée (description libre + modèle de business optionnel), renvoie en plus `accessToken` (jeton aléatoire, à conserver côté navigateur — voir `docs/DECISIONS.md`)
 - `PUT /ideas/:id` — protégée ; met à jour la même idée (même corps que `POST /ideas`), remplace ses hypothèses et sa simulation d'aperçu, conserve ses blocs de canvas ; utilisé quand l'utilisateur revient en arrière dans le wizard
-- `GET /ideas/:id` — protégée ; relit l'idée, ses hypothèses, sa simulation d'aperçu, et `paid: boolean` (calculé côté serveur, jamais transmis par le client)
+- `GET /ideas/:id` — protégée ; relit l'idée, ses hypothèses, sa simulation d'aperçu, `paid: boolean` (calculé côté serveur, jamais transmis par le client) et `hasCapitalPlan: boolean`
 - `POST /ideas/suggest-hypotheses` — l'IA propose les 4 hypothèses à partir de la description (sans persistance, `{ available: false }` si l'IA ne répond pas)
 - `POST /ideas/suggest-canvas-blocks` — l'IA propose les 7 blocs qualitatifs du canvas (même contrat)
 - `PATCH /ideas/:id/canvas-blocks` — protégée ; enregistre les 7 blocs validés/édités par l'utilisateur
+
+## Récupération d'une analyse payée
+
+- `POST /ideas/:id/recovery-code` — protégée (jeton d'accès) et réservée aux idées payées (403). Génère un nouveau code `CT-XXXXX-XXXXX`, remplace l'ancien, renvoie `201 { code }` (le code n'est jamais réaffichable : seul son hash est stocké).
+- `POST /recovery` — publique, 5 requêtes/min/IP (429 au-delà). Corps `{ code }` (casse, espaces et tirets ignorés). Renvoie `200 { ideaId, accessToken }` (nouveau jeton, l'ancien reste valide) ; `404` pour un code inconnu, mal formé ou d'une idée non payée ; `400` si `code` est absent.
 
 ## Simulation
 
@@ -26,7 +31,14 @@ Toutes les routes `/ideas/:id…` (sauf `POST /ideas` et les deux routes `sugges
 ## Analyse complète et rapport
 
 - L'analyse payante (« Et si ? », scénarios) est affichée côté navigateur (`/analyse/:ideaId`) une fois `GET /ideas/:id/payment` confirmé `paid: true` ; pas d'endpoint dédié pour l'instant, `GET /ideas/:id` suffit (hypothèses + devise).
-- `GET /ideas/:id/report` — reporté à la Phase 6b-2 (rapport final formaté).
+- `PUT /ideas/:id/capital` — protégée et **réservée aux idées payées** (`PaidIdeaGuard` : 403 sinon). Corps `{ equipment, initialStock, openingCosts, other, availableCapital }`, entiers de 0 à 2 147 483 647 (400 sinon). Enregistre le plan (upsert) et renvoie `200 { capitalNeed }` (`computeCapitalNeed` : dépenses de départ, réserve de 3 mois de charges, capital nécessaire, besoin de financement ou excédent).
+- `GET /ideas/:id/report` — protégée et réservée aux idées payées (403). Rapport complet assemblé côté serveur : idée, hypothèses, résultat, seuil, 4 scénarios, `capital` (`{ plan, need }` ou `null` si non saisi), variables sensibles, codes des points à surveiller, canvas (7 blocs saisis + structure de coûts et flux de revenus calculés), sans la synthèse : la route ne fait jamais attendre l'IA. Tous les chiffres viennent du moteur.
+- `GET /ideas/:id/report/summary` — protégée et réservée aux idées payées (403). Renvoie `{ text, source: "ai" | "template" }`. Synthèse IA sans aucun chiffre, stockée par empreinte des faits ; repli sur une synthèse modèle (non stockée) si l'IA échoue. Des requêtes simultanées pour une même idée partagent un seul appel à l'IA (par processus API).
+
+## Analytics
+
+- `POST /analytics/events` — publique, 60 requêtes/min/IP, `204`. Corps `{ type, sessionId, ideaId? }` ; `type` ∈ `landing_view | test_started | offer_viewed | what_if_used | report_viewed | report_printed` (les paiements ne sont jamais acceptés du navigateur) ; `sessionId` 8–64 caractères `[A-Za-z0-9-]` ; `400` sinon.
+- `GET /admin/stats?period=7d|30d|all` (défaut `30d`) — en-tête `x-admin-key` = `ADMIN_KEY` (comparaison en temps constant). `404` si `ADMIN_KEY` n'est pas configurée, `401` si la clé est fausse, `400` période inconnue. Renvoie `{ period, from, steps: [{ key, count }], reportPrinted, recoveries }`, étapes dans l'ordre du funnel, comptes distincts.
 
 ## Historique
 

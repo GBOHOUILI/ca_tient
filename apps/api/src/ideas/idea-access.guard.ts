@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import type { Request } from "express";
 import { PrismaService } from "../prisma/prisma.service.js";
-import { accessTokenMatches } from "./access-token.js";
+import { accessTokenMatches, hashAccessToken } from "./access-token.js";
 
 @Injectable()
 export class IdeaAccessGuard implements CanActivate {
@@ -20,8 +20,18 @@ export class IdeaAccessGuard implements CanActivate {
       ? await this.prisma.idea.findUnique({ where: { id: ideaId }, select: { accessTokenHash: true } })
       : null;
 
+    if (idea?.accessTokenHash && accessTokenMatches(token, idea.accessTokenHash)) return true;
+
+    // Tokens handed out by a recovery code (another browser) live in IdeaAccessToken.
+    const recovered = idea
+      ? await this.prisma.ideaAccessToken.findFirst({
+          where: { ideaId, tokenHash: hashAccessToken(token) },
+          select: { id: true },
+        })
+      : null;
+
     // Same 404 for unknown idea and wrong token: never reveal that an idea exists.
-    if (!idea?.accessTokenHash || !accessTokenMatches(token, idea.accessTokenHash)) {
+    if (!recovered) {
       throw new NotFoundException(`Idee ${ideaId} introuvable.`);
     }
     return true;

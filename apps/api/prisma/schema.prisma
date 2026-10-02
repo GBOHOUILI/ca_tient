@@ -27,6 +27,10 @@ model Idea {
   accessTokenHash String?
   paidAt          DateTime?
   payments        Payment[]
+  capitalPlan     CapitalPlan?
+  reportSummary   ReportSummary?
+  recoveryCodeHash String?          @unique
+  accessTokens     IdeaAccessToken[]
 }
 
 model Hypothesis {
@@ -95,4 +99,53 @@ model Payment {
 
   @@unique([provider, providerTransactionId])
   @@index([ideaId])
+}
+
+model CapitalPlan {
+  id               String   @id @default(cuid())
+  ideaId           String   @unique
+  idea             Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  equipment        Int
+  initialStock     Int
+  openingCosts     Int
+  other            Int
+  availableCapital Int
+  updatedAt        DateTime @updatedAt
+}
+
+model ReportSummary {
+  id        String   @id @default(cuid())
+  ideaId    String   @unique
+  idea      Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  text      String
+  factsHash String
+  createdAt DateTime @default(now())
+}
+
+model IdeaAccessToken {
+  id        String   @id @default(cuid())
+  ideaId    String
+  idea      Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  createdAt DateTime @default(now())
+}
+
+enum AnalyticsEventType {
+  landing_view
+  test_started
+  offer_viewed
+  what_if_used
+  report_viewed
+  report_printed
+}
+
+model AnalyticsEvent {
+  id        String             @id @default(cuid())
+  type      AnalyticsEventType
+  sessionId String
+  // No foreign key: an event must never fail because its idea was deleted.
+  ideaId    String?
+  createdAt DateTime           @default(now())
+
+  @@index([type, createdAt])
 }
