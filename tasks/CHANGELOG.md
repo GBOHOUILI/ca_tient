@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## [Non versionné], Phase 6b-2a : capital et rapport complet
+- Moteur (`packages/financial-engine`) : `computeCapitalNeed` (dépenses de départ + réserve de 3 mois de charges, besoin de financement ou excédent), `computeSensitivity` (±10 % par hypothèse, classées par impact), `computeWatchPoints` (6 règles déterministes). 55 tests.
+- API : modèles `CapitalPlan` et `ReportSummary`, `PUT /ideas/:id/capital` et `GET /ideas/:id/report` réservées aux idées payées (`PaidIdeaGuard`, 403), `hasCapitalPlan` dans `GET /ideas/:id`. Rapport assemblé côté serveur ; synthèse rédigée par la chaîne IA existante à partir de faits sans montant, rejetée si elle contient un chiffre, repli sur une synthèse modèle, stockée par empreinte des faits.
+- Web : écrans « Ton capital » (récapitulatif en direct via le moteur partagé) et « Ton rapport » (7 sections, canvas en 9 blocs, impression / PDF via le navigateur, feuille `@media print` en thème clair). L'écran d'offre annonce désormais le rapport comme inclus.
+- Vérification : suites moteur et API vertes ; parcours API de bout en bout avec le fournisseur de paiement `test` (403 avant paiement, capital, rapport, synthèse IA réelle sans chiffre puis réutilisée).
+
 ## [Non versionné], Phase 6b-1 : accès à l'analyse et paiement
 - Le paiement se place désormais après l'aperçu gratuit : "Et si ?" et les scénarios ne s'affichent qu'une fois le paiement de 1 000 FCFA confirmé côté serveur (nouvel écran "Offre" dans `/commencer`).
 - Paiement sur la page hébergée FedaPay (redirection, aucune donnée bancaire sur nos serveurs) ; en développement, un `TestProvider` (`PAYMENT_PROVIDER=test`) approuve immédiatement pour travailler sans compte FedaPay.

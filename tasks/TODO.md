@@ -46,8 +46,10 @@
 - [x] Écran d'offre à 1 000 FCFA
 - [x] Phase 6b-1 : jeton d'accès par idée, paiement après l'aperçu, `PaymentService` + providers `test`/`fedapay`, page `/analyse/[ideaId]` (`docs/PAYMENT.md`, `docs/superpowers/specs/2026-09-26-phase-6b1-acces-paiement-design.md`)
 - [ ] Test réel FedaPay sandbox (clés sandbox + URL publique pour le webhook)
-- [ ] Phase 6b-2 : écran capital, besoin financier, rapport complet, analytics
-- [ ] Rapport final
+- [x] Phase 6b-2a : écran capital, besoin financier, rapport complet imprimable (`docs/superpowers/specs/2026-10-02-phase-6b2a-capital-rapport-design.md`)
+- [ ] Phase 6b-2b : analytics minimal (visites, démarrages de test, simulations terminées, paiements), spec séparée
+- [ ] **Dette (découverte 2026-10-02)** : `HypothesesDto` n'a pas de `@Max` alors que `Hypothesis.value` est un `Int` Postgres (plafond 2 147 483 647) : un montant plus grand échoue en 500 au lieu d'un 400.
+- [ ] **Dette (découverte 2026-10-02)** : `formatAmount` affiche les montants tels quels alors que le moteur les définit dans la plus petite unité de la devise (centimes pour EUR/USD/GBP/NGN/GHS) ; sans incidence en XOF, à clarifier avant d'ouvrir d'autres devises.
 
 ## Phase 8 — Bêta
 - [ ] Recruter 10–20 utilisateurs réels

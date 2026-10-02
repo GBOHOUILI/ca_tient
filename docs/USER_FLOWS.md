@@ -12,7 +12,8 @@
 | 8 | Paiement | Redirection vers la page hébergée FedaPay → paiement → vérification côté serveur (webhook signé + relecture de la transaction) |
 | 9 | Et si… ? | Modification des prix, ventes, coûts, saisonnalité, etc. — accessible uniquement après confirmation serveur du paiement |
 | 10 | Scénarios | Prudent, réaliste, ambitieux, crise, et scénario personnalisé |
-| 11 | Rapport (Phase 6b-2) | Synthèse, capital et besoin financier, business model canvas complet, variables sensibles, points à surveiller |
+| 11 | Ton capital | Dépenses de départ (matériel, stock, frais d'ouverture, autres) et capital déjà disponible ; récapitulatif en direct du capital nécessaire (dépenses + 3 mois de charges) et du besoin de financement |
+| 12 | Ton rapport | Synthèse, chiffres clés, capital et besoin financier, scénarios, variables sensibles, points à surveiller, business model canvas en 9 blocs ; imprimable / enregistrable en PDF depuis le navigateur. À une nouvelle visite, `/analyse/<id>` ouvre directement le rapport si le capital a été saisi |
 
 ## Points de rupture à gérer explicitement
 

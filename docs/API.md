@@ -8,7 +8,7 @@ Toutes les routes `/ideas/:id…` (sauf `POST /ideas` et les deux routes `sugges
 
 - `POST /ideas` — crée une idée (description libre + modèle de business optionnel), renvoie en plus `accessToken` (jeton aléatoire, à conserver côté navigateur — voir `docs/DECISIONS.md`)
 - `PUT /ideas/:id` — protégée ; met à jour la même idée (même corps que `POST /ideas`), remplace ses hypothèses et sa simulation d'aperçu, conserve ses blocs de canvas ; utilisé quand l'utilisateur revient en arrière dans le wizard
-- `GET /ideas/:id` — protégée ; relit l'idée, ses hypothèses, sa simulation d'aperçu, et `paid: boolean` (calculé côté serveur, jamais transmis par le client)
+- `GET /ideas/:id` — protégée ; relit l'idée, ses hypothèses, sa simulation d'aperçu, `paid: boolean` (calculé côté serveur, jamais transmis par le client) et `hasCapitalPlan: boolean`
 - `POST /ideas/suggest-hypotheses` — l'IA propose les 4 hypothèses à partir de la description (sans persistance, `{ available: false }` si l'IA ne répond pas)
 - `POST /ideas/suggest-canvas-blocks` — l'IA propose les 7 blocs qualitatifs du canvas (même contrat)
 - `PATCH /ideas/:id/canvas-blocks` — protégée ; enregistre les 7 blocs validés/édités par l'utilisateur
@@ -26,7 +26,8 @@ Toutes les routes `/ideas/:id…` (sauf `POST /ideas` et les deux routes `sugges
 ## Analyse complète et rapport
 
 - L'analyse payante (« Et si ? », scénarios) est affichée côté navigateur (`/analyse/:ideaId`) une fois `GET /ideas/:id/payment` confirmé `paid: true` ; pas d'endpoint dédié pour l'instant, `GET /ideas/:id` suffit (hypothèses + devise).
-- `GET /ideas/:id/report` — reporté à la Phase 6b-2 (rapport final formaté).
+- `PUT /ideas/:id/capital` — protégée et **réservée aux idées payées** (`PaidIdeaGuard` : 403 sinon). Corps `{ equipment, initialStock, openingCosts, other, availableCapital }`, entiers de 0 à 2 147 483 647 (400 sinon). Enregistre le plan (upsert) et renvoie `200 { capitalNeed }` (`computeCapitalNeed` : dépenses de départ, réserve de 3 mois de charges, capital nécessaire, besoin de financement ou excédent).
+- `GET /ideas/:id/report` — protégée et réservée aux idées payées (403). Rapport complet assemblé côté serveur : idée, hypothèses, résultat, seuil, 4 scénarios, `capital` (`{ plan, need }` ou `null` si non saisi), variables sensibles, codes des points à surveiller, canvas (7 blocs saisis + structure de coûts et flux de revenus calculés), `summary: { text, source: "ai" | "template" }`. Tous les chiffres viennent du moteur ; la synthèse IA ne contient aucun chiffre.
 
 ## Historique
 
