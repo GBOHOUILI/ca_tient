@@ -26,12 +26,14 @@ function Row({ label, value, strong }: { label: string; value: string; strong?: 
 export function ReportView({
   report,
   summary,
+  recoveryCode,
   onEditCapital,
   onBackToAnalysis,
 }: {
   report: IdeaReport;
   // null while the summary is being written (it never blocks the rest of the report).
   summary: ReportSummary | null;
+  recoveryCode: string | null;
   onEditCapital: () => void;
   onBackToAnalysis: () => void;
 }) {
@@ -81,6 +83,11 @@ export function ReportView({
         <p className="text-micro font-medium tracking-micro text-text-secondary">Ca tient ? · Rapport complet</p>
         <h1 className="text-h2-mobile font-semibold md:text-h2">Ton rapport</h1>
         <p className="mt-2 text-body text-text-secondary">{report.idea.rawDescription}</p>
+        {recoveryCode ? (
+          <p className="mt-2 text-small text-text-secondary">
+            Code pour revoir cette analyse : <span className="font-semibold tabular-nums text-text-primary">{recoveryCode}</span>
+          </p>
+        ) : null}
       </div>
 
       <Section title="Synthese">

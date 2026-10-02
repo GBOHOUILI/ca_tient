@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { SeasonalityProfileKey } from "financial-engine";
+import { RecoveryCodeBox } from "@/components/analyse/RecoveryCodeBox";
 import { ReportView } from "@/components/analyse/ReportView";
 import { StepCapital } from "@/components/analyse/StepCapital";
 import { StepEtSi } from "@/components/wizard/StepEtSi";
@@ -16,6 +17,7 @@ import {
   fetchReport,
   fetchReportSummary,
   hypothesesFromDetail,
+  issueRecoveryCode,
   saveCapital,
   startPayment,
   type CapitalPlanInput,
@@ -43,6 +45,9 @@ export default function AnalysePage() {
   const [screen, setScreen] = useState<"et-si" | "scenarios" | "capital" | "report">("et-si");
   const [report, setReport] = useState<IdeaReport | null>(null);
   const [summary, setSummary] = useState<ReportSummary | null>(null);
+  const [recoveryCode, setRecoveryCode] = useState<string | null>(null);
+  const [issuingCode, setIssuingCode] = useState(false);
+  const [codeError, setCodeError] = useState<string | null>(null);
   const [loadingReport, setLoadingReport] = useState(false);
   const [savingCapital, setSavingCapital] = useState(false);
   const [capitalError, setCapitalError] = useState<string | null>(null);
@@ -137,6 +142,18 @@ export default function AnalysePage() {
     };
   }, [ideaId, report]);
 
+  async function issueCode() {
+    setIssuingCode(true);
+    setCodeError(null);
+    try {
+      setRecoveryCode(await issueRecoveryCode(ideaId));
+    } catch {
+      setCodeError("Le code n'a pas pu etre genere. Reessaie.");
+    } finally {
+      setIssuingCode(false);
+    }
+  }
+
   async function openCapital() {
     setCapitalError(null);
     setScreen("capital");
@@ -191,9 +208,13 @@ export default function AnalysePage() {
         <div className="mx-auto flex max-w-xl flex-col items-center gap-4 text-center">
           <h1 className="text-h2-mobile font-semibold md:text-h2">Analyse introuvable</h1>
           <p className="text-body text-text-secondary">
-            Cette analyse n&apos;est accessible que depuis le navigateur qui l&apos;a creee.
+            Ce navigateur n&apos;a pas acces a cette analyse. Si tu as paye, utilise le code que tu as note pour la
+            retrouver.
           </p>
-          <Link href="/commencer" className={primaryButton}>
+          <Link href="/retrouver" className={primaryButton}>
+            Retrouver mon analyse
+          </Link>
+          <Link href="/commencer" className="text-body font-medium text-text-secondary">
             Tester une idee
           </Link>
         </div>
@@ -273,7 +294,15 @@ export default function AnalysePage() {
       )}
 
       {view.kind === "paid" && screen === "report" && report && (
-        <ReportView report={report} summary={summary} onEditCapital={() => void openCapital()} onBackToAnalysis={() => setScreen("et-si")} />
+        <ReportView
+          report={report}
+          summary={summary}
+          recoveryCode={recoveryCode}
+          onEditCapital={() => void openCapital()} onBackToAnalysis={() => setScreen("et-si")} />
+      )}
+
+      {view.kind === "paid" && (
+        <RecoveryCodeBox code={recoveryCode} issuing={issuingCode} error={codeError} onIssue={() => void issueCode()} />
       )}
     </main>
   );
