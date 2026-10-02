@@ -35,6 +35,11 @@ Toutes les routes `/ideas/:id…` (sauf `POST /ideas` et les deux routes `sugges
 - `GET /ideas/:id/report` — protégée et réservée aux idées payées (403). Rapport complet assemblé côté serveur : idée, hypothèses, résultat, seuil, 4 scénarios, `capital` (`{ plan, need }` ou `null` si non saisi), variables sensibles, codes des points à surveiller, canvas (7 blocs saisis + structure de coûts et flux de revenus calculés), sans la synthèse : la route ne fait jamais attendre l'IA. Tous les chiffres viennent du moteur.
 - `GET /ideas/:id/report/summary` — protégée et réservée aux idées payées (403). Renvoie `{ text, source: "ai" | "template" }`. Synthèse IA sans aucun chiffre, stockée par empreinte des faits ; repli sur une synthèse modèle (non stockée) si l'IA échoue. Des requêtes simultanées pour une même idée partagent un seul appel à l'IA (par processus API).
 
+## Analytics
+
+- `POST /analytics/events` — publique, 60 requêtes/min/IP, `204`. Corps `{ type, sessionId, ideaId? }` ; `type` ∈ `landing_view | test_started | offer_viewed | what_if_used | report_viewed | report_printed` (les paiements ne sont jamais acceptés du navigateur) ; `sessionId` 8–64 caractères `[A-Za-z0-9-]` ; `400` sinon.
+- `GET /admin/stats?period=7d|30d|all` (défaut `30d`) — en-tête `x-admin-key` = `ADMIN_KEY` (comparaison en temps constant). `404` si `ADMIN_KEY` n'est pas configurée, `401` si la clé est fausse, `400` période inconnue. Renvoie `{ period, from, steps: [{ key, count }], reportPrinted, recoveries }`, étapes dans l'ordre du funnel, comptes distincts.
+
 ## Historique
 
 - `GET /ideas` — liste des idées/analyses de l'utilisateur (si compte/session persistante)

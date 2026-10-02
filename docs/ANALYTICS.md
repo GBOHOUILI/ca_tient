@@ -14,6 +14,13 @@
 
 Le KPI principal du MVP est la conversion vers le paiement, pas le volume de trafic. Le funnel ci-dessus permet d'identifier précisément où les utilisateurs abandonnent (avant de voir le prix ? après ? pendant le paiement lui-même ?) pour ajuster prix, valeur perçue ou parcours — voir `docs/BUSINESS_RULES.md`.
 
-## Implémentation
+## Implémentation (Phase 6b-2b)
 
-Outil léger pour le MVP (ex : plausible/umami/posthog en free-tier, ou simple table d'événements en base) — pas de dépendance lourde ni de tracking intrusif non nécessaire au stade MVP.
+Table d'événements maison (`AnalyticsEvent`), aucune dépendance, aucun cookie, aucune IP ni user-agent stocké. Spec : `docs/superpowers/specs/2026-10-02-phase-6b2b-analytics-design.md`.
+
+- **Envoyés par le site** (`POST /analytics/events`, `trackEvent` dans `apps/web/src/lib/analytics.ts`) : `landing_view`, `test_started`, `offer_viewed`, `what_if_used`, `report_viewed`, `report_printed`. Un `sessionId` aléatoire par onglet (`sessionStorage`) : on compte des sessions, pas des personnes.
+- **Lus en base** (fiables, fixés par le serveur) : aperçus générés (`Idea`), paiements initiés (`Payment`), paiements confirmés (`Idea.paidAt`), analyses retrouvées par code (`IdeaAccessToken`).
+- **Comptes distincts** (sessions ou idées) : rechargements et doubles rendus ne gonflent rien.
+- **Consultation** : page `/admin/stats` (non indexée), clé `ADMIN_KEY` côté API (absente = statistiques désactivées). Funnel sur 7 jours, 30 jours ou depuis le début, avec le taux de passage d'une étape à l'autre.
+
+Correspondance avec la liste ci-dessus : « simulations terminées » = aperçus générés ; « scénarios explorés » = « Et si ? » utilisé ; « rapports téléchargés » = rapports imprimés / enregistrés en PDF.

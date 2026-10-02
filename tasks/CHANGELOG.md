@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## [Non versionné], Phase 6b-2b : analytics minimal
+- Table `AnalyticsEvent` et `POST /analytics/events` (public, 60/min/IP, liste fermée de 6 types), sans cookie ni donnée personnelle ; `sessionId` aléatoire par onglet.
+- `GET /admin/stats` (clé `ADMIN_KEY`, temps constant, 404 si absente) : funnel visites → tests démarrés → aperçus → offre vue → paiements initiés → paiements confirmés → « Et si ? » → rapports consultés, plus rapports imprimés et analyses retrouvées par code. Comptes distincts ; paiements lus en base.
+- Web : `trackEvent` (envoi silencieux, jamais bloquant) posé sur la landing, `/commencer`, l'offre, « Et si ? » et le rapport ; page `/admin/stats` non indexée avec choix de période et taux de passage. 8 tests.
+
 ## [Non versionné], code de récupération d'une analyse payée
 - Sur une analyse payée, « Obtenir mon code » génère un code `CT-XXXXX-XXXXX` (copiable, imprimé en tête du rapport) ; un nouveau code remplace l'ancien.
 - Page `/retrouver` (liens depuis le pied de page et l'écran « Analyse introuvable ») : le code rouvre l'analyse depuis n'importe quel navigateur, avec un jeton d'accès supplémentaire ; le navigateur d'origine garde le sien.
