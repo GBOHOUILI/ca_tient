@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { SeasonalityProfileKey } from "financial-engine";
+import { ReportView } from "@/components/analyse/ReportView";
+import { StepCapital } from "@/components/analyse/StepCapital";
 import { StepEtSi } from "@/components/wizard/StepEtSi";
 import { StepScenarios } from "@/components/wizard/StepScenarios";
 import type { WhatIfDeltas } from "@/components/wizard/wizard-reducer";
@@ -11,9 +13,13 @@ import {
   AccessDeniedError,
   fetchIdea,
   fetchPaymentStatus,
+  fetchReport,
   hypothesesFromDetail,
+  saveCapital,
   startPayment,
+  type CapitalPlanInput,
   type IdeaDetail,
+  type IdeaReport,
 } from "@/lib/ideas-api";
 
 const POLL_INTERVAL_MS = 3_000;
@@ -32,7 +38,11 @@ export default function AnalysePage() {
   const { ideaId } = useParams<{ ideaId: string }>();
   const [view, setView] = useState<View>({ kind: "loading" });
   const [retrying, setRetrying] = useState(false);
-  const [screen, setScreen] = useState<"et-si" | "scenarios">("et-si");
+  const [screen, setScreen] = useState<"et-si" | "scenarios" | "capital" | "report">("et-si");
+  const [report, setReport] = useState<IdeaReport | null>(null);
+  const [loadingReport, setLoadingReport] = useState(false);
+  const [savingCapital, setSavingCapital] = useState(false);
+  const [capitalError, setCapitalError] = useState<string | null>(null);
   const [deltas, setDeltas] = useState<WhatIfDeltas>(NO_DELTAS);
   const [profile, setProfile] = useState<SeasonalityProfileKey>("stable");
   const pollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -53,6 +63,13 @@ export default function AnalysePage() {
       if (payment.paid) {
         const idea = await fetchIdea(ideaId);
         if (!mountedRef.current) return;
+        // Coming back after entering the capital: the report is the natural landing screen.
+        if (idea.hasCapitalPlan) {
+          const loaded = await fetchReport(ideaId);
+          if (!mountedRef.current) return;
+          setReport(loaded);
+          setScreen("report");
+        }
         setView({ kind: "paid", idea });
         return;
       }
@@ -94,6 +111,36 @@ export default function AnalysePage() {
       if (pollTimer.current) clearTimeout(pollTimer.current);
     };
   }, []);
+
+  async function openCapital() {
+    setCapitalError(null);
+    setScreen("capital");
+    // Pre-fill with the saved plan if the report was not loaded yet (direct jump from Scenarios).
+    if (!report && view.kind === "paid" && view.idea.hasCapitalPlan) {
+      setLoadingReport(true);
+      try {
+        setReport(await fetchReport(ideaId));
+      } catch {
+        // the form simply starts empty
+      } finally {
+        setLoadingReport(false);
+      }
+    }
+  }
+
+  async function submitCapital(plan: CapitalPlanInput) {
+    setSavingCapital(true);
+    setCapitalError(null);
+    try {
+      await saveCapital(ideaId, plan);
+      setReport(await fetchReport(ideaId));
+      setScreen("report");
+    } catch {
+      setCapitalError("L'enregistrement n'a pas abouti. Reessaie : tes montants sont conserves.");
+    } finally {
+      setSavingCapital(false);
+    }
+  }
 
   async function retryPayment() {
     setRetrying(true);
@@ -178,7 +225,28 @@ export default function AnalysePage() {
           currency={view.idea.currency}
           whatIfDeltas={deltas}
           onBack={() => setScreen("et-si")}
+          onNext={() => void openCapital()}
         />
+      )}
+
+      {view.kind === "paid" && screen === "capital" && loadingReport && (
+        <p className="text-center text-body text-text-secondary">Chargement de ton capital...</p>
+      )}
+
+      {view.kind === "paid" && screen === "capital" && !loadingReport && (
+        <StepCapital
+          currency={view.idea.currency}
+          fixedCosts={hypothesesFromDetail(view.idea).fixedCosts}
+          initialPlan={report?.capital?.plan ?? null}
+          saving={savingCapital}
+          error={capitalError}
+          onSubmit={(plan) => void submitCapital(plan)}
+          onBack={() => setScreen(report ? "report" : "scenarios")}
+        />
+      )}
+
+      {view.kind === "paid" && screen === "report" && report && (
+        <ReportView report={report} onEditCapital={() => void openCapital()} onBackToAnalysis={() => setScreen("et-si")} />
       )}
     </main>
   );

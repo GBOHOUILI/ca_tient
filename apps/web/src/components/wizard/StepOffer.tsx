@@ -18,7 +18,7 @@ export function StepOffer({
       <ul className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-6 text-left text-body">
         <li>&quot;Et si ?&quot; : change ton prix, tes ventes ou tes couts et vois l&apos;effet en direct, mois par mois selon ta saisonnalite.</li>
         <li>Les scenarios prudent, realiste, ambitieux et crise, compares cote a cote.</li>
-        <li>Bientot inclus : ton rapport complet, avec ton business model et le capital dont tu as besoin.</li>
+        <li>Ton rapport complet a imprimer : synthese, capital et besoin financier, variables sensibles, points a surveiller et business model.</li>
       </ul>
       <p className="text-h1-mobile font-bold tabular-nums md:text-h1">1 000 FCFA</p>
       <p className="text-small text-text-secondary">

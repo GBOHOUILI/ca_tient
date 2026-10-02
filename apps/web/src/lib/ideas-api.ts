@@ -1,3 +1,5 @@
+import type { CapitalNeed, ScenarioKey, SensitivityEntry, WatchPointCode } from "financial-engine";
+
 export const BUSINESS_MODELS = ["ECOMMERCE", "FORMATION", "EBOOK", "SERVICE", "PRODUIT_PHYSIQUE", "AUTRE"] as const;
 export type BusinessModel = (typeof BUSINESS_MODELS)[number];
 
@@ -193,6 +195,7 @@ export interface IdeaDetail {
   currency: CurrencyCode;
   hypotheses: { key: string; value: number }[];
   paid: boolean;
+  hasCapitalPlan: boolean;
 }
 
 export async function startPayment(ideaId: string): Promise<{ redirectUrl: string }> {
@@ -249,4 +252,57 @@ export function hypothesesFromDetail(detail: IdeaDetail): HypothesesInput {
     variableCostPerUnit: value("variableCostPerUnit"),
     fixedCosts: value("fixedCosts"),
   };
+}
+
+export interface CapitalPlanInput {
+  equipment: number;
+  initialStock: number;
+  openingCosts: number;
+  other: number;
+  availableCapital: number;
+}
+
+export interface IdeaReport {
+  idea: { id: string; businessModel: BusinessModel; rawDescription: string; currency: CurrencyCode };
+  hypotheses: HypothesesInput & { currency: CurrencyCode };
+  result: FinancialResult;
+  breakEven: BreakEvenResult;
+  scenarios: { key: ScenarioKey; result: FinancialResult }[];
+  capital: { plan: CapitalPlanInput; need: CapitalNeed } | null;
+  sensitivity: SensitivityEntry[];
+  watchPoints: WatchPointCode[];
+  canvas: {
+    blocks: Partial<Record<CanvasBlockKey, string>>;
+    costStructure: { variableCostPerUnit: number; fixedCosts: number; startupCosts: number | null };
+    revenueStreams: { price: number; volume: number; revenue: number };
+  };
+  summary: { text: string; source: "ai" | "template" };
+}
+
+export async function saveCapital(ideaId: string, plan: CapitalPlanInput): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/ideas/${ideaId}/capital`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeaders(ideaId) },
+    body: JSON.stringify(plan),
+  });
+
+  if (response.status === 401 || response.status === 404) {
+    throw new AccessDeniedError();
+  }
+  if (!response.ok) {
+    throw new Error(`L'enregistrement du capital a echoue (${response.status}).`);
+  }
+}
+
+export async function fetchReport(ideaId: string): Promise<IdeaReport> {
+  const response = await fetch(`${API_BASE_URL}/ideas/${ideaId}/report`, { headers: authHeaders(ideaId) });
+
+  if (response.status === 401 || response.status === 404) {
+    throw new AccessDeniedError();
+  }
+  if (!response.ok) {
+    throw new Error(`Le rapport est indisponible (${response.status}).`);
+  }
+
+  return (await response.json()) as IdeaReport;
 }
