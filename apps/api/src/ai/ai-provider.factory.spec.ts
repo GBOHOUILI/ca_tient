@@ -18,3 +18,14 @@ describe("createAiProvider", () => {
     expect(createAiProvider({}).backends).toEqual([]);
   });
 });
+
+describe("DEFAULT_AI_MODELS", () => {
+  it("uses models still served to new free-tier accounts (October 2026)", async () => {
+    const { DEFAULT_AI_MODELS } = await import("./ai-provider.factory.js");
+    expect(DEFAULT_AI_MODELS).toEqual({
+      gemini: "gemini-3.5-flash-lite",
+      groq: "openai/gpt-oss-120b",
+      mistral: "mistral-small-latest",
+    });
+  });
+});
