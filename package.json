@@ -19,6 +19,10 @@
       "@prisma/client",
       "@prisma/engines",
       "prisma"
-    ]
+    ],
+    "overrides": {
+      "mysql2": "^3.23.1",
+      "deepmerge-ts": "^8.0.0"
+    }
   }
 }
