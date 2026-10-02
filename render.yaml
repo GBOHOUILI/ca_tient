@@ -6,14 +6,16 @@ services:
     runtime: node
     plan: free
     region: frankfurt
+    # pnpm is pinned through npx (same version as package.json "packageManager"): it does not rely
+    # on corepack being available on the build image.
     buildCommand: >-
-      corepack enable &&
-      pnpm install --frozen-lockfile &&
-      pnpm --filter financial-engine build &&
-      pnpm --filter api exec prisma generate &&
-      pnpm --filter api build
-    # Migrations are applied before every start, so a deploy never runs code against an older schema.
-    startCommand: pnpm --filter api exec prisma migrate deploy && pnpm --filter api start:prod
+      npx --yes pnpm@10.33.2 install --frozen-lockfile &&
+      npx --yes pnpm@10.33.2 --filter financial-engine build &&
+      npx --yes pnpm@10.33.2 --filter api exec prisma generate &&
+      npx --yes pnpm@10.33.2 --filter api build
+    # No package manager at runtime. Migrations are applied before every start, so a deploy never
+    # runs code against an older schema.
+    startCommand: cd apps/api && ./node_modules/.bin/prisma migrate deploy && NODE_ENV=production node dist/main
     healthCheckPath: /health
     envVars:
       - key: NODE_VERSION

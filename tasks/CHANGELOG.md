@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## [Non versionné], préparation du déploiement
+- `render.yaml` (API sur Render, Frankfurt), `apps/web/netlify.toml` (web sur Netlify), `.nvmrc` (Node 24), guide `docs/DEPLOYMENT.md` (Neon, Render, Netlify, webhook FedaPay sandbox, passage en live).
+- Builds de production simulés dans un clone propre du dépôt : API (install figé, moteur, client Prisma, compilation) et démarrage en `NODE_ENV=production` (migrations, `/health`, `/pricing`), web (`next build`).
+- La landing n'attend plus l'API plus de 3 s pour le prix (API gratuite en veille).
+
 ## [Non versionné], prix configurable
 - `ANALYSIS_PRICE_XOF` (API, défaut 1 000) : seule source du prix, montant envoyé à FedaPay et enregistré ; `GET /pricing` public ; valeur invalide = démarrage refusé.
 - Le site lit le prix depuis l'API : landing (régénérée toutes les 60 s) et écran d'offre (lu juste avant le paiement). Plus aucun prix en dur dans le web.
