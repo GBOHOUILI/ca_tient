@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import type { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { FinancialEngineService } from "../financial-engine/financial-engine.service.js";
 import { generateAccessToken } from "./access-token.js";
 import type { CreateIdeaDto } from "./dto/create-idea.dto.js";
+import type { IdeaProfileDto } from "./dto/idea-profile.dto.js";
 import type { UpdateCanvasBlocksDto } from "./dto/update-canvas-blocks.dto.js";
 import type { Hypotheses } from "financial-engine";
 
@@ -35,6 +36,10 @@ export class IdeasService {
         rawDescription: dto.rawDescription,
         currency: dto.currency,
         accessTokenHash: hash,
+        utmSource: dto.acquisition?.utmSource,
+        utmMedium: dto.acquisition?.utmMedium,
+        utmCampaign: dto.acquisition?.utmCampaign,
+        referrerHost: dto.acquisition?.referrerHost,
         hypotheses: { create: hypothesesRows },
         simulations: { create: simulation },
       },
@@ -131,6 +136,26 @@ export class IdeasService {
           }
         : null,
     };
+  }
+
+  async saveProfile(ideaId: string, dto: IdeaProfileDto): Promise<void> {
+    const consent = dto.contactConsent === true;
+    // The contact is the only personal data collected: never stored without explicit consent.
+    if (dto.contact && !consent) {
+      throw new BadRequestException("Le contact n'est enregistre qu'avec ton accord.");
+    }
+
+    const data = {
+      country: dto.country ?? null,
+      city: dto.city?.trim() || null,
+      profile: dto.profile ?? null,
+      stage: dto.stage ?? null,
+      heardFrom: dto.heardFrom ?? null,
+      contact: consent ? (dto.contact?.trim() ?? null) : null,
+      contactConsent: consent,
+      consentAt: consent ? new Date() : null,
+    };
+    await this.prisma.ideaProfile.upsert({ where: { ideaId }, create: { ideaId, ...data }, update: data });
   }
 
   async updateCanvasBlocks(ideaId: string, dto: UpdateCanvasBlocksDto): Promise<void> {
