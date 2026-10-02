@@ -1,4 +1,7 @@
-const faqs = [
+import { priceLabel } from "@/lib/price";
+
+function faqs(price: string | null) {
+  return [
   {
     question: "Qu'est-ce qui est gratuit ?",
     answer:
@@ -21,7 +24,9 @@ const faqs = [
   {
     question: "Comment je paie ?",
     answer:
-      "1 000 FCFA, une seule fois, sur la page de paiement sécurisée de FedaPay (mobile money ou carte). Pas d'abonnement, pas de frais cachés.",
+      price
+        ? `${price}, une seule fois, sur la page de paiement sécurisée de FedaPay (mobile money ou carte). Pas d'abonnement, pas de frais cachés.`
+        : "En ce moment, l'analyse complète est gratuite : rien à payer.",
   },
   {
     question: "Et si je change de téléphone ?",
@@ -30,7 +35,9 @@ const faqs = [
   },
   {
     question: "Je veux tester plusieurs idées.",
-    answer: "Chaque idée a son aperçu gratuit. L'analyse complète coûte 1 000 FCFA par idée : tu ne paies que ce que tu approfondis.",
+    answer: price
+      ? `Chaque idée a son aperçu gratuit. L'analyse complète coûte ${price} par idée : tu ne paies que ce que tu approfondis.`
+      : "Chaque idée a son aperçu et son analyse complète, gratuitement en ce moment.",
   },
   {
     question: "Que deviennent mes informations ?",
@@ -42,14 +49,15 @@ const faqs = [
     answer:
       "Non. C'est une aide à la décision : les résultats dépendent des chiffres que tu donnes. Elle te montre où sont les risques, pas une garantie de succès.",
   },
-];
+  ];
+}
 
-export function Faq() {
+export function Faq({ price }: { price: number }) {
   return (
     <section className="mx-auto max-w-3xl px-4 py-24 sm:px-6">
       <h2 className="text-center text-h2-mobile font-semibold md:text-h2">Questions fréquentes</h2>
       <dl className="mt-12 flex flex-col gap-6">
-        {faqs.map((faq) => (
+        {faqs(priceLabel(price)).map((faq) => (
           <div key={faq.question} className="border-b border-border pb-6">
             <dt className="text-h4 font-semibold">{faq.question}</dt>
             <dd className="mt-2 text-body text-text-secondary">{faq.answer}</dd>

@@ -62,7 +62,7 @@ payment-gateway.port.ts       interface PaymentGateway (port) : createCheckout()
 payment-gateway.factory.ts    createPaymentGateway(env) : lit PAYMENT_PROVIDER, instancie le provider
 test-payment.gateway.ts       TestPaymentGateway — approuve au premier appel (createCheckout renvoie initialStatus: "approved")
 fedapay.gateway.ts            FedaPayGateway — via fetch natif (aucun SDK)
-payment.service.ts            PaymentService — orchestration, machine à etats, ecriture en base (ANALYSIS_PRICE_XOF = 1000)
+payment.service.ts            PaymentService — orchestration, machine à etats, ecriture en base (prix lu dans ANALYSIS_PRICE_XOF, voir pricing.ts)
 payment-state.ts              nextPaymentStatus(current, incoming) — fonction pure de transition
 payments.controller.ts        POST /ideas/:id/payments, GET /ideas/:id/payment (proteges par IdeaAccessGuard)
 fedapay-webhook.controller.ts POST /payments/webhook/fedapay (public, signature obligatoire)

@@ -1,3 +1,9 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { fetchAnalysisPrice } from "@/lib/api/pricing";
+import { priceLabel } from "@/lib/price";
+
 export function StepOffer({
   onPay,
   onBack,
@@ -11,6 +17,27 @@ export function StepOffer({
   error: string | null;
   persistenceWarning?: boolean;
 }) {
+  // The price shown here is read from the server right before paying: it is the amount charged.
+  const [price, setPrice] = useState<number | null>(null);
+  const [priceError, setPriceError] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchAnalysisPrice()
+      .then((value) => {
+        if (!cancelled) setPrice(value);
+      })
+      .catch(() => {
+        if (!cancelled) setPriceError(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const label = price === null ? null : priceLabel(price);
+  const free = price === 0;
+
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-6 text-center">
       <div>
@@ -22,10 +49,17 @@ export function StepOffer({
         <li>Les scénarios prudent, réaliste, ambitieux et crise, comparés côte à côte.</li>
         <li>Ton rapport complet à imprimer : synthèse, capital et besoin financier, variables sensibles, points à surveiller et business model.</li>
       </ul>
-      <p className="text-h1-mobile font-bold tabular-nums md:text-h1">1 000 FCFA</p>
-      <p className="text-small text-text-secondary">
-        Paiement unique, sans abonnement, sur la page sécurisée FedaPay (mobile money ou carte).
+      <p className="text-h1-mobile font-bold tabular-nums md:text-h1">
+        {price === null ? (priceError ? "—" : "…") : (label ?? "Gratuit")}
       </p>
+      <p className="text-small text-text-secondary">
+        {free
+          ? "En ce moment, l'analyse complète est gratuite : rien à payer."
+          : "Paiement unique, sans abonnement, sur la page sécurisée FedaPay (mobile money ou carte)."}
+      </p>
+      {priceError ? (
+        <p className="text-small text-error">Le prix n&apos;a pas pu être chargé. Recharge la page pour réessayer.</p>
+      ) : null}
       <p className="text-small text-text-secondary">
         Ça tient ? est une aide à la décision, pas une garantie de rentabilité : les résultats dépendent des hypothèses que tu fournis.
       </p>
@@ -43,10 +77,10 @@ export function StepOffer({
         <button
           type="button"
           onClick={onPay}
-          disabled={paying}
+          disabled={paying || price === null}
           className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white disabled:opacity-40"
         >
-          {paying ? "Redirection..." : "Payer 1 000 FCFA"}
+          {paying ? "Redirection..." : free ? "Voir l'analyse complète" : label ? `Payer ${label}` : "Payer"}
         </button>
       </div>
     </div>

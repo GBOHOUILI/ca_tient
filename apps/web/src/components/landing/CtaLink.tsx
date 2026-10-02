@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { priceLabel } from "@/lib/price";
 
 // The one call to action of the landing page, identical everywhere it appears.
-export function CtaLink() {
+export function CtaLink({ price }: { price: number }) {
+  const label = priceLabel(price);
   return (
     <div className="flex flex-col items-center gap-2">
       <Link
@@ -10,7 +12,9 @@ export function CtaLink() {
       >
         Tester mon idée
       </Link>
-      <span className="text-small tabular-nums text-text-secondary">Aperçu gratuit · analyse complète 1 000 FCFA</span>
+      <span className="text-small tabular-nums text-text-secondary">
+        {label ? `Aperçu gratuit · analyse complète ${label}` : "Aperçu et analyse complète gratuits"}
+      </span>
     </div>
   );
 }

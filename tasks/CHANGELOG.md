@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## [Non versionné], prix configurable
+- `ANALYSIS_PRICE_XOF` (API, défaut 1 000) : seule source du prix, montant envoyé à FedaPay et enregistré ; `GET /pricing` public ; valeur invalide = démarrage refusé.
+- Le site lit le prix depuis l'API : landing (régénérée toutes les 60 s) et écran d'offre (lu juste avant le paiement). Plus aucun prix en dur dans le web.
+- `0` = analyse complète gratuite (tests) : déblocage immédiat sans FedaPay, textes adaptés (« Aperçu et analyse complète gratuits », « Voir l'analyse complète »).
+- Vérifié dans Chrome avec 0 et 2 500 : landing, offre, déblocage gratuit ; 4 nouveaux tests API.
+
 ## [Non versionné], landing orientée conversion
 - Audit de la landing : une promesse fausse corrigée (« Et si ? » et les scénarios étaient présentés avant le paiement alors qu'ils sont payants) ; l'aperçu gratuit, principal argument, est désormais mis en avant.
 - Nouvel ordre : hero (promesse concrète + CTA unique « Tester mon idée », « Aperçu gratuit · analyse complète 1 000 FCFA »), pour qui, problème, aperçu réel calculé par le moteur sur un exemple étiqueté, 3 étapes, offre Gratuit / 1 000 FCFA, bénéfices, confiance, FAQ (objections : IA et chiffres, ce qui est gratuit, paiement, changement de téléphone, données, garantie), CTA final.

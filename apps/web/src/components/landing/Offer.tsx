@@ -1,3 +1,4 @@
+import { priceLabel } from "@/lib/price";
 import { CtaLink } from "./CtaLink";
 
 const free = [
@@ -34,22 +35,24 @@ function Column({ title, price, items, highlight }: { title: string; price: stri
   );
 }
 
-export function Offer() {
+export function Offer({ price }: { price: number }) {
+  const label = priceLabel(price);
   return (
     <section id="tarif" className="mx-auto max-w-5xl px-4 py-24 sm:px-6">
       <div className="text-center">
         <h2 className="text-h2-mobile font-semibold md:text-h2">Tu sais si ça tient avant de payer</h2>
         <p className="mx-auto mt-4 max-w-xl text-body text-text-secondary">
-          L&apos;aperçu est gratuit. Tu ne paies que si tu veux l&apos;analyse complète : 1 000 FCFA par idée, une seule
-          fois, sans abonnement.
+          {label
+            ? `L'aperçu est gratuit. Tu ne paies que si tu veux l'analyse complète : ${label} par idée, une seule fois, sans abonnement.`
+            : "L'aperçu et l'analyse complète sont gratuits en ce moment."}
         </p>
       </div>
       <div className="mt-12 grid gap-6 md:grid-cols-2">
         <Column title="Aperçu" price="Gratuit" items={free} />
-        <Column title="Analyse complète" price="1 000 FCFA" items={paid} highlight />
+        <Column title="Analyse complète" price={label ?? "Gratuit"} items={paid} highlight />
       </div>
       <div className="mt-10">
-        <CtaLink />
+        <CtaLink price={price} />
       </div>
     </section>
   );

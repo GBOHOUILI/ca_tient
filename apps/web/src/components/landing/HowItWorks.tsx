@@ -1,4 +1,7 @@
-const steps = [
+import { priceLabel } from "@/lib/price";
+
+function steps(price: string | null) {
+  return [
   {
     title: "Décris ton idée",
     description: "Le type de business et quelques phrases sur ce que tu veux lancer. Pas besoin de vocabulaire financier.",
@@ -9,16 +12,19 @@ const steps = [
   },
   {
     title: "Vois si ça tient",
-    description: "Ton aperçu gratuit s'affiche aussitôt. Si tu veux aller plus loin, l'analyse complète coûte 1 000 FCFA.",
+    description: price
+      ? `Ton aperçu gratuit s'affiche aussitôt. Si tu veux aller plus loin, l'analyse complète coûte ${price}.`
+      : "Ton aperçu s'affiche aussitôt, et l'analyse complète est gratuite en ce moment.",
   },
-];
+  ];
+}
 
-export function HowItWorks() {
+export function HowItWorks({ price }: { price: number }) {
   return (
     <section className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
       <h2 className="text-center text-h2-mobile font-semibold md:text-h2">Trois étapes, quelques minutes</h2>
       <ol className="mt-12 grid gap-6 md:grid-cols-3">
-        {steps.map((step, index) => (
+        {steps(priceLabel(price)).map((step, index) => (
           <li key={step.title} className="rounded-2xl border border-border bg-surface p-6">
             <span className="text-small font-semibold tabular-nums text-accent-emerald">
               {String(index + 1).padStart(2, "0")}
