@@ -1,3 +1,4 @@
+import { readAcquisition } from "./acquisition";
 import type { CapitalNeed, ScenarioKey, SensitivityEntry, WatchPointCode } from "financial-engine";
 
 export const BUSINESS_MODELS = ["ECOMMERCE", "FORMATION", "EBOOK", "SERVICE", "PRODUIT_PHYSIQUE", "AUTRE"] as const;
@@ -90,7 +91,7 @@ export async function createIdea(input: CreateIdeaInput): Promise<CreateIdeaResp
   const response = await fetch(`${API_BASE_URL}/ideas`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
+    body: JSON.stringify({ ...input, acquisition: readAcquisition() }),
   });
 
   if (!response.ok) {
@@ -385,4 +386,40 @@ export async function redeemRecoveryCode(code: string): Promise<{ ideaId: string
   const body = (await response.json()) as { ideaId: string; accessToken: string };
   saveAccessToken(body.ideaId, body.accessToken);
   return { ideaId: body.ideaId };
+}
+
+export interface ProfileInput {
+  country: string;
+  city: string;
+  profile: string;
+  stage: string;
+  heardFrom: string;
+  contact: string;
+  contactConsent: boolean;
+}
+
+export const EMPTY_PROFILE: ProfileInput = {
+  country: "",
+  city: "",
+  profile: "",
+  stage: "",
+  heardFrom: "",
+  contact: "",
+  contactConsent: false,
+};
+
+export async function saveProfile(ideaId: string, profile: ProfileInput): Promise<void> {
+  // Empty fields are left out rather than sent as "" (the API validates every value it receives).
+  const body = Object.fromEntries(
+    Object.entries(profile).filter(([key, value]) => (key === "contactConsent" ? true : String(value).trim() !== "")),
+  );
+  const response = await fetch(`${API_BASE_URL}/ideas/${ideaId}/profile`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeaders(ideaId) },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw new Error(`L'enregistrement du profil a echoue (${response.status}).`);
+  }
 }

@@ -5,6 +5,7 @@ const STEPS: { key: WizardStep; label: string }[] = [
   { key: "description", label: "Description" },
   { key: "hypotheses", label: "Hypotheses" },
   { key: "canvas", label: "Ton business model" },
+  { key: "profile", label: "Toi" },
   { key: "results", label: "Apercu" },
   { key: "offer", label: "Analyse complete" },
 ];

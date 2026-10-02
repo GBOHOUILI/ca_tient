@@ -8,6 +8,7 @@ import { StepHypotheses } from "@/components/wizard/StepHypotheses";
 import { StepResults } from "@/components/wizard/StepResults";
 import { StepOffer } from "@/components/wizard/StepOffer";
 import { StepCanvas } from "@/components/wizard/StepCanvas";
+import { StepProfile } from "@/components/wizard/StepProfile";
 import { TrackEvent } from "@/components/analytics/TrackEvent";
 import { initialWizardState, wizardReducer } from "@/components/wizard/wizard-reducer";
 import {
@@ -17,6 +18,9 @@ import {
   suggestHypotheses,
   suggestCanvasBlocks,
   saveCanvasBlocks,
+  saveProfile,
+  EMPTY_PROFILE,
+  type ProfileInput,
   startPayment,
   isAccessTokenPersisted,
   type CreateIdeaResponse,
@@ -29,6 +33,7 @@ export default function CommencerPage() {
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [response, setResponse] = useState<CreateIdeaResponse | null>(null);
+  const [profile, setProfile] = useState<ProfileInput>(EMPTY_PROFILE);
 
   async function handleDescriptionNext() {
     if (!state.businessModel) return;
@@ -94,9 +99,24 @@ export default function CommencerPage() {
         state.canvasBlocks,
         state.canvasWasSuggested ? "ia_suggere" : "utilisateur_edite",
       );
-      dispatch({ type: "GO_TO_STEP", step: "results" });
+      dispatch({ type: "GO_TO_STEP", step: "profile" });
     } catch {
       setError("L'enregistrement a echoue. Reessaie.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleProfileSubmit() {
+    if (!response) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      await saveProfile(response.ideaId, profile);
+      dispatch({ type: "GO_TO_STEP", step: "results" });
+    } catch {
+      // Never blocks the free preview: the user can fix the contact or skip.
+      setError("On n'a pas pu enregistrer tes reponses : verifie ton contact, ou passe cette etape.");
     } finally {
       setSubmitting(false);
     }
@@ -156,6 +176,21 @@ export default function CommencerPage() {
           onBlockChange={(key, value) => dispatch({ type: "SET_CANVAS_BLOCK", key, value })}
           onNext={handleCanvasNext}
           onBack={() => dispatch({ type: "GO_TO_STEP", step: "hypotheses" })}
+          submitting={submitting}
+          error={error}
+        />
+      )}
+
+      {state.step === "profile" && response && (
+        <StepProfile
+          profile={profile}
+          onChange={setProfile}
+          onSubmit={() => void handleProfileSubmit()}
+          onSkip={() => {
+            setError(null);
+            dispatch({ type: "GO_TO_STEP", step: "results" });
+          }}
+          onBack={() => dispatch({ type: "GO_TO_STEP", step: "canvas" })}
           submitting={submitting}
           error={error}
         />
