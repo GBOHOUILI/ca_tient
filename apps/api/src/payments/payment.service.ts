@@ -3,8 +3,7 @@ import type { PaymentStatus } from "@prisma/client";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { PAYMENT_GATEWAY, type PaymentGateway } from "./payment-gateway.port.js";
 import { nextPaymentStatus } from "./payment-state.js";
-
-export const ANALYSIS_PRICE_XOF = 1000;
+import { analysisPriceXof } from "./pricing.js";
 
 function webAppUrl(): string {
   return (process.env.WEB_APP_URL ?? "http://localhost:3000").replace(/\/+$/, "");
@@ -19,7 +18,7 @@ export class PaymentService {
     @Inject(PAYMENT_GATEWAY) private readonly gateway: PaymentGateway,
   ) {}
 
-  async startCheckout(ideaId: string): Promise<{ paymentId: string; redirectUrl: string }> {
+  async startCheckout(ideaId: string): Promise<{ paymentId: string | null; redirectUrl: string }> {
     // Re-read any pending payment before charging again: the user may already have paid at
     // FedaPay (webhook not arrived yet) — creating a second transaction would be a double charge.
     const { anyFailed } = await this.reReadPendingPayments(ideaId);
@@ -32,8 +31,15 @@ export class PaymentService {
       throw new ServiceUnavailableException("Le paiement n'a pas pu etre initialise, reessaie.");
     }
 
+    const price = analysisPriceXof();
+    // Free analysis (ANALYSIS_PRICE_XOF=0, used for tests): unlocked at once, no provider involved.
+    if (price === 0) {
+      await this.prisma.idea.updateMany({ where: { id: ideaId, paidAt: null }, data: { paidAt: new Date() } });
+      return { paymentId: null, redirectUrl: `${webAppUrl()}/analyse/${ideaId}` };
+    }
+
     const payment = await this.prisma.payment.create({
-      data: { ideaId, provider: this.gateway.name, amount: ANALYSIS_PRICE_XOF, currency: "XOF" },
+      data: { ideaId, provider: this.gateway.name, amount: price, currency: "XOF" },
     });
 
     let session;
@@ -41,7 +47,7 @@ export class PaymentService {
       session = await this.gateway.createCheckout({
         ideaId,
         paymentId: payment.id,
-        amount: ANALYSIS_PRICE_XOF,
+        amount: price,
         currency: "XOF",
         description: "Analyse complete Ca tient ?",
         returnUrl: `${webAppUrl()}/analyse/${ideaId}`,

@@ -1,7 +1,7 @@
 import { HeroSceneLoader } from "./HeroSceneLoader";
 import { CtaLink } from "./CtaLink";
 
-export function Hero() {
+export function Hero({ price }: { price: number }) {
   return (
     <section className="relative isolate flex min-h-[90vh] items-center justify-center overflow-hidden px-4 text-center sm:px-6">
       <div
@@ -22,7 +22,7 @@ export function Hero() {
           Vérifie-le avant d&apos;y mettre ton argent. Décris ton idée : tu sais en quelques minutes ce qu&apos;elle
           rapporte, ce qu&apos;elle coûte et combien tu dois vendre chaque mois.
         </p>
-        <CtaLink />
+        <CtaLink price={price} />
       </div>
     </section>
   );

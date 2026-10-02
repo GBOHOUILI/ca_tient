@@ -9,22 +9,25 @@ import { Offer } from "@/components/landing/Offer";
 import { Problem } from "@/components/landing/Problem";
 import { ProductPreview } from "@/components/landing/ProductPreview";
 import { Trust } from "@/components/landing/Trust";
+import { getAnalysisPrice } from "@/lib/api/pricing";
 
 // Conversion order: problem -> promise -> proof -> how -> offer -> benefits -> trust -> objections -> action.
-export default function Home() {
+export default async function Home() {
+  const price = await getAnalysisPrice();
+
   return (
     <>
       <TrackEvent type="landing_view" />
-      <Hero />
+      <Hero price={price} />
       <BusinessTypes />
       <Problem />
       <ProductPreview />
-      <HowItWorks />
-      <Offer />
+      <HowItWorks price={price} />
+      <Offer price={price} />
       <Benefits />
       <Trust />
-      <Faq />
-      <FinalCta />
+      <Faq price={price} />
+      <FinalCta price={price} />
     </>
   );
 }
