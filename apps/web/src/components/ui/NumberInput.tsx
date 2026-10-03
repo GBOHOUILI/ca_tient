@@ -1,4 +1,4 @@
-const CLASS_NAME =
+export const NUMBER_INPUT_CLASS =
   "rounded-lg border border-border bg-surface p-3 text-right text-body tabular-nums text-text-primary placeholder:text-text-secondary focus:border-accent-emerald focus:outline-none";
 
 // 0 is shown as an empty field (placeholder "0"): otherwise typing "5" after the 0 gives "05".
@@ -11,7 +11,7 @@ export function NumberInput({ value, onChange }: { value: number; onChange: (val
       placeholder="0"
       value={value === 0 ? "" : value}
       onChange={(e) => onChange(Number(e.target.value))}
-      className={CLASS_NAME}
+      className={NUMBER_INPUT_CLASS}
     />
   );
 }

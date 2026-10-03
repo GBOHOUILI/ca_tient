@@ -7,3 +7,4 @@ export { computeAnnualProjection, SEASONALITY_PROFILES, type SeasonalityProfileK
 export { computeCapitalNeed, CASH_RESERVE_MONTHS, type CapitalPlanInput, type CapitalNeed } from "./capital.js";
 export { computeSensitivity, SENSITIVITY_PERCENT, type SensitivityKey, type SensitivityEntry } from "./sensitivity.js";
 export { computeWatchPoints, THIN_MARGIN_PERCENT, type WatchPointCode } from "./watch-points.js";
+export { fromMinorUnits, minorUnitDigits, relabelCurrency, toMinorUnits } from "./money.js";

@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## [Non versionné], montants en euros et autres devises
+- Les montants EUR, USD, GBP, NGN, GHS se tapent et s'affichent en unités (« 2,50 € ») ; ils restent stockés en centimes. Avant, 2,50 € s'affichait « 250 € ».
+- Changer de devise sur l'écran des hypothèses garde les chiffres saisis.
+- Fonctions moteur `minorUnitDigits`, `toMinorUnits`, `fromMinorUnits`, `relabelCurrency` (tests).
+
 ## [Non versionné], confort mobile
 - Menu mobile (Tester mon idée, Retrouver mon analyse, Tarif, Questions fréquentes, Confidentialité), fermé par un lien ou Échap ; bouton de thème dans la barre, à côté du menu ; liste unique pour ajouter les prochaines fonctionnalités.
 - Champs numériques (hypothèses, capital) : 0 affiché comme champ vide, plus de « 05 » quand on tape ; clavier numérique sur mobile.
