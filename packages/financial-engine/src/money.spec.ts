@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fromMinorUnits, minorUnitDigits, relabelCurrency, toMinorUnits } from "./money.js";
+import { approxEurFromXof, fromMinorUnits, minorUnitDigits, relabelCurrency, toMinorUnits } from "./money.js";
 
 describe("minorUnitDigits", () => {
   it("has no sub-unit for XOF", () => {
@@ -56,5 +56,12 @@ describe("relabelCurrency", () => {
 
   it("is a no-op between currencies with the same sub-unit", () => {
     expect(relabelCurrency(999, "EUR", "USD")).toBe(999);
+  });
+});
+
+describe("approxEurFromXof", () => {
+  it("uses the fixed official parity, in euro cents", () => {
+    expect(approxEurFromXof(1000)).toBe(152);
+    expect(approxEurFromXof(655_957)).toBe(100_000);
   });
 });

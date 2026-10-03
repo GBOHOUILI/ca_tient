@@ -20,3 +20,10 @@ export function fromMinorUnits(amount: number, currency: CurrencyCode): number {
 export function relabelCurrency(amount: number, from: CurrencyCode, to: CurrencyCode): number {
   return toMinorUnits(fromMinorUnits(amount, from), to);
 }
+
+// Fixed official CFA franc / euro parity: a constant, not an exchange rate.
+export const XOF_PER_EUR = 655.957;
+
+export function approxEurFromXof(xof: number): number {
+  return toMinorUnits(xof / XOF_PER_EUR, "EUR");
+}
