@@ -37,7 +37,7 @@ Déjà fixées par le Blueprint : `NODE_VERSION=24`, `TRUST_PROXY=1`, `ANALYSIS_
 
 1. Sur netlify.com : **Add new site → Import from Git**, dépôt `ca_tient`.
 2. Paramètres : **Base directory** vide (racine du dépôt), **Package directory** `apps/web`. Netlify lit `apps/web/netlify.toml` (commande et dossier de publication).
-3. Variable d'environnement : `NEXT_PUBLIC_API_URL` = `https://<service>.onrender.com` (sans `/` final).
+3. Variable d'environnement : `NEXT_PUBLIC_API_URL` = `https://<service>.onrender.com` (sans `/` final). Facultatif : `NEXT_PUBLIC_SITE_URL` (domaine canonique pour le SEO, défaut `https://catient.zerotoone.bj`).
 4. Déployer, puis reporter l'URL Netlify (`https://<site>.netlify.app`) dans `WEB_APP_URL` sur Render (CORS et retour de paiement) et redéployer l'API.
 
 ## 4. FedaPay (sandbox)

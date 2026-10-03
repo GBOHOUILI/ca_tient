@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## [Non versionné], SEO et pied de page
+- Métadonnées complètes (titre par page, description, Open Graph, Twitter, canonique), `robots.txt`, `sitemap.xml`, image de partage et icônes générées, données structurées (Organization, WebApplication, FAQPage) sur la landing.
+- Pages privées (`/analyse/*`, `/admin`, `/retrouver`) exclues de l'indexation.
+- Pied de page en colonnes (produit, aide, lien zerotoone.bj) ; ancre `#faq`.
+- Fichiers par défaut de Next retirés de `public/` et ancien favicon remplacé.
+
 ## [Non versionné], retours externes sur la landing et le verdict
 - Verdict plus honnête : aide sous « ventes par mois » (le chiffre qui pèse le plus, à vérifier), rémunération du fondateur à inclure dans les charges fixes, pertes / retours / publicité dans le coût par unité, ligne « Si tu vends 20 % de moins » dans l'aperçu (moteur), fonds de roulement signalé dans le rapport et la FAQ, ligne « Ta description est analysée par une IA » sous la description.
 - Partage du verdict sur WhatsApp depuis l'aperçu (lien `wa.me`, verdict et seuil uniquement).

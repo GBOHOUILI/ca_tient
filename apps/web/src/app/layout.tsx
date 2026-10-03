@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { AcquisitionCapture } from "@/components/analytics/AcquisitionCapture";
 import { themeInitScript } from "@/components/theme/theme-script";
+import { PUBLISHER, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -14,8 +15,30 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Ça tient ?",
-  description: "Teste les chiffres de ton idée de business avant d'investir ton argent.",
+  metadataBase: new URL(SITE_URL),
+  title: { default: SITE_TITLE, template: `%s — ${SITE_NAME}` },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  publisher: PUBLISHER.name,
+  authors: [{ name: PUBLISHER.name, url: PUBLISHER.url }],
+  openGraph: {
+    type: "website",
+    locale: "fr_FR",
+    siteName: SITE_NAME,
+    url: "/",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
+  twitter: { card: "summary_large_image", title: SITE_TITLE, description: SITE_DESCRIPTION },
+  // Amounts like "1 000 F CFA" must not be turned into phone links on mobile.
+  formatDetection: { telephone: false },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0b" },
+    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
+  ],
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

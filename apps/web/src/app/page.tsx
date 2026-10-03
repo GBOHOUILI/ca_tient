@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { TrackEvent } from "@/components/analytics/TrackEvent";
 import { Benefits } from "@/components/landing/Benefits";
 import { BusinessTypes } from "@/components/landing/BusinessTypes";
@@ -11,8 +12,12 @@ import { ProductPreview } from "@/components/landing/ProductPreview";
 import { ReportExtract } from "@/components/landing/ReportExtract";
 import { Trust } from "@/components/landing/Trust";
 import { Testimonials } from "@/components/landing/Testimonials";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { landingStructuredData } from "@/components/seo/structured-data";
 import { getAnalysisPrice } from "@/lib/api/pricing";
 import { getPublishedReviews } from "@/lib/api/reviews";
+
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 // Conversion order: problem -> promise -> proof -> how -> offer -> benefits -> trust -> objections -> action.
 export default async function Home() {
@@ -20,6 +25,7 @@ export default async function Home() {
 
   return (
     <>
+      <JsonLd data={landingStructuredData(price)} />
       <TrackEvent type="landing_view" />
       <Hero price={price} />
       <BusinessTypes />
