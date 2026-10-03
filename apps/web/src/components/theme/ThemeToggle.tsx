@@ -1,16 +1,18 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { useI18n } from "@/i18n/I18nProvider";
 import { themeStore } from "./theme-store";
 
 export function ThemeToggle() {
+  const { t } = useI18n();
   const isDark = useSyncExternalStore(themeStore.subscribe, themeStore.getSnapshot, themeStore.getServerSnapshot);
 
   return (
     <button
       type="button"
       onClick={() => themeStore.setDark(!isDark)}
-      aria-label={isDark ? "Passer en mode clair" : "Passer en mode sombre"}
+      aria-label={isDark ? t.header.themeToLight : t.header.themeToDark}
       className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:border-accent-emerald hover:text-text-primary"
     >
       {isDark ? (

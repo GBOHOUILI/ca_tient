@@ -17,6 +17,11 @@ describe("resolveLocaleRoute", () => {
     expect(resolveLocaleRoute("/fr/retrouver")).toEqual({ action: "redirect", pathname: "/retrouver" });
   });
 
+  it("serves generated social images under /fr without redirecting", () => {
+    expect(resolveLocaleRoute("/fr/opengraph-image")).toEqual({ action: "next" });
+    expect(resolveLocaleRoute("/fr/twitter-image")).toEqual({ action: "next" });
+  });
+
   it("does not mistake words starting with en or fr for a locale", () => {
     expect(resolveLocaleRoute("/enfant")).toEqual({ action: "rewrite", pathname: "/fr/enfant" });
     expect(resolveLocaleRoute("/franchise")).toEqual({ action: "rewrite", pathname: "/fr/franchise" });

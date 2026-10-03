@@ -3,17 +3,19 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { useI18n } from "@/i18n/I18nProvider";
 
 // Mobile menu entries: new features get their link here.
 const MENU_LINKS = [
-  { href: "/commencer", label: "Tester mon idée" },
-  { href: "/retrouver", label: "Retrouver mon analyse" },
-  { href: "/#tarif", label: "Tarif" },
-  { href: "/#faq", label: "Questions fréquentes" },
-  { href: "/confidentialite", label: "Confidentialité" },
-];
+  { href: "/commencer", key: "start" },
+  { href: "/retrouver", key: "recover" },
+  { href: "/#tarif", key: "pricing" },
+  { href: "/#faq", key: "faq" },
+  { href: "/confidentialite", key: "privacy" },
+] as const;
 
 export function Header() {
+  const { t, href } = useI18n();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -44,20 +46,20 @@ export function Header() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
-        <Link href="/" onClick={() => setMenuOpen(false)} className="text-h4 font-bold">
+        <Link href={href("/")} onClick={() => setMenuOpen(false)} className="text-h4 font-bold">
           <span className="bg-gradient-to-r from-accent-emerald to-accent-cyan bg-clip-text text-transparent">
             Ça tient ?
           </span>
         </Link>
-        <nav aria-label="Navigation principale" className="hidden items-center gap-4 sm:flex">
-          <Link href="/retrouver" className="text-small font-medium text-text-secondary hover:text-text-primary">
-            Retrouver mon analyse
+        <nav aria-label={t.header.nav} className="hidden items-center gap-4 sm:flex">
+          <Link href={href("/retrouver")} className="text-small font-medium text-text-secondary hover:text-text-primary">
+            {t.header.recover}
           </Link>
           <Link
-            href="/commencer"
+            href={href("/commencer")}
             className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-4 py-2 text-small font-semibold text-white"
           >
-            Tester mon idée
+            {t.header.start}
           </Link>
           <ThemeToggle />
         </nav>
@@ -68,7 +70,7 @@ export function Header() {
             onClick={() => setMenuOpen((open) => !open)}
             aria-expanded={menuOpen}
             aria-controls="menu-mobile"
-            aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-label={menuOpen ? t.header.closeMenu : t.header.openMenu}
             className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-secondary hover:text-text-primary"
           >
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
@@ -82,16 +84,16 @@ export function Header() {
         </div>
       </div>
       {menuOpen ? (
-        <nav id="menu-mobile" aria-label="Menu" className="border-t border-border bg-bg px-4 pb-4 sm:hidden">
+        <nav id="menu-mobile" aria-label={t.header.menu} className="border-t border-border bg-bg px-4 pb-4 sm:hidden">
           <ul className="flex flex-col">
             {MENU_LINKS.map((link) => (
               <li key={link.href}>
                 <Link
-                  href={link.href}
+                  href={href(link.href)}
                   onClick={() => setMenuOpen(false)}
                   className="block border-b border-border py-4 text-body font-medium text-text-primary"
                 >
-                  {link.label}
+                  {t.header[link.key]}
                 </Link>
               </li>
             ))}

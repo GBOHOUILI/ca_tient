@@ -27,6 +27,8 @@ export type LocaleRoute =
 export function resolveLocaleRoute(pathname: string): LocaleRoute {
   const match = pathname.match(PREFIX);
   if (match?.[1] === "en") return { action: "next" };
+  // Next links the French social images as /fr/...-image: serve them, a redirect could be dropped by crawlers.
+  if (/^\/fr\/(opengraph|twitter)-image$/.test(pathname)) return { action: "next" };
   if (match?.[1] === "fr") return { action: "redirect", pathname: stripLocale(pathname).path };
   return { action: "rewrite", pathname: pathname === "/" ? "/fr" : `/fr${pathname}` };
 }
