@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { LanguageSwitch } from "@/components/i18n/LanguageSwitch";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useI18n } from "@/i18n/I18nProvider";
 
@@ -61,6 +62,7 @@ export function Header() {
           >
             {t.header.start}
           </Link>
+          <LanguageSwitch className="text-small font-medium text-text-secondary hover:text-text-primary" />
           <ThemeToggle />
         </nav>
         <div className="flex items-center gap-2 sm:hidden">
@@ -98,6 +100,10 @@ export function Header() {
               </li>
             ))}
           </ul>
+          <LanguageSwitch
+            onSwitch={() => setMenuOpen(false)}
+            className="block py-4 text-body font-medium text-text-secondary"
+          />
         </nav>
       ) : null}
     </header>

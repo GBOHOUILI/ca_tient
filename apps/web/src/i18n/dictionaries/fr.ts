@@ -575,6 +575,11 @@ export const fr = {
     searching: "Recherche...",
     submit: "Retrouver mon analyse",
   },
+  suggestion: {
+    text: "Cette page existe en français.",
+    link: "Lire en français",
+    close: "Fermer",
+  },
   notFound: {
     title: "Page introuvable",
     text: "Cette page n'existe pas ou a été déplacée.",

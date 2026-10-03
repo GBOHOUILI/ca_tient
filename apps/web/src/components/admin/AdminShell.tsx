@@ -34,7 +34,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [keyInput, setKeyInput] = useState("");
   const [gateMessage, setGateMessage] = useState<string | null>(null);
-  const [filters, setFilters] = useState<AdminFilters>({ period: "30d", businessModel: "", country: "" });
+  const [filters, setFilters] = useState<AdminFilters>({ period: "30d", businessModel: "", country: "", locale: "" });
 
   // sessionStorage only exists in the browser: read after mount.
   useEffect(() => {
@@ -166,6 +166,16 @@ export function AdminShell({ children }: { children: ReactNode }) {
                   {option.label}
                 </option>
               ))}
+            </select>
+            <select
+              aria-label="Langue"
+              value={filters.locale}
+              onChange={(event) => setFilters({ ...filters, locale: event.target.value })}
+              className={selectClass}
+            >
+              <option value="">Toutes les langues</option>
+              <option value="fr">Français</option>
+              <option value="en">Anglais</option>
             </select>
             <button type="button" onClick={() => logout()} className="text-small text-text-secondary md:hidden">
               Se déconnecter

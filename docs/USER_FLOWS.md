@@ -16,6 +16,8 @@
 | 11 | Ton capital | Dépenses de départ (matériel, stock, frais d'ouverture, autres) et capital déjà disponible ; récapitulatif en direct du capital nécessaire (dépenses + 3 mois de charges) et du besoin de financement |
 | 12 | Ton rapport | Synthèse, chiffres clés, capital et besoin financier, scénarios, variables sensibles, points à surveiller, business model canvas en 9 blocs ; imprimable / enregistrable en PDF depuis le navigateur. À une nouvelle visite, `/analyse/<id>` ouvre directement le rapport si le capital a été saisi |
 
+**Langue** : chaque écran existe en français (adresses sans préfixe) et en anglais (`/en/...`). Bouton FR/EN dans le header et le menu ; si le navigateur préfère l'autre langue, un bandeau la propose (jamais de redirection automatique). Une idée garde la langue dans laquelle elle a été créée : l'IA, la synthèse, le retour après paiement et le code de récupération ramènent à cette langue.
+
 ## Points de rupture à gérer explicitement
 
 - **Paiement annulé/échoué** : écran « Le paiement n'a pas abouti », rien n'est perdu (les hypothèses restent enregistrées), bouton « Réessayer le paiement ».

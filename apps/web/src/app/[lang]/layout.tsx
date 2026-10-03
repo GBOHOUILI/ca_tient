@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { AcquisitionCapture } from "@/components/analytics/AcquisitionCapture";
+import { LanguageSuggestion } from "@/components/i18n/LanguageSuggestion";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { RootDocument } from "@/components/layout/RootDocument";
@@ -53,6 +54,7 @@ export default async function LangLayout({ children, params }: LayoutProps<"/[la
     <RootDocument lang={lang}>
       <I18nProvider locale={lang}>
         <AcquisitionCapture />
+        <LanguageSuggestion />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

@@ -82,6 +82,7 @@ export default function AdminIdeasPage() {
                     <th className="py-2 font-medium">Date</th>
                     <th className="py-2 font-medium">Type</th>
                     <th className="py-2 font-medium">Pays</th>
+                    <th className="py-2 font-medium">Langue</th>
                     <th className="py-2 font-medium">Description</th>
                     <th className="py-2 font-medium">Verdict</th>
                     <th className="py-2 font-medium">Paiement</th>
@@ -94,6 +95,7 @@ export default function AdminIdeasPage() {
                       <td className="whitespace-nowrap py-2 tabular-nums">{shortDate(item.createdAt)}</td>
                       <td className="py-2">{label(item.businessModel)}</td>
                       <td className="py-2">{label(item.country)}</td>
+                      <td className="py-2 uppercase">{item.locale}</td>
                       <td className="py-2">
                         <Link href={`/admin/idees/${item.id}`} className="text-text-primary underline underline-offset-4">
                           {item.excerpt || "(sans description)"}

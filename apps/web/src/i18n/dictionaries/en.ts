@@ -569,6 +569,11 @@ export const en: Dictionary = {
     searching: "Searching...",
     submit: "Find my analysis",
   },
+  suggestion: {
+    text: "This page is available in English.",
+    link: "Read in English",
+    close: "Close",
+  },
   notFound: {
     title: "Page not found",
     text: "This page does not exist or has moved.",
