@@ -1,6 +1,6 @@
 import type { BusinessModel } from "@/lib/business-models";
 import type { CanvasBlockKey, CanvasBlocks, HypothesesInput } from "@/lib/api/ideas";
-import type { CurrencyCode } from "financial-engine";
+import { relabelCurrency, type CurrencyCode } from "financial-engine";
 
 export type WizardStep =
   | "business-type"
@@ -67,7 +67,12 @@ export function wizardReducer(state: WizardState, action: WizardAction): WizardS
     case "SET_DESCRIPTION":
       return { ...state, rawDescription: action.rawDescription };
     case "SET_CURRENCY":
-      return { ...state, currency: action.currency, wasSuggested: false };
+      return {
+        ...state,
+        currency: action.currency,
+        hypotheses: relabelHypotheses(state.hypotheses, state.currency, action.currency),
+        wasSuggested: false,
+      };
     case "SET_HYPOTHESIS":
       return { ...state, hypotheses: { ...state.hypotheses, [action.key]: action.value }, wasSuggested: false };
     case "SET_HYPOTHESES":
@@ -85,4 +90,14 @@ export function wizardReducer(state: WizardState, action: WizardAction): WizardS
     default:
       return state;
   }
+}
+
+// Switching currency keeps the numbers the person sees; the volume is not an amount.
+function relabelHypotheses(hypotheses: HypothesesInput, from: CurrencyCode, to: CurrencyCode): HypothesesInput {
+  return {
+    ...hypotheses,
+    price: relabelCurrency(hypotheses.price, from, to),
+    variableCostPerUnit: relabelCurrency(hypotheses.variableCostPerUnit, from, to),
+    fixedCosts: relabelCurrency(hypotheses.fixedCosts, from, to),
+  };
 }

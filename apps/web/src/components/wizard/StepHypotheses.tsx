@@ -1,6 +1,7 @@
 import { SUPPORTED_CURRENCIES, type CurrencyCode } from "financial-engine";
 import type { BusinessModel } from "@/lib/business-models";
 import type { HypothesesInput } from "@/lib/api/ideas";
+import { MoneyInput } from "@/components/ui/MoneyInput";
 import { NumberInput } from "@/components/ui/NumberInput";
 
 const HINTS: Record<BusinessModel, string> = {
@@ -90,7 +91,16 @@ export function StepHypotheses({
             </span>
           )}
           {field.hint ? <span className="text-micro">{field.hint}</span> : null}
-          <NumberInput value={hypotheses[field.key]} onChange={(value) => onHypothesisChange(field.key, value)} />
+          {field.key === "volume" ? (
+            <NumberInput value={hypotheses.volume} onChange={(value) => onHypothesisChange("volume", value)} />
+          ) : (
+            <MoneyInput
+              key={currency}
+              value={hypotheses[field.key]}
+              currency={currency}
+              onChange={(value) => onHypothesisChange(field.key, value)}
+            />
+          )}
         </label>
       ))}
       {error ? <p className="text-small text-error">{error}</p> : null}

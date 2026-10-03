@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { computeCapitalNeed, type CurrencyCode } from "financial-engine";
 import type { CapitalPlanInput } from "@/lib/api/report";
 import { formatAmount } from "@/lib/format";
-import { NumberInput } from "@/components/ui/NumberInput";
+import { MoneyInput } from "@/components/ui/MoneyInput";
 
 const EMPTY_PLAN: CapitalPlanInput = { equipment: 0, initialStock: 0, openingCosts: 0, other: 0, availableCapital: 0 };
 
@@ -55,8 +55,9 @@ export function StepCapital({
       {FIELDS.map((field) => (
         <label key={field.key} className="flex flex-col gap-2 text-small text-text-secondary">
           {field.label}
-          <NumberInput
+          <MoneyInput
             value={plan[field.key]}
+            currency={currency}
             onChange={(value) => setPlan((current) => ({ ...current, [field.key]: value }))}
           />
         </label>
