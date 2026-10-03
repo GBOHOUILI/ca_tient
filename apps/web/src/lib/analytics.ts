@@ -13,7 +13,7 @@ export type AnalyticsEventType =
 // Fallback when sessionStorage is unavailable (strict private browsing): one id per page load.
 let memorySessionId: string | null = null;
 
-function sessionId(): string {
+export function sessionId(): string {
   try {
     const existing = window.sessionStorage.getItem(SESSION_KEY);
     if (existing) return existing;
