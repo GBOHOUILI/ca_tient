@@ -11,23 +11,19 @@ import {
 } from "financial-engine";
 import type { CurrencyCode } from "financial-engine";
 import type { HypothesesInput } from "@/lib/api/ideas";
-import { formatAmount } from "@/lib/format";
+import { useI18n } from "@/i18n/I18nProvider";
+import { formatAmount, numberLocale } from "@/lib/format";
 import type { WhatIfDeltas } from "./wizard-reducer";
 import { BreakEvenChart } from "./charts/BreakEvenChart";
 import { MonthlyRevenueChart } from "./charts/MonthlyRevenueChart";
 
-const SEASONALITY_OPTIONS: { value: SeasonalityProfileKey; label: string }[] = [
-  { value: "stable", label: "Stable toute l'année" },
-  { value: "fetes_fin_annee", label: "Pic en fin d'année (fêtes)" },
-  { value: "ete", label: "Pic en été" },
-  { value: "rentree_scolaire", label: "Pic à la rentrée scolaire" },
-];
+const SEASONALITY_PROFILES: SeasonalityProfileKey[] = ["stable", "fetes_fin_annee", "ete", "rentree_scolaire"];
 
-const SLIDER_CONFIG: { key: keyof WhatIfDeltas; label: string; min: number; max: number }[] = [
-  { key: "price", label: "Prix de vente", min: -50, max: 100 },
-  { key: "volume", label: "Volume de ventes", min: -100, max: 200 },
-  { key: "variableCostPerUnit", label: "Coût variable par unité", min: -100, max: 200 },
-  { key: "fixedCosts", label: "Coûts fixes", min: -100, max: 200 },
+const SLIDER_CONFIG: { key: keyof WhatIfDeltas; min: number; max: number }[] = [
+  { key: "price", min: -50, max: 100 },
+  { key: "volume", min: -100, max: 200 },
+  { key: "variableCostPerUnit", min: -100, max: 200 },
+  { key: "fixedCosts", min: -100, max: 200 },
 ];
 
 export function StepEtSi({
@@ -49,7 +45,9 @@ export function StepEtSi({
   onNext: () => void;
   onBack?: () => void;
 }) {
-  const { adjusted, breakEvenVolume, result, error } = useMemo(() => {
+  const { t, locale } = useI18n();
+  const amount = (value: number) => formatAmount(value, currency, locale);
+  const { adjusted, breakEvenVolume, result, invalid } = useMemo(() => {
     const base: Hypotheses = { currency, ...hypotheses };
     try {
       const adjusted = applyDelta(base, whatIfDeltas);
@@ -58,14 +56,14 @@ export function StepEtSi({
         adjusted,
         breakEvenVolume: breakEven.reachable ? breakEven.volumeUnits : null,
         result: computeResult(adjusted),
-        error: null as string | null,
+        invalid: false,
       };
     } catch {
       return {
         adjusted: null,
         breakEvenVolume: null,
         result: null,
-        error: "Ces réglages donnent des valeurs impossibles (prix ou coûts à zéro). Ajuste un curseur.",
+        invalid: true,
       };
     }
   }, [currency, hypotheses, whatIfDeltas]);
@@ -77,16 +75,16 @@ export function StepEtSi({
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-8">
-      <h1 className="text-center text-h2-mobile font-semibold md:text-h2">Et si... ?</h1>
+      <h1 className="text-center text-h2-mobile font-semibold md:text-h2">{t.analysis.whatIfTitle}</h1>
       <p className="text-center text-body text-text-secondary">
-        Bouge les curseurs pour voir l&apos;impact sur ta rentabilité, en temps réel.
+        {t.analysis.whatIfIntro}
       </p>
 
       <div className="grid gap-4">
         {SLIDER_CONFIG.map((field) => (
           <label key={field.key} className="flex flex-col gap-2 text-small text-text-secondary">
             <span className="flex justify-between">
-              <span>{field.label}</span>
+              <span>{t.analysis.sliders[field.key]}</span>
               <span className="tabular-nums text-text-primary">
                 {whatIfDeltas[field.key] > 0 ? "+" : ""}
                 {whatIfDeltas[field.key]}%
@@ -105,22 +103,22 @@ export function StepEtSi({
       </div>
 
       <label className="flex flex-col gap-2 text-small text-text-secondary">
-        Saisonnalité
+        {t.analysis.seasonality}
         <select
           value={seasonalityProfile}
           onChange={(e) => onSeasonalityChange(e.target.value as SeasonalityProfileKey)}
           className="rounded-lg border border-border bg-surface p-3 text-body text-text-primary"
         >
-          {SEASONALITY_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
+          {SEASONALITY_PROFILES.map((value) => (
+            <option key={value} value={value}>
+              {t.analysis.seasonalityProfiles[value]}
             </option>
           ))}
         </select>
       </label>
 
-      {error ? (
-        <p className="text-small text-error">{error}</p>
+      {invalid ? (
+        <p className="text-small text-error">{t.analysis.impossibleSettings}</p>
       ) : (
         adjusted && (
           <>
@@ -134,15 +132,18 @@ export function StepEtSi({
                 currency={currency}
               />
               <p className="mt-2 text-small text-text-secondary">
-                Résultat estimé à ton volume actuel :{" "}
-                <span className="tabular-nums text-text-primary">{formatAmount(result!.estimatedResult, currency)}</span>.{" "}
+                {t.analysis.resultAtVolume}{" "}
+                <span className="tabular-nums text-text-primary">{amount(result!.estimatedResult)}</span>.{" "}
                 {breakEvenVolume !== null ? (
                   <>
-                    Seuil de rentabilité : <span className="tabular-nums text-text-primary">{breakEvenVolume}</span>{" "}
-                    unites/mois.
+                    {t.analysis.breakEvenAt}{" "}
+                    <span className="tabular-nums text-text-primary">
+                      {breakEvenVolume.toLocaleString(numberLocale(locale))}
+                    </span>{" "}
+                    {t.analysis.unitsPerMonth}
                   </>
                 ) : (
-                  "Seuil de rentabilité non atteignable avec ces réglages."
+                  t.analysis.breakEvenUnreachable
                 )}
               </p>
             </div>
@@ -150,15 +151,10 @@ export function StepEtSi({
               <div className="rounded-2xl border border-border bg-surface p-4">
                 <MonthlyRevenueChart projection={projection} currency={currency} />
                 <p className="mt-2 text-small text-text-secondary">
-                  Chiffre d&apos;affaires estimé : de{" "}
-                  <span className="tabular-nums text-text-primary">
-                    {formatAmount(Math.min(...projection.map((m) => m.result.revenue)), currency)}
-                  </span>{" "}
-                  a{" "}
-                  <span className="tabular-nums text-text-primary">
-                    {formatAmount(Math.max(...projection.map((m) => m.result.revenue)), currency)}
-                  </span>{" "}
-                  selon le mois.
+                  {t.analysis.revenueRange(
+                    amount(Math.min(...projection.map((m) => m.result.revenue))),
+                    amount(Math.max(...projection.map((m) => m.result.revenue))),
+                  )}
                 </p>
               </div>
             )}
@@ -169,7 +165,7 @@ export function StepEtSi({
       <div className="flex justify-between">
         {onBack ? (
           <button type="button" onClick={onBack} className="text-body font-medium text-text-secondary">
-            Retour
+            {t.common.back}
           </button>
         ) : (
           <span />
@@ -179,7 +175,7 @@ export function StepEtSi({
           onClick={onNext}
           className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white"
         >
-          Voir les scénarios
+          {t.analysis.seeScenarios}
         </button>
       </div>
     </div>

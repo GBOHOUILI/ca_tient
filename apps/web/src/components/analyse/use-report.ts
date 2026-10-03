@@ -9,15 +9,12 @@ import {
   type IdeaReport,
   type ReportSummary,
 } from "@/lib/api/report";
-
-const SUMMARY_UNAVAILABLE: ReportSummary = {
-  text: "La synthèse n'a pas pu être rédigée pour le moment. Le reste du rapport est complet.",
-  source: "template",
-};
+import { useI18n } from "@/i18n/I18nProvider";
 
 // Report of a paid idea. Loaded at once when the capital was already entered (the report is then
 // the landing screen); the AI summary is fetched separately so it never delays the report.
 export function useReport(ideaId: string, hasCapitalPlan: boolean) {
+  const { t } = useI18n();
   const [report, setReport] = useState<IdeaReport | null>(null);
   const [summary, setSummary] = useState<ReportSummary | null>(null);
   const [loading, setLoading] = useState(hasCapitalPlan);
@@ -52,12 +49,12 @@ export function useReport(ideaId: string, hasCapitalPlan: boolean) {
         if (!cancelled) setSummary(loaded);
       })
       .catch(() => {
-        if (!cancelled) setSummary(SUMMARY_UNAVAILABLE);
+        if (!cancelled) setSummary({ text: t.analysis.summaryUnavailable, source: "template" });
       });
     return () => {
       cancelled = true;
     };
-  }, [ideaId, report]);
+  }, [ideaId, report, t]);
 
   const submitCapital = useCallback(
     async (plan: CapitalPlanInput): Promise<boolean> => {
@@ -69,13 +66,13 @@ export function useReport(ideaId: string, hasCapitalPlan: boolean) {
         if (!reloaded) throw new Error("report unavailable");
         return true;
       } catch {
-        setError("L'enregistrement n'a pas abouti. Réessaie : tes montants sont conservés.");
+        setError(t.analysis.capitalSaveFailed);
         return false;
       } finally {
         setSaving(false);
       }
     },
-    [ideaId, load],
+    [ideaId, load, t],
   );
 
   return { report, summary, loading, saving, error, clearError: () => setError(null), submitCapital };

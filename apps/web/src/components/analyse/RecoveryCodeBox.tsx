@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useI18n } from "@/i18n/I18nProvider";
 
 export function RecoveryCodeBox({
   code,
@@ -13,6 +14,7 @@ export function RecoveryCodeBox({
   error: string | null;
   onIssue: () => void;
 }) {
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
 
   async function copy() {
@@ -27,10 +29,9 @@ export function RecoveryCodeBox({
 
   return (
     <aside className="no-print mx-auto flex w-full max-w-3xl flex-col gap-3 rounded-2xl border border-border bg-surface p-6">
-      <h2 className="text-body font-semibold">Ton code pour revoir ton analyse</h2>
+      <h2 className="text-body font-semibold">{t.analysis.codeTitle}</h2>
       <p className="text-small text-text-secondary">
-        Note-le : il te permet de rouvrir cette analyse depuis un autre téléphone ou un autre navigateur, sur la page
-        « Retrouver mon analyse ».
+        {t.analysis.codeText}
       </p>
       {code ? (
         <div className="flex flex-wrap items-center gap-3">
@@ -38,7 +39,7 @@ export function RecoveryCodeBox({
             {code}
           </span>
           <button type="button" onClick={() => void copy()} className="text-small font-medium text-accent-emerald">
-            {copied ? "Copie" : "Copier"}
+            {copied ? t.analysis.copied : t.analysis.copy}
           </button>
         </div>
       ) : null}
@@ -50,10 +51,10 @@ export function RecoveryCodeBox({
           disabled={issuing}
           className="rounded-lg border border-border px-4 py-2 text-small font-medium text-text-primary disabled:opacity-40"
         >
-          {issuing ? "Génération..." : code ? "Générer un nouveau code" : "Obtenir mon code"}
+          {issuing ? t.analysis.generating : code ? t.analysis.newCode : t.analysis.getCode}
         </button>
         {code ? (
-          <p className="mt-2 text-micro text-text-secondary">Un nouveau code remplace celui-ci : l&apos;ancien ne marchera plus.</p>
+          <p className="mt-2 text-micro text-text-secondary">{t.analysis.codeReplaces}</p>
         ) : null}
       </div>
     </aside>

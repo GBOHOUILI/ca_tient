@@ -13,13 +13,13 @@ export async function Testimonials({ data }: { data: PublishedReviews }) {
       <div className="text-center">
         <h2 className="text-h2-mobile font-semibold md:text-h2">{t.landing.reviewsTitle}</h2>
         <p className="mt-3 text-body text-text-secondary">
-          <Stars rating={data.average} /> {data.average.toLocaleString(numberLocale(locale))} / 5 · {t.landing.reviewsCount(data.count)}
+          <Stars rating={data.average} label={t.analysis.reviewStar(data.average)} /> {data.average.toLocaleString(numberLocale(locale))} / 5 · {t.landing.reviewsCount(data.count)}
         </p>
       </div>
       <ul className="mt-12 grid gap-6 md:grid-cols-2">
         {data.reviews.map((review) => (
           <li key={review.createdAt + review.comment} className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-6">
-            <Stars rating={review.rating} />
+            <Stars rating={review.rating} label={t.analysis.reviewStar(review.rating)} />
             {review.comment ? <p className="text-body text-text-primary">« {review.comment} »</p> : null}
             {review.displayName ? <p className="text-small text-text-secondary">— {review.displayName}</p> : null}
           </li>

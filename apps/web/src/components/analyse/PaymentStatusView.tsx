@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useI18n } from "@/i18n/I18nProvider";
 import type { PaymentGateView } from "./use-payment-gate";
 
 const primaryButton =
@@ -16,39 +19,39 @@ export function PaymentStatusView({
   onCheckAgain: () => void;
   onRetryPayment: () => void;
 }) {
+  const { t, href } = useI18n();
   if (view.kind === "loading") {
-    return <p className="text-center text-body text-text-secondary">Chargement de ton analyse...</p>;
+    return <p className="text-center text-body text-text-secondary">{t.analysis.loading}</p>;
   }
 
   return (
     <div className="mx-auto flex max-w-xl flex-col items-center gap-4 text-center">
       {view.kind === "no-access" && (
         <>
-          <h1 className="text-h2-mobile font-semibold md:text-h2">Analyse introuvable</h1>
+          <h1 className="text-h2-mobile font-semibold md:text-h2">{t.analysis.notFoundTitle}</h1>
           <p className="text-body text-text-secondary">
-            Ce navigateur n&apos;a pas accès à cette analyse. Si tu as payé, utilise le code que tu as noté pour la
-            retrouver.
+            {t.analysis.notFoundText}
           </p>
-          <Link href="/retrouver" className={primaryButton}>
-            Retrouver mon analyse
+          <Link href={href("/retrouver")} className={primaryButton}>
+            {t.header.recover}
           </Link>
-          <Link href="/commencer" className="text-body font-medium text-text-secondary">
-            Tester une idée
+          <Link href={href("/commencer")} className="text-body font-medium text-text-secondary">
+            {t.analysis.testAnIdea}
           </Link>
         </>
       )}
 
       {view.kind === "pending" && (
         <>
-          <h1 className="text-h2-mobile font-semibold md:text-h2">Paiement en cours de confirmation</h1>
+          <h1 className="text-h2-mobile font-semibold md:text-h2">{t.analysis.pendingTitle}</h1>
           <p className="text-body text-text-secondary">
             {view.timedOut
-              ? "Le paiement n'est pas encore confirmé. S'il a bien été débité, il sera pris en compte dès la confirmation de FedaPay."
-              : "On attend la confirmation de FedaPay, ça prend en général quelques secondes."}
+              ? t.analysis.pendingTimedOut
+              : t.analysis.pendingWaiting}
           </p>
           {view.timedOut ? (
             <button type="button" onClick={onCheckAgain} className={primaryButton}>
-              Vérifier à nouveau
+              {t.analysis.checkAgain}
             </button>
           ) : null}
         </>
@@ -56,19 +59,19 @@ export function PaymentStatusView({
 
       {view.kind === "failed" && (
         <>
-          <h1 className="text-h2-mobile font-semibold md:text-h2">Le paiement n&apos;a pas abouti</h1>
-          <p className="text-body text-text-secondary">Rien n&apos;a été perdu : tes hypothèses sont enregistrées. Tu peux réessayer.</p>
+          <h1 className="text-h2-mobile font-semibold md:text-h2">{t.analysis.failedTitle}</h1>
+          <p className="text-body text-text-secondary">{t.analysis.failedText}</p>
           <button type="button" onClick={onRetryPayment} disabled={retrying} className={primaryButton}>
-            {retrying ? "Redirection..." : "Réessayer le paiement"}
+            {retrying ? t.offer.redirecting : t.analysis.retryPayment}
           </button>
         </>
       )}
 
       {view.kind === "error" && (
         <>
-          <h1 className="text-h2-mobile font-semibold md:text-h2">Service momentanément indisponible</h1>
+          <h1 className="text-h2-mobile font-semibold md:text-h2">{t.analysis.unavailableTitle}</h1>
           <button type="button" onClick={onCheckAgain} className={primaryButton}>
-            Réessayer
+            {t.analysis.retry}
           </button>
         </>
       )}

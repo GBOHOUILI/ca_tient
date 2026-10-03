@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n/I18nProvider";
 import { fetchOwnReview, saveOwnReview, type OwnReview } from "@/lib/api/reviews";
 
 const EMPTY: OwnReview = { rating: 0, comment: "", displayName: "", publishConsent: false };
 
 export function ReviewBox({ ideaId }: { ideaId: string }) {
+  const { t } = useI18n();
   const [review, setReview] = useState<OwnReview>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [sent, setSent] = useState(false);
@@ -30,7 +32,7 @@ export function ReviewBox({ ideaId }: { ideaId: string }) {
       await saveOwnReview(ideaId, review);
       setSent(true);
     } catch {
-      setError("L'envoi n'a pas abouti. Réessaie.");
+      setError(t.analysis.reviewFailed);
     } finally {
       setSaving(false);
     }
@@ -39,9 +41,9 @@ export function ReviewBox({ ideaId }: { ideaId: string }) {
   if (sent) {
     return (
       <aside className="no-print mx-auto w-full max-w-3xl rounded-2xl border border-border bg-surface p-6 text-center">
-        <p className="text-body font-semibold">Merci pour ton avis !</p>
+        <p className="text-body font-semibold">{t.analysis.reviewThanks}</p>
         <button type="button" onClick={() => setSent(false)} className="mt-2 text-small text-text-secondary underline underline-offset-4">
-          Le modifier
+          {t.analysis.reviewEdit}
         </button>
       </aside>
     );
@@ -49,15 +51,15 @@ export function ReviewBox({ ideaId }: { ideaId: string }) {
 
   return (
     <aside className="no-print mx-auto flex w-full max-w-3xl flex-col gap-4 rounded-2xl border border-border bg-surface p-6">
-      <h2 className="text-body font-semibold">Ton avis sur Ça tient ?</h2>
-      <div className="flex gap-1" role="radiogroup" aria-label="Note sur 5">
+      <h2 className="text-body font-semibold">{t.analysis.reviewTitle}</h2>
+      <div className="flex gap-1" role="radiogroup" aria-label={t.analysis.reviewRating}>
         {[1, 2, 3, 4, 5].map((value) => (
           <button
             key={value}
             type="button"
             role="radio"
             aria-checked={review.rating === value}
-            aria-label={`${value} sur 5`}
+            aria-label={t.analysis.reviewStar(value)}
             onClick={() => setReview({ ...review, rating: value })}
             className={`text-h3 leading-none ${value <= review.rating ? "text-accent-emerald" : "text-border"}`}
           >
@@ -66,7 +68,7 @@ export function ReviewBox({ ideaId }: { ideaId: string }) {
         ))}
       </div>
       <label className="flex flex-col gap-2 text-small text-text-secondary">
-        Qu&apos;est-ce que ça t&apos;a apporté ?
+        {t.analysis.reviewComment}
         <textarea
           value={review.comment}
           maxLength={500}
@@ -76,11 +78,11 @@ export function ReviewBox({ ideaId }: { ideaId: string }) {
         />
       </label>
       <label className="flex flex-col gap-2 text-small text-text-secondary">
-        Ton prénom et ta ville (facultatif, affichés avec ton avis)
+        {t.analysis.reviewName}
         <input
           value={review.displayName ?? ""}
           maxLength={40}
-          placeholder="Ex : Awa, Cotonou"
+          placeholder={t.analysis.reviewNamePlaceholder}
           onChange={(event) => setReview({ ...review, displayName: event.target.value })}
           className="rounded-lg border border-border bg-bg p-3 text-body text-text-primary focus:border-accent-emerald focus:outline-none"
         />
@@ -92,7 +94,7 @@ export function ReviewBox({ ideaId }: { ideaId: string }) {
           onChange={(event) => setReview({ ...review, publishConsent: event.target.checked })}
           className="mt-1"
         />
-        J&apos;accepte que mon avis soit publié sur le site.
+        {t.analysis.reviewConsent}
       </label>
       {error ? <p className="text-small text-error">{error}</p> : null}
       <div>
@@ -102,7 +104,7 @@ export function ReviewBox({ ideaId }: { ideaId: string }) {
           disabled={saving || review.rating === 0}
           className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-5 py-2 text-small font-semibold text-white disabled:opacity-40"
         >
-          {saving ? "Envoi..." : "Envoyer mon avis"}
+          {saving ? t.analysis.sending : t.analysis.sendReview}
         </button>
       </div>
     </aside>
