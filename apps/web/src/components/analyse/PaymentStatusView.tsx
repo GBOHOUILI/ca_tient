@@ -14,7 +14,7 @@ export function PaymentStatusView({
   onCheckAgain,
   onRetryPayment,
 }: {
-  view: Exclude<PaymentGateView, { kind: "paid" }>;
+  view: Exclude<PaymentGateView, { kind: "paid" } | { kind: "unpaid" }>;
   retrying: boolean;
   onCheckAgain: () => void;
   onRetryPayment: () => void;

@@ -55,6 +55,13 @@ describe("Profile and acquisition", () => {
     expect(await prisma.idea.findUniqueOrThrow({ where: { id: english.id } })).toMatchObject({ locale: "en" });
   });
 
+  it("returns the creation date and language with the idea, for the list of ideas on a device", async () => {
+    const { id, auth } = await createIdea({ locale: "en" });
+    const response = await request(server()).get(`/ideas/${id}`).set(...auth).expect(200);
+    expect(new Date(response.body.createdAt).getTime()).toBeGreaterThan(Date.now() - 60_000);
+    expect(response.body.locale).toBe("en");
+  });
+
   it("requires the access token", async () => {
     const { id } = await createIdea();
     await request(server()).put(`/ideas/${id}/profile`).send({}).expect(401);

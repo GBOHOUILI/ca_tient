@@ -13,7 +13,8 @@ export function StepOffer({
   persistenceWarning,
 }: {
   onPay: () => void;
-  onBack: () => void;
+  // Absent when the offer is shown on its own (idea reopened later from /retrouver).
+  onBack?: () => void;
   paying: boolean;
   error: string | null;
   persistenceWarning?: boolean;
@@ -72,9 +73,13 @@ export function StepOffer({
       ) : null}
       {error ? <p className="text-small text-error">{error}</p> : null}
       <div className="flex justify-between">
-        <button type="button" onClick={onBack} className="text-body font-medium text-text-secondary">
-          {t.common.back}
-        </button>
+        {onBack ? (
+          <button type="button" onClick={onBack} className="text-body font-medium text-text-secondary">
+            {t.common.back}
+          </button>
+        ) : (
+          <span />
+        )}
         <button
           type="button"
           onClick={onPay}

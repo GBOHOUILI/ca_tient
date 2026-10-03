@@ -42,3 +42,19 @@ export function forgetAccessToken(ideaId: string): void {
     // nothing stored
   }
 }
+
+export function ideaIdsFromStorageKeys(keys: readonly string[]): string[] {
+  return keys
+    .filter((key) => key.startsWith(ACCESS_KEY_PREFIX) && key.length > ACCESS_KEY_PREFIX.length)
+    .map((key) => key.slice(ACCESS_KEY_PREFIX.length));
+}
+
+// Ideas created or reopened in this browser: the tokens are the only link we keep, no account needed.
+export function storedIdeaIds(): string[] {
+  try {
+    const keys = Array.from({ length: window.localStorage.length }, (_, index) => window.localStorage.key(index) ?? "");
+    return ideaIdsFromStorageKeys(keys);
+  } catch {
+    return [];
+  }
+}

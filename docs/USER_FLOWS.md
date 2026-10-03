@@ -18,6 +18,8 @@
 
 **Langue** : chaque écran existe en français (adresses sans préfixe) et en anglais (`/en/...`). Bouton FR/EN dans le header et le menu ; si le navigateur préfère l'autre langue, un bandeau la propose (jamais de redirection automatique). Une idée garde la langue dans laquelle elle a été créée : l'IA, la synthèse, le retour après paiement et le code de récupération ramènent à cette langue.
 
+**Reprendre plus tard** : une idée testée mais non payée reste accessible depuis le même navigateur, via « Retrouver mon analyse » (liste des idées gardées par le navigateur, sans compte). Rouverte, elle affiche son aperçu et l'offre. Depuis un autre appareil, seul le code de récupération (après paiement) permet de la retrouver.
+
 ## Points de rupture à gérer explicitement
 
 - **Paiement annulé/échoué** : écran « Le paiement n'a pas abouti », rien n'est perdu (les hypothèses restent enregistrées), bouton « Réessayer le paiement ».

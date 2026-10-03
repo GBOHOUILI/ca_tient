@@ -13,6 +13,8 @@ export type PaymentGateView =
   | { kind: "no-access" }
   | { kind: "pending"; timedOut: boolean }
   | { kind: "failed" }
+  // Never tried to pay (left before the offer, or came back later): show the offer, not a failure.
+  | { kind: "unpaid"; idea: IdeaDetail }
   | { kind: "error" }
   | { kind: "paid"; idea: IdeaDetail };
 
@@ -43,6 +45,11 @@ export function usePaymentGate(ideaId: string) {
         const timedOut = Date.now() - pollStartedAt.current >= POLL_TIMEOUT_MS;
         setView({ kind: "pending", timedOut });
         if (!timedOut) pollTimer.current = setTimeout(() => checkRef.current(), POLL_INTERVAL_MS);
+        return;
+      }
+      if (payment.status === null) {
+        const idea = await fetchIdea(ideaId);
+        if (mountedRef.current) setView({ kind: "unpaid", idea });
         return;
       }
       setView({ kind: "failed" });
