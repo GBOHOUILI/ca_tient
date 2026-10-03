@@ -8,7 +8,7 @@
 - [x] Initialiser le repo (monorepo pnpm workspaces : `apps/web` Next.js + TS, `apps/api` NestJS, Prisma 7.10.0 configuré pour PostgreSQL sans modèles)
 - [x] Mettre en place les tokens de design (`design/COLORS.md`, `design/TYPOGRAPHY.md`) dans Tailwind (`apps/web/src/app/globals.css`)
 - [x] Landing page statique avec hero Three.js (voir `design/PROMPTS.md`), copy FR en dur, i18n et sélecteur de langue non implémentés (voir note ci-dessous)
-- [ ] i18n (FR/EN, `next-intl`), reporté volontairement lors de la landing page, à faire avant la bêta (`design/UX_PRINCIPLES.md`)
+- [x] i18n FR/EN (2026-10-03) : routage `/en`, dictionnaires maison, IA et rapport dans la langue de l'idée (voir `docs/DECISIONS.md`)
 - [ ] Déploiement : configuration prête (`render.yaml`, `apps/web/netlify.toml`, `docs/DEPLOYMENT.md`), reste à créer les comptes Neon / Render / Netlify et à vérifier le parcours en ligne
 
 ## Phase 2 — Moteur financier

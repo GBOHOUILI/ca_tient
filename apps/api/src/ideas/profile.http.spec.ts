@@ -48,6 +48,13 @@ describe("Profile and acquisition", () => {
   const putProfile = (id: string, auth: [string, string], body: object) =>
     request(server()).put(`/ideas/${id}/profile`).set(...auth).send(body);
 
+  it("stores the idea's language, French by default", async () => {
+    const french = await createIdea();
+    const english = await createIdea({ locale: "en" });
+    expect(await prisma.idea.findUniqueOrThrow({ where: { id: french.id } })).toMatchObject({ locale: "fr" });
+    expect(await prisma.idea.findUniqueOrThrow({ where: { id: english.id } })).toMatchObject({ locale: "en" });
+  });
+
   it("requires the access token", async () => {
     const { id } = await createIdea();
     await request(server()).put(`/ideas/${id}/profile`).send({}).expect(401);

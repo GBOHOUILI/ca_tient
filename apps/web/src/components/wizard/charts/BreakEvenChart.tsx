@@ -1,6 +1,7 @@
 "use client";
 
 import { Area, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { useI18n } from "@/i18n/I18nProvider";
 import { formatAmount } from "@/lib/format";
 import { AXIS_PROPS, TOOLTIP_CONTENT_STYLE, TOOLTIP_LABEL_STYLE } from "./chart-theme";
 
@@ -38,8 +39,9 @@ export function BreakEvenChart({
   const zeroOffset = range === 0 ? 0.5 : maxMargin / range;
   const clampedOffset = Math.min(Math.max(zeroOffset, 0), 1);
 
+  const { t, locale } = useI18n();
   return (
-    <div role="img" aria-label={`Graphique de seuil de rentabilité : marge estimée selon le volume de ventes, de 0 à ${domainMax} unités par mois.`}>
+    <div role="img" aria-label={t.analysis.chartBreakEven(domainMax)}>
       <ResponsiveContainer width="100%" height={240}>
         <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
           <defs>
@@ -54,13 +56,13 @@ export function BreakEvenChart({
             dataKey="volume"
             type="number"
             domain={[0, domainMax]}
-            label={{ value: "Volume vendu / mois", position: "insideBottom", offset: -10, fontSize: 12 }}
+            label={{ value: t.analysis.chartVolumeAxis, position: "insideBottom", offset: -10, fontSize: 12 }}
           />
-          <YAxis {...AXIS_PROPS} tickFormatter={(value: number) => formatAmount(value, currency)} width={90} />
+          <YAxis {...AXIS_PROPS} tickFormatter={(value: number) => formatAmount(value, currency, locale)} width={90} />
           <Tooltip
             contentStyle={TOOLTIP_CONTENT_STYLE}
             labelStyle={TOOLTIP_LABEL_STYLE}
-            formatter={(value) => formatAmount(Number(value), currency)}
+            formatter={(value) => formatAmount(Number(value), currency, locale)}
             labelFormatter={(label) => `${label} unites/mois`}
           />
           <ReferenceLine y={0} stroke="var(--color-text-secondary)" />
@@ -68,7 +70,7 @@ export function BreakEvenChart({
             x={currentVolume}
             stroke="var(--color-text-primary)"
             strokeDasharray="4 4"
-            label={{ value: "Tu es ici", position: "top", fontSize: 12 }}
+            label={{ value: t.analysis.chartYouAreHere, position: "top", fontSize: 12 }}
           />
           {breakEvenVolume !== null && (
             <ReferenceLine x={breakEvenVolume} stroke="var(--color-accent-emerald)" strokeDasharray="2 2" />

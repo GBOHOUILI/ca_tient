@@ -23,6 +23,8 @@ model Idea {
   businessModel  BusinessModel
   rawDescription String
   currency       String
+  // "fr" | "en": language of the AI texts, the report summary and the payment return page.
+  locale         String        @default("fr")
   createdAt      DateTime      @default(now())
   hypotheses     Hypothesis[]
   simulations    Simulation[]

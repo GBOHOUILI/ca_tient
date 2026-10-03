@@ -6,10 +6,10 @@
 
 Toutes les routes `/ideas/:id…` (sauf `POST /ideas` et les deux routes `suggest-*`, qui n'ont pas encore d'idée) exigent l'en-tête `Authorization: Bearer <accessToken>` (`IdeaAccessGuard`) : en-tête absent → 401 ; jeton faux ou idée inconnue → 404 identique dans les deux cas (ne révèle pas qu'une idée existe).
 
-- `POST /ideas` — crée une idée (description libre + modèle de business optionnel ; `acquisition` facultatif `{ utmSource?, utmMedium?, utmCampaign?, referrerHost? }`, ignoré par `PUT`), renvoie en plus `accessToken` (jeton aléatoire, à conserver côté navigateur — voir `docs/DECISIONS.md`)
+- `POST /ideas` — crée une idée (description libre + modèle de business optionnel ; `acquisition` facultatif `{ utmSource?, utmMedium?, utmCampaign?, referrerHost? }`, ignoré par `PUT`), renvoie en plus `accessToken` (jeton aléatoire, à conserver côté navigateur — voir `docs/DECISIONS.md`) ; `locale` facultatif `fr|en` (défaut `fr`, fixé à la création, ignoré par `PUT`) : langue des textes de l'IA, de la synthèse et de la page de retour après paiement
 - `PUT /ideas/:id` — protégée ; met à jour la même idée (même corps que `POST /ideas`), remplace ses hypothèses et sa simulation d'aperçu, conserve ses blocs de canvas ; utilisé quand l'utilisateur revient en arrière dans le wizard
 - `GET /ideas/:id` — protégée ; relit l'idée, ses hypothèses, sa simulation d'aperçu, `paid: boolean` (calculé côté serveur, jamais transmis par le client) et `hasCapitalPlan: boolean`
-- `POST /ideas/suggest-hypotheses` — l'IA propose les 4 hypothèses à partir de la description (sans persistance, `{ available: false }` si l'IA ne répond pas)
+- `POST /ideas/suggest-hypotheses` — l'IA propose les 4 hypothèses à partir de la description (sans persistance, `{ available: false }` si l'IA ne répond pas) ; `locale` facultatif `fr|en`
 - `POST /ideas/suggest-canvas-blocks` — l'IA propose les 7 blocs qualitatifs du canvas (même contrat)
 - `PUT /ideas/:id/profile` — protégée (jeton d'accès, pas besoin d'avoir payé) ; profil facultatif `{ country?, city?, profile?, stage?, heardFrom?, contact?, contactConsent? }` (valeurs dans des listes fermées, voir `IdeaProfileDto`). `contact` sans `contactConsent: true` → 400 ; retirer le consentement efface le contact. Upsert, `200 { ok: true }`.
 - `DELETE /ideas/:id` — protégée (jeton d'accès) ; l'utilisateur supprime son analyse et tout ce qui s'y rattache (cascade + événements analytics). `204`.
@@ -18,7 +18,7 @@ Toutes les routes `/ideas/:id…` (sauf `POST /ideas` et les deux routes `sugges
 ## Récupération d'une analyse payée
 
 - `POST /ideas/:id/recovery-code` — protégée (jeton d'accès) et réservée aux idées payées (403). Génère un nouveau code `CT-XXXXX-XXXXX`, remplace l'ancien, renvoie `201 { code }` (le code n'est jamais réaffichable : seul son hash est stocké).
-- `POST /recovery` — publique, 5 requêtes/min/IP (429 au-delà). Corps `{ code }` (casse, espaces et tirets ignorés). Renvoie `200 { ideaId, accessToken }` (nouveau jeton, l'ancien reste valide) ; `404` pour un code inconnu, mal formé ou d'une idée non payée ; `400` si `code` est absent.
+- `POST /recovery` — publique, 5 requêtes/min/IP (429 au-delà). Corps `{ code }` (casse, espaces et tirets ignorés). Renvoie `200 { ideaId, accessToken, locale }` (nouveau jeton, l'ancien reste valide) ; `404` pour un code inconnu, mal formé ou d'une idée non payée ; `400` si `code` est absent.
 
 ## Simulation
 
@@ -46,7 +46,7 @@ Toutes les routes `/ideas/:id…` (sauf `POST /ideas` et les deux routes `sugges
 
 ## Dashboard admin
 
-Toutes les routes : en-tête `x-admin-key` = `ADMIN_KEY` (404 si non configurée, 401 si fausse), 60 requêtes/min/IP, lecture seule. Filtres communs : `period=7d|30d|90d|all` (défaut `30d`), `businessModel`, `country`, et `currency` (défaut `XOF`, montants du marché).
+Toutes les routes : en-tête `x-admin-key` = `ADMIN_KEY` (404 si non configurée, 401 si fausse), 60 requêtes/min/IP, lecture seule. Filtres communs : `period=7d|30d|90d|all` (défaut `30d`), `businessModel`, `country`, `locale` (`fr|en`) et `currency` (défaut `XOF`, montants du marché).
 
 - `GET /admin/overview` — indicateurs clés (visites, idées, paiements confirmés, chiffre d'affaires, conversion aperçu → paiement, part des idées qui tiennent) et activité par jour.
 - `GET /admin/market` — répartitions (type, pays, profil, avancement, devises) et médianes par type de business dans la devise choisie.

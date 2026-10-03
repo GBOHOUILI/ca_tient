@@ -16,9 +16,11 @@ import { initialWizardState, wizardReducer } from "@/components/wizard/wizard-re
 import { CANVAS_BLOCK_KEYS, createIdea, updateIdea, suggestHypotheses, suggestCanvasBlocks, saveCanvasBlocks, saveProfile, EMPTY_PROFILE, type ProfileInput, type CreateIdeaResponse } from "@/lib/api/ideas";
 import { startPayment } from "@/lib/api/payments";
 import { isAccessTokenPersisted } from "@/lib/api/access-token";
+import { useI18n } from "@/i18n/I18nProvider";
 
 export default function CommencerPage() {
-  const [state, dispatch] = useReducer(wizardReducer, initialWizardState);
+  const { t, locale } = useI18n();
+  const [state, dispatch] = useReducer(wizardReducer, locale, initialWizardState);
   const [suggesting, setSuggesting] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [paying, setPaying] = useState(false);
@@ -34,6 +36,7 @@ export default function CommencerPage() {
         businessModel: state.businessModel,
         rawDescription: state.rawDescription,
         currency: state.currency,
+        locale,
       });
       if (suggestion.available) {
         dispatch({ type: "SET_HYPOTHESES", hypotheses: suggestion.hypotheses });
@@ -59,12 +62,13 @@ export default function CommencerPage() {
     const canvasIsEmpty = CANVAS_BLOCK_KEYS.every((key) => state.canvasBlocks[key].trim() === "");
     try {
       const [result, canvasSuggestion] = await Promise.all([
-        response ? updateIdea(response.ideaId, ideaInput) : createIdea(ideaInput),
+        response ? updateIdea(response.ideaId, ideaInput) : createIdea(ideaInput, locale),
         canvasIsEmpty
           ? suggestCanvasBlocks({
               businessModel: state.businessModel,
               rawDescription: state.rawDescription,
               currency: state.currency,
+              locale,
             })
           : Promise.resolve({ available: false as const }),
       ]);
@@ -74,7 +78,7 @@ export default function CommencerPage() {
       }
       dispatch({ type: "GO_TO_STEP", step: "canvas" });
     } catch {
-      setError("Le calcul a échoué. Vérifie tes valeurs et réessaie.");
+      setError(t.wizard.calculationFailed);
     } finally {
       setSubmitting(false);
     }
@@ -92,7 +96,7 @@ export default function CommencerPage() {
       );
       dispatch({ type: "GO_TO_STEP", step: "profile" });
     } catch {
-      setError("L'enregistrement a échoué. Réessaie.");
+      setError(t.wizard.saveFailed);
     } finally {
       setSubmitting(false);
     }
@@ -107,7 +111,7 @@ export default function CommencerPage() {
       dispatch({ type: "GO_TO_STEP", step: "results" });
     } catch {
       // Never blocks the free preview: the user can fix the contact or skip.
-      setError("On n'a pas pu enregistrer tes réponses : vérifie ton contact, ou passe cette étape.");
+      setError(t.wizard.profileFailed);
     } finally {
       setSubmitting(false);
     }
@@ -121,13 +125,13 @@ export default function CommencerPage() {
       const { redirectUrl } = await startPayment(response.ideaId);
       window.location.assign(redirectUrl);
     } catch {
-      setError("Le paiement n'a pas pu démarrer. Réessaie.");
+      setError(t.wizard.payFailed);
       setPaying(false);
     }
   }
 
   return (
-    <main className="mx-auto flex max-w-4xl flex-col gap-12 px-4 py-16 sm:px-6">
+    <div className="mx-auto flex max-w-4xl flex-col gap-12 px-4 py-16 sm:px-6">
       <TrackEvent type="test_started" />
       <WizardProgress currentStep={state.step} />
 
@@ -200,7 +204,7 @@ export default function CommencerPage() {
             onClick={() => dispatch({ type: "GO_TO_STEP", step: "offer" })}
             className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white"
           >
-            Voir l&apos;analyse complète
+            {t.wizard.seeFullAnalysis}
           </button>
         </div>
       )}
@@ -216,6 +220,6 @@ export default function CommencerPage() {
           persistenceWarning={!isAccessTokenPersisted(response.ideaId)}
         />
       )}
-    </main>
+    </div>
   );
 }

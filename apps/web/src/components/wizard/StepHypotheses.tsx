@@ -1,38 +1,13 @@
+"use client";
+
 import { SUPPORTED_CURRENCIES, type CurrencyCode } from "financial-engine";
 import type { BusinessModel } from "@/lib/business-models";
 import type { HypothesesInput } from "@/lib/api/ideas";
+import { useI18n } from "@/i18n/I18nProvider";
 import { MoneyInput } from "@/components/ui/MoneyInput";
 import { NumberInput } from "@/components/ui/NumberInput";
 
-const HINTS: Record<BusinessModel, string> = {
-  ECOMMERCE: "Inclut coût produit, livraison et commissions.",
-  FORMATION: "Inclut coût de production et plateforme.",
-  EBOOK: "Inclut commissions et coût de création.",
-  SERVICE: "Inclut sous-traitance et outils.",
-  PRODUIT_PHYSIQUE: "Inclut matières, production et logistique.",
-  RESTAURATION: "Inclut ingrédients, gaz ou charbon, emballages et livraison par plat.",
-  AGRICULTURE: "Inclut semences, engrais, aliments du bétail, main-d'œuvre et transport par unité vendue.",
-  TRANSFORMATION_ALIMENTAIRE: "Inclut matière première, énergie, emballages et transport par unité.",
-  AUTRE: "Regroupe tous tes coûts qui varient avec le volume vendu.",
-};
-
-const LOSSES_HINT = "Pense aussi aux pertes, aux retours et à la publicité par vente.";
-
-const FIELDS: { key: keyof HypothesesInput; label: string; hint?: string }[] = [
-  { key: "price", label: "À combien tu vends une unité ?" },
-  {
-    key: "volume",
-    label: "Combien tu penses en vendre par mois ?",
-    // The verdict depends on this number above all, and the AI can only guess it.
-    hint: "C'est le chiffre qui pèse le plus. Comment sais-tu que tu en vendras autant ? Vérifie-le en premier.",
-  },
-  { key: "variableCostPerUnit", label: "Combien ça te coûte de produire ou fournir une unité ?" },
-  {
-    key: "fixedCosts",
-    label: "Tes charges fixes chaque mois (loyer, salaires, abonnements...)",
-    hint: "Compte aussi ce que tu veux te verser chaque mois : sans ça, le résultat est trop flatteur.",
-  },
-];
+const FIELDS: (keyof HypothesesInput)[] = ["price", "volume", "variableCostPerUnit", "fixedCosts"];
 
 export function StepHypotheses({
   businessModel,
@@ -57,19 +32,25 @@ export function StepHypotheses({
   submitting: boolean;
   error: string | null;
 }) {
+  const { t } = useI18n();
+  // The verdict depends on the volume above all, and the AI can only guess it.
+  const hints: Partial<Record<keyof HypothesesInput, string>> = {
+    volume: t.wizard.volumeHint,
+    fixedCosts: t.wizard.fixedCostsHint,
+  };
   // The API requires a price of at least 1 (all other values may be 0).
   const hasPrice = hypotheses.price >= 1;
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-6">
-      <h1 className="text-center text-h2-mobile font-semibold md:text-h2">Tes hypothèses</h1>
+      <h1 className="text-center text-h2-mobile font-semibold md:text-h2">{t.wizard.hypothesesTitle}</h1>
       {wasSuggested ? (
         <p className="text-center text-small text-accent-emerald">
-          Suggéré par l&apos;IA à partir de ta description : vérifie et corrige si besoin.
+          {t.wizard.suggested}
         </p>
       ) : null}
       <label className="flex flex-col gap-2 text-small text-text-secondary">
-        Devise
+        {t.wizard.currency}
         <select
           value={currency}
           onChange={(e) => onCurrencyChange(e.target.value as CurrencyCode)}
@@ -83,33 +64,33 @@ export function StepHypotheses({
         </select>
       </label>
       {FIELDS.map((field) => (
-        <label key={field.key} className="flex flex-col gap-2 text-small text-text-secondary">
-          {field.label}
-          {field.key === "variableCostPerUnit" && (
+        <label key={field} className="flex flex-col gap-2 text-small text-text-secondary">
+          {t.wizard.fields[field]}
+          {field === "variableCostPerUnit" && (
             <span className="text-micro">
-              {HINTS[businessModel]} {LOSSES_HINT}
+              {t.wizard.costHints[businessModel]} {t.wizard.lossesHint}
             </span>
           )}
-          {field.hint ? <span className="text-micro">{field.hint}</span> : null}
-          {field.key === "volume" ? (
+          {hints[field] ? <span className="text-micro">{hints[field]}</span> : null}
+          {field === "volume" ? (
             <NumberInput value={hypotheses.volume} onChange={(value) => onHypothesisChange("volume", value)} />
           ) : (
             <MoneyInput
               key={currency}
-              value={hypotheses[field.key]}
+              value={hypotheses[field]}
               currency={currency}
-              onChange={(value) => onHypothesisChange(field.key, value)}
+              onChange={(value) => onHypothesisChange(field, value)}
             />
           )}
         </label>
       ))}
       {error ? <p className="text-small text-error">{error}</p> : null}
       {!hasPrice ? (
-        <p className="text-center text-small text-text-secondary">Indique ton prix de vente pour continuer.</p>
+        <p className="text-center text-small text-text-secondary">{t.wizard.needPrice}</p>
       ) : null}
       <div className="flex justify-between">
         <button type="button" onClick={onBack} className="text-body font-medium text-text-secondary">
-          Retour
+          {t.common.back}
         </button>
         <button
           type="button"
@@ -117,7 +98,7 @@ export function StepHypotheses({
           disabled={submitting || !hasPrice}
           className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white disabled:opacity-40"
         >
-          {submitting ? "Calcul en cours..." : "Voir mes résultats"}
+          {submitting ? t.wizard.calculating : t.common.seeResults}
         </button>
       </div>
     </div>

@@ -1,11 +1,16 @@
 import { ImageResponse } from "next/og";
+import { DICTIONARIES } from "@/i18n/dictionaries";
+import { hasLocale } from "@/i18n/locales";
 
 // Social preview (WhatsApp, Facebook, LinkedIn...). No price on it: the price is configurable.
-export const alt = "Ça tient ? — Teste ton idée de business avant d'investir";
+// The alt text is static for both languages: the image itself carries the translated words.
+export const alt = "Ça tient ?";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OpengraphImage() {
+export default async function OpengraphImage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params;
+  const t = DICTIONARIES[hasLocale(lang) ? lang : "fr"].meta;
   return new ImageResponse(
     (
       <div
@@ -22,11 +27,11 @@ export default function OpengraphImage() {
       >
         <div style={{ fontSize: 44, fontWeight: 700, color: "#22e5c9" }}>Ça tient ?</div>
         <div style={{ marginTop: 28, display: "flex", flexDirection: "column", fontSize: 72, lineHeight: 1.15 }}>
-          <span>Ton idée de business</span>
-          <span>tient-elle vraiment ?</span>
+          <span>{t.ogHeadline[0]}</span>
+          <span>{t.ogHeadline[1]}</span>
         </div>
         <div style={{ marginTop: 32, fontSize: 34, color: "#a1a1aa" }}>
-          Chiffre d&apos;affaires, marge, seuil de rentabilité, en quelques minutes.
+          {t.ogSubline}
         </div>
         <div
           style={{
@@ -40,7 +45,7 @@ export default function OpengraphImage() {
             background: "linear-gradient(90deg, #008558, #22e5c9)",
           }}
         >
-          Aperçu gratuit
+          {t.ogBadge}
         </div>
       </div>
     ),

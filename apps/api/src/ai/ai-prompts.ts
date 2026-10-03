@@ -1,5 +1,6 @@
 import type { BusinessModel } from "@prisma/client";
 import type { CurrencyCode } from "financial-engine";
+import type { Locale } from "../i18n/locale.js";
 import {
   CANVAS_BLOCK_KEYS,
   type AiSuggestionInput,
@@ -60,6 +61,17 @@ function jsonShape(schema: JsonSchema): string {
   return `{${fields.join(", ")}}`;
 }
 
+// Instructions stay in French (tested wording); only the language of the produced text changes.
+const OUTPUT_LANGUAGE: Record<Locale, string> = {
+  fr: "en français correct, avec les accents",
+  en: "en anglais correct",
+};
+
+const ADDRESS: Record<Locale, string> = {
+  fr: "en tutoyant",
+  en: "en t'adressant directement au lecteur (you)",
+};
+
 export function buildHypothesesPrompt(input: AiSuggestionInput): string {
   return [
     "Tu aides à estimer les hypothèses financières d'une idée de business, pour un outil qui teste sa viabilité avant de se lancer.",
@@ -77,7 +89,7 @@ export function buildHypothesesPrompt(input: AiSuggestionInput): string {
 
 export function buildCanvasPrompt(input: AiSuggestionInput): string {
   return [
-    "Tu aides à remplir un business model canvas (méthode Osterwalder) pour une idée de business, en français.",
+    "Tu aides à remplir un business model canvas (méthode Osterwalder) pour une idée de business.",
     `Modèle de business : ${BUSINESS_MODEL_LABELS[input.businessModel]}.`,
     `Description de l'idée, en langage libre : "${input.rawDescription}"`,
     "Propose un texte court (1 à 2 phrases maximum, style note plutôt que paragraphe) pour chacun des 7 blocs suivants, même si la description est vague (fais une hypothèse plausible plutôt que de répondre par une phrase vide) :",
@@ -88,7 +100,7 @@ export function buildCanvasPrompt(input: AiSuggestionInput): string {
     "- keyResources : les ressources indispensables pour opérer (matériel, compétences, stock...)",
     "- keyActivities : les activités clés du quotidien pour faire tourner ce business",
     "- keyPartners : les partenaires ou fournisseurs clés nécessaires",
-    `Réponds uniquement avec un objet JSON de la forme ${jsonShape(CANVAS_JSON_SCHEMA)} : chaque texte en français correct, avec les accents, sans jargon, 500 caractères maximum.`,
+    `Réponds uniquement avec un objet JSON de la forme ${jsonShape(CANVAS_JSON_SCHEMA)} : chaque texte ${OUTPUT_LANGUAGE[input.locale]}, sans jargon, 500 caractères maximum.`,
   ].join("\n");
 }
 
@@ -183,7 +195,7 @@ export function buildReportSummaryPrompt(facts: ReportSummaryFacts): string {
     points.length > 0 ? `Points à surveiller : ${points.join(" ; ")}.` : "Aucun point d'alerte particulier.",
     `Variables qui pèsent le plus sur le résultat : ${facts.mostSensitive.map((key) => SENSITIVITY_FACTS[key]).join(", ")}.`,
     `Capital : ${FINANCING_FACTS[facts.financing]}.`,
-    "Écris 3 à 5 phrases simples, en tutoyant, sans jargon, en français correct, avec les accents. N'écris aucun chiffre ni montant ni pourcentage. Ne promets jamais la rentabilité : c'est une aide à la décision.",
+    `Écris 3 à 5 phrases simples, ${ADDRESS[facts.locale]}, sans jargon, ${OUTPUT_LANGUAGE[facts.locale]}. N'écris aucun chiffre ni montant ni pourcentage. Ne promets jamais la rentabilité : c'est une aide à la décision.`,
     `Réponds uniquement avec un objet JSON de la forme ${jsonShape(REPORT_SUMMARY_JSON_SCHEMA)}.`,
   ]
     .filter((line) => line.length > 0)

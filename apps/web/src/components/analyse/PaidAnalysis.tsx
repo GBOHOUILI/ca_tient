@@ -6,6 +6,7 @@ import { TrackEvent } from "@/components/analytics/TrackEvent";
 import { StepEtSi } from "@/components/wizard/StepEtSi";
 import { StepScenarios } from "@/components/wizard/StepScenarios";
 import type { WhatIfDeltas } from "@/components/wizard/wizard-reducer";
+import { useI18n } from "@/i18n/I18nProvider";
 import { trackEvent } from "@/lib/analytics";
 import { hypothesesFromDetail, type IdeaDetail } from "@/lib/api/ideas";
 import { issueRecoveryCode } from "@/lib/api/recovery";
@@ -23,6 +24,7 @@ type Screen = "et-si" | "scenarios" | "capital" | "report";
 const loadingClass = "text-center text-body text-text-secondary";
 
 export function PaidAnalysis({ ideaId, idea }: { ideaId: string; idea: IdeaDetail }) {
+  const { t } = useI18n();
   // Coming back after entering the capital: the report is the natural landing screen.
   const [screen, setScreen] = useState<Screen>(idea.hasCapitalPlan ? "report" : "et-si");
   const [deltas, setDeltas] = useState<WhatIfDeltas>(NO_DELTAS);
@@ -58,7 +60,7 @@ export function PaidAnalysis({ ideaId, idea }: { ideaId: string; idea: IdeaDetai
     try {
       setRecoveryCode(await issueRecoveryCode(ideaId));
     } catch {
-      setCodeError("Le code n'a pas pu être généré. Réessaie.");
+      setCodeError(t.analysis.codeFailed);
     } finally {
       setIssuingCode(false);
     }
@@ -90,7 +92,7 @@ export function PaidAnalysis({ ideaId, idea }: { ideaId: string; idea: IdeaDetai
 
       {screen === "capital" &&
         (reportState.loading ? (
-          <p className={loadingClass}>Chargement de ton capital...</p>
+          <p className={loadingClass}>{t.analysis.loadingCapital}</p>
         ) : (
           <StepCapital
             currency={idea.currency}
@@ -117,9 +119,9 @@ export function PaidAnalysis({ ideaId, idea }: { ideaId: string; idea: IdeaDetai
             <ReviewBox ideaId={ideaId} />
           </>
         ) : reportState.loading ? (
-          <p className={loadingClass}>Chargement de ton rapport...</p>
+          <p className={loadingClass}>{t.analysis.loadingReport}</p>
         ) : (
-          <p className="text-center text-body text-error">Le rapport est indisponible pour le moment.</p>
+          <p className="text-center text-body text-error">{t.analysis.reportUnavailable}</p>
         ))}
 
       <RecoveryCodeBox code={recoveryCode} issuing={issuingCode} error={codeError} onIssue={() => void issueCode()} />

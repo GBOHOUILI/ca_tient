@@ -1,6 +1,7 @@
-import { IsEnum, IsIn, IsNotEmpty, IsString, MaxLength } from "class-validator";
+import { IsEnum, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
 import { BusinessModel } from "@prisma/client";
 import { SUPPORTED_CURRENCIES, type CurrencyCode } from "financial-engine";
+import { LOCALES, type Locale } from "../../i18n/locale.js";
 
 export class SuggestHypothesesDto {
   @IsEnum(BusinessModel)
@@ -13,4 +14,8 @@ export class SuggestHypothesesDto {
 
   @IsIn(SUPPORTED_CURRENCIES)
   currency!: CurrencyCode;
+
+  @IsOptional()
+  @IsIn(LOCALES)
+  locale?: Locale;
 }

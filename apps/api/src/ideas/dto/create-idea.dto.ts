@@ -2,6 +2,7 @@ import { Type } from "class-transformer";
 import { IsEnum, IsIn, IsNotEmpty, IsOptional, IsString, MaxLength, ValidateNested } from "class-validator";
 import { BusinessModel } from "@prisma/client";
 import { SUPPORTED_CURRENCIES, type CurrencyCode } from "financial-engine";
+import { LOCALES, type Locale } from "../../i18n/locale.js";
 import { AcquisitionDto } from "./acquisition.dto.js";
 import { HypothesesDto } from "./hypotheses.dto.js";
 
@@ -16,6 +17,11 @@ export class CreateIdeaDto {
 
   @IsIn(SUPPORTED_CURRENCIES)
   currency!: CurrencyCode;
+
+  // Fixed at creation (ignored on update): the language the idea was written in.
+  @IsOptional()
+  @IsIn(LOCALES)
+  locale?: Locale;
 
   @ValidateNested()
   @Type(() => HypothesesDto)

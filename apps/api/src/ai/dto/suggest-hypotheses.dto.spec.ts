@@ -18,6 +18,12 @@ describe("SuggestHypothesesDto", () => {
     expect(errors).toHaveLength(0);
   });
 
+  it("accepts English and rejects an unknown locale", async () => {
+    expect(await validate(plainToInstance(SuggestHypothesesDto, { ...validPayload(), locale: "en" }))).toHaveLength(0);
+    const errors = await validate(plainToInstance(SuggestHypothesesDto, { ...validPayload(), locale: "de" }));
+    expect(errors.some((e) => e.property === "locale")).toBe(true);
+  });
+
   it("rejects an unsupported currency", async () => {
     const dto = plainToInstance(SuggestHypothesesDto, { ...validPayload(), currency: "JPY" });
     const errors = await validate(dto);

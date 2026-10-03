@@ -50,6 +50,7 @@ describe("Admin dashboard API", () => {
     createdAt?: Date;
     description?: string;
     utmSource?: string;
+    locale?: "fr" | "en";
   }) {
     const idea = await prisma.idea.create({
       data: {
@@ -59,6 +60,7 @@ describe("Admin dashboard API", () => {
         createdAt: options.createdAt,
         paidAt: options.paid ? new Date() : null,
         utmSource: options.utmSource,
+        locale: options.locale,
         hypotheses: {
           create: [
             { key: "price", label: "Prix", value: options.price ?? 5000, source: "utilisateur_saisi" },
@@ -151,6 +153,12 @@ describe("Admin dashboard API", () => {
     const byCountry = await get("/admin/overview?country=BJ").expect(200);
     expect(byCountry.body.kpis.ideas).toBe(1);
     await get("/admin/overview?country=XX").expect(400);
+    await seedIdea({ locale: "en" });
+    const english = await get("/admin/overview?locale=en").expect(200);
+    expect(english.body.kpis.ideas).toBe(1);
+    await get("/admin/overview?locale=de").expect(400);
+    const listed = await get("/admin/ideas?locale=en").expect(200);
+    expect(listed.body.items[0]).toMatchObject({ locale: "en" });
     await get("/admin/overview?period=1y").expect(400);
   });
 

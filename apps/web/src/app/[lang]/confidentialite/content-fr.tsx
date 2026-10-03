@@ -1,32 +1,11 @@
-import type { Metadata } from "next";
-import Link from "next/link";
 import type { ReactNode } from "react";
+import { PUBLISHER } from "@/lib/site";
 
-export const metadata: Metadata = {
-  title: "Confidentialité",
-  alternates: { canonical: "/confidentialite" },
-  description: "Comment Ça tient ? utilise tes informations et comment les supprimer.",
-};
+const CONTACT = PUBLISHER.email;
 
-const CONTACT = "contact@zerotoone.bj";
-
-function Section({ title, children }: { title: string; children: ReactNode }) {
+export function PrivacyFr({ Section }: { Section: (props: { title: string; children: ReactNode }) => ReactNode }) {
   return (
-    <section className="flex flex-col gap-3">
-      <h2 className="text-h3-mobile font-semibold md:text-h3">{title}</h2>
-      <div className="flex flex-col gap-3 text-body text-text-secondary">{children}</div>
-    </section>
-  );
-}
-
-export default function ConfidentialitePage() {
-  return (
-    <main className="mx-auto flex max-w-2xl flex-col gap-10 px-4 py-16 sm:px-6">
-      <div>
-        <h1 className="text-h2-mobile font-semibold md:text-h2">Confidentialité</h1>
-        <p className="mt-2 text-small text-text-secondary">Mise à jour le 3 octobre 2026</p>
-      </div>
-
+    <>
       <Section title="Qui sommes-nous">
         <p>
           Ça tient ? est édité par ZeroToOne. Pour toute question sur tes informations :{" "}
@@ -73,7 +52,7 @@ export default function ConfidentialitePage() {
 
       <Section title="Cookies et stockage">
         <p>
-          Un cookie retient ton thème (clair ou sombre). Le stockage de ton navigateur garde l&apos;accès à ton analyse et la
+          Un cookie retient ton thème (clair ou sombre), un autre ton choix si tu fermes la suggestion de langue. Le stockage de ton navigateur garde l&apos;accès à ton analyse et la
           source de ta visite. Aucun cookie publicitaire.
         </p>
       </Section>
@@ -96,9 +75,6 @@ export default function ConfidentialitePage() {
         </p>
       </Section>
 
-      <Link href="/" className="text-small text-text-secondary underline underline-offset-4">
-        ← Retour à l&apos;accueil
-      </Link>
-    </main>
+    </>
   );
 }

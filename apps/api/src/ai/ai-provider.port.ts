@@ -1,5 +1,6 @@
 import type { BusinessModel } from "@prisma/client";
 import type { CurrencyCode } from "financial-engine";
+import type { Locale } from "../i18n/locale.js";
 
 export interface SuggestedHypotheses {
   price: number;
@@ -26,10 +27,12 @@ export interface AiSuggestionInput {
   businessModel: BusinessModel;
   rawDescription: string;
   currency: CurrencyCode;
+  locale: Locale;
 }
 
 // Qualitative facts only: no amount ever reaches the model (CLAUDE.md rule #3).
 export interface ReportSummaryFacts {
+  locale: Locale;
   businessModel: BusinessModel;
   holds: boolean;
   breakEvenReachable: boolean;

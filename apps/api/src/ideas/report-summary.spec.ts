@@ -3,6 +3,7 @@ import type { WatchPointCode } from "financial-engine";
 import { buildReportFacts, factsHash, templateSummary } from "./report-summary.js";
 
 const baseInput = {
+  locale: "fr" as const,
   businessModel: "SERVICE" as const,
   estimatedResult: 50000,
   breakEvenReachable: true,
@@ -20,6 +21,7 @@ const baseInput = {
 describe("buildReportFacts", () => {
   it("keeps only qualitative facts", () => {
     expect(buildReportFacts(baseInput)).toEqual({
+      locale: "fr",
       businessModel: "SERVICE",
       holds: true,
       breakEvenReachable: true,
@@ -62,5 +64,23 @@ describe("templateSummary", () => {
       expect(text).not.toMatch(/\d/);
       expect(text).toContain("pas une garantie");
     }
+  });
+});
+
+describe("language of the summary", () => {
+  it("never reuses a summary across languages", () => {
+    const fr = buildReportFacts(baseInput);
+    const en = buildReportFacts({ ...baseInput, locale: "en" });
+    expect(factsHash(fr)).not.toBe(factsHash(en));
+  });
+
+  it("has an English fallback summary", () => {
+    const text = templateSummary(buildReportFacts({ ...baseInput, locale: "en" }));
+    expect(text).toMatch(/^With your assumptions/);
+    expect(text).not.toMatch(/\d/);
+  });
+
+  it("writes the French fallback summary with accents", () => {
+    expect(templateSummary(buildReportFacts(baseInput))).toContain("Avec tes hypothèses, ton idée");
   });
 });

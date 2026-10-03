@@ -17,6 +17,7 @@ export interface AdminFilters {
   period: AdminPeriod;
   businessModel: string;
   country: string;
+  locale: string;
 }
 
 export interface Count {
@@ -88,6 +89,7 @@ export interface IdeaListItem {
   businessModel: string;
   country: string | null;
   currency: string;
+  locale: string;
   holds: boolean | null;
   paid: boolean;
   hasContact: boolean;
@@ -102,7 +104,15 @@ export interface IdeaList {
 }
 
 export interface IdeaDetail {
-  idea: { id: string; createdAt: string; businessModel: string; rawDescription: string; currency: string; paidAt: string | null };
+  idea: {
+    id: string;
+    createdAt: string;
+    businessModel: string;
+    rawDescription: string;
+    currency: string;
+    locale: string;
+    paidAt: string | null;
+  };
   acquisition: { utmSource: string | null; utmMedium: string | null; utmCampaign: string | null; referrerHost: string | null };
   hypotheses: { currency: string; price: number; volume: number; variableCostPerUnit: number; fixedCosts: number } | null;
   result: { revenue: number; grossMargin: number; estimatedResult: number } | null;
@@ -152,7 +162,7 @@ export async function adminGet<T>(adminKey: string, path: string, params: Record
 }
 
 export function filterParams(filters: AdminFilters): Record<string, string> {
-  return { period: filters.period, businessModel: filters.businessModel, country: filters.country };
+  return { period: filters.period, businessModel: filters.businessModel, country: filters.country, locale: filters.locale };
 }
 
 // The key travels in a header, so a plain link cannot download the file: fetch it, then save the blob.

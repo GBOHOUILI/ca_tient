@@ -22,6 +22,7 @@ import { PrismaService } from "../prisma/prisma.service.js";
 import type { CapitalPlanDto } from "./dto/capital-plan.dto.js";
 import { hypothesesFromRows } from "./hypotheses-from-rows.js";
 import { buildReportFacts, factsHash, templateSummary } from "./report-summary.js";
+import { asLocale } from "../i18n/locale.js";
 
 const SCENARIOS: readonly ScenarioKey[] = ["prudent", "realiste", "ambitieux", "crise"];
 
@@ -106,6 +107,7 @@ export class ReportService {
     >;
 
     const facts = buildReportFacts({
+      locale: asLocale(idea.locale),
       businessModel: idea.businessModel,
       estimatedResult: result.estimatedResult,
       breakEvenReachable: breakEven.reachable,

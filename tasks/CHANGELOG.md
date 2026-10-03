@@ -1,5 +1,14 @@
 # CHANGELOG.md
 
+## [Non versionné], site en anglais
+- Tout le parcours existe en anglais sous `/en` : landing, FAQ, test, aperçu, paiement, analyse, rapport, récupération, confidentialité.
+- Bouton FR/EN dans le header et le menu ; bandeau qui propose la langue du navigateur, sans redirection.
+- L'IA rédige hypothèses, business model et synthèse dans la langue de l'idée ; retour de paiement dans la bonne langue.
+- Devise proposée EUR en anglais ; prix affiché « 1,000 CFA francs (about €1.52) ».
+- SEO bilingue : `hreflang`, sitemap des deux langues, données structurées et image de partage traduites.
+- Admin : filtre et colonne « Langue ».
+- Pages 404 traduites ; correction des `<main>` imbriqués.
+
 ## [Non versionné], montants en euros et autres devises
 - Les montants EUR, USD, GBP, NGN, GHS se tapent et s'affichent en unités (« 2,50 € ») ; ils restent stockés en centimes. Avant, 2,50 € s'affichait « 250 € ».
 - Changer de devise sur l'écran des hypothèses garde les chiffres saisis.

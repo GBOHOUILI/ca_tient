@@ -10,7 +10,7 @@ export default function AnalysePage() {
   const { view, checkAgain, retryPayment, retrying } = usePaymentGate(ideaId);
 
   return (
-    <main className="mx-auto flex max-w-4xl flex-col gap-12 px-4 py-16 sm:px-6">
+    <div className="mx-auto flex max-w-4xl flex-col gap-12 px-4 py-16 sm:px-6">
       {view.kind === "paid" ? (
         <PaidAnalysis ideaId={ideaId} idea={view.idea} />
       ) : (
@@ -21,6 +21,6 @@ export default function AnalysePage() {
           onRetryPayment={() => void retryPayment()}
         />
       )}
-    </main>
+    </div>
   );
 }

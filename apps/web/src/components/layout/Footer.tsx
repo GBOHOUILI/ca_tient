@@ -1,42 +1,44 @@
 import Link from "next/link";
+import { getI18n } from "@/i18n/server";
 import { PUBLISHER } from "@/lib/site";
 
 const linkClass = "hover:text-text-primary";
 
-const COLUMNS = [
-  {
-    title: "Produit",
-    links: [
-      { href: "/commencer", label: "Tester mon idée" },
-      { href: "/retrouver", label: "Retrouver mon analyse" },
-      { href: "/#tarif", label: "Tarif" },
-      { href: "/#faq", label: "Questions fréquentes" },
-    ],
-  },
-  {
-    title: "Aide",
-    links: [
-      { href: `mailto:${PUBLISHER.email}`, label: PUBLISHER.email },
-      { href: "/confidentialite", label: "Confidentialité" },
-    ],
-  },
-];
+export async function Footer() {
+  const { t, href } = await getI18n();
+  const columns = [
+    {
+      title: t.footer.product,
+      links: [
+        { href: href("/commencer"), label: t.header.start },
+        { href: href("/retrouver"), label: t.header.recover },
+        { href: href("/#tarif"), label: t.header.pricing },
+        { href: href("/#faq"), label: t.header.faq },
+      ],
+    },
+    {
+      title: t.footer.help,
+      links: [
+        { href: `mailto:${PUBLISHER.email}`, label: PUBLISHER.email },
+        { href: href("/confidentialite"), label: t.header.privacy },
+      ],
+    },
+  ];
 
-export function Footer() {
   return (
     <footer className="border-t border-border px-4 pt-12 pb-8 text-small text-text-secondary sm:px-6">
       <div className="mx-auto grid max-w-5xl gap-10 sm:grid-cols-[2fr_1fr_1fr]">
         <div>
           <p className="text-h4 font-semibold text-text-primary">Ça tient ?</p>
-          <p className="mt-2 max-w-xs">Teste les chiffres de ton idée de business avant d&apos;investir ton argent.</p>
+          <p className="mt-2 max-w-xs">{t.footer.tagline}</p>
           <p className="mt-4">
-            Un produit{" "}
+            {t.footer.productBy}{" "}
             <a href={PUBLISHER.url} className="font-medium text-accent-emerald hover:underline">
               ZeroToOne
             </a>
           </p>
         </div>
-        {COLUMNS.map((column) => (
+        {columns.map((column) => (
           <nav key={column.title} aria-label={column.title}>
             <p className="font-semibold text-text-primary">{column.title}</p>
             <ul className="mt-3 flex flex-col gap-2">

@@ -1,73 +1,13 @@
+import { getI18n } from "@/i18n/server";
 import { priceLabel } from "@/lib/price";
 
-export function faqs(price: string | null) {
-  return [
-  {
-    question: "Qu'est-ce qui est gratuit ?",
-    answer:
-      "Tout jusqu'à l'aperçu : la description de ton idée, les hypothèses proposées par l'IA, ton chiffre d'affaires, ta marge, ton résultat, ton seuil de rentabilité et le verdict. Tu ne paies que pour l'analyse complète.",
-  },
-  {
-    question: "Je n'y connais rien en finance, je vais m'en sortir ?",
-    answer:
-      "Oui. Les questions sont posées simplement (« À combien tu vends une unité ? »), l'IA propose des chiffres de départ et le rapport explique les résultats en phrases simples.",
-  },
-  {
-    question: "L'IA va-t-elle inventer mes chiffres ?",
-    answer:
-      "Non. L'IA propose des hypothèses que tu vérifies et corriges. Tous les résultats sont calculés par des formules fixes, et la synthèse rédigée par l'IA ne contient aucun chiffre.",
-  },
-  {
-    question: "Le résultat compte-t-il ma propre rémunération ?",
-    answer:
-      "Seulement si tu l'ajoutes à tes charges fixes, et c'est ce qu'on te conseille : sinon, un résultat positif peut cacher le fait que tu travailles gratuitement. Pense aussi à compter les pertes, les retours et la publicité dans ton coût par unité.",
-  },
-  {
-    question: "Le capital calculé suffit-il pour démarrer ?",
-    answer:
-      "C'est un minimum : tes dépenses de départ plus trois mois de charges. Il ne compte pas le fonds de roulement (le stock à racheter, l'argent que tes clients te doivent encore). Garde une marge en plus.",
-  },
-  {
-    question: "Combien de temps ça prend ?",
-    answer: "Quelques minutes pour décrire ton idée et vérifier tes chiffres. L'aperçu s'affiche aussitôt.",
-  },
-  {
-    question: "Comment je paie ?",
-    answer:
-      price
-        ? `${price}, une seule fois, sur la page de paiement sécurisée de FedaPay (mobile money ou carte). Pas d'abonnement, pas de frais cachés.`
-        : "En ce moment, l'analyse complète est gratuite : rien à payer.",
-  },
-  {
-    question: "Et si je change de téléphone ?",
-    answer:
-      "Après le paiement, tu peux obtenir un code. Il te permet de rouvrir ton analyse depuis n'importe quel téléphone ou navigateur, sur la page « Retrouver mon analyse ».",
-  },
-  {
-    question: "Je veux tester plusieurs idées.",
-    answer: price
-      ? `Chaque idée a son aperçu gratuit. L'analyse complète coûte ${price} par idée : tu ne paies que ce que tu approfondis.`
-      : "Chaque idée a son aperçu et son analyse complète, gratuitement en ce moment.",
-  },
-  {
-    question: "Que deviennent mes informations ?",
-    answer:
-      "Ta description est envoyée à un service d'IA pour te proposer des hypothèses. Tes chiffres et ton analyse restent chez nous. Ton contact n'est enregistré que si tu coches la case prévue, et il n'est jamais partagé.",
-  },
-  {
-    question: "Si l'analyse dit que ça tient, c'est sûr que ça marchera ?",
-    answer:
-      "Non. C'est une aide à la décision : les résultats dépendent des chiffres que tu donnes. Elle te montre où sont les risques, pas une garantie de succès.",
-  },
-  ];
-}
-
-export function Faq({ price }: { price: number }) {
+export async function Faq({ price }: { price: number }) {
+  const { t, locale } = await getI18n();
   return (
     <section id="faq" className="mx-auto max-w-3xl px-4 py-24 sm:px-6">
-      <h2 className="text-center text-h2-mobile font-semibold md:text-h2">Questions fréquentes</h2>
+      <h2 className="text-center text-h2-mobile font-semibold md:text-h2">{t.landing.faqTitle}</h2>
       <dl className="mt-12 flex flex-col gap-6">
-        {faqs(priceLabel(price)).map((faq) => (
+        {t.faq(priceLabel(price, locale)).map((faq) => (
           <div key={faq.question} className="border-b border-border pb-6">
             <dt className="text-h4 font-semibold">{faq.question}</dt>
             <dd className="mt-2 text-body text-text-secondary">{faq.answer}</dd>

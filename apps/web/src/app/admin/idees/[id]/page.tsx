@@ -73,7 +73,8 @@ export default function AdminIdeaPage() {
       <div>
         <PageTitle>{label(detail.idea.businessModel)}</PageTitle>
         <p className="mt-1 text-small text-text-secondary">
-          Créée le {shortDate(detail.idea.createdAt)} · {detail.idea.paidAt ? `payée le ${shortDate(detail.idea.paidAt)}` : "non payée"}
+          Créée le {shortDate(detail.idea.createdAt)} · {detail.idea.locale === "en" ? "en anglais" : "en français"} ·{" "}
+          {detail.idea.paidAt ? `payée le ${shortDate(detail.idea.paidAt)}` : "non payée"}
           {detail.recoveries > 0 ? ` · retrouvée ${detail.recoveries} fois par code` : ""}
         </p>
       </div>

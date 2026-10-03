@@ -67,6 +67,7 @@ export class AdminService {
     return {
       createdAt: since ? { gte: since } : undefined,
       businessModel: filters.businessModel,
+      locale: filters.locale,
       profile: filters.country ? { is: { country: filters.country } } : undefined,
     };
   }
@@ -140,7 +141,11 @@ export class AdminService {
       where: {
         currency: "XOF",
         createdAt: since ? { gte: since } : undefined,
-        idea: { businessModel: filters.businessModel, profile: filters.country ? { is: { country: filters.country } } : undefined },
+        idea: {
+          businessModel: filters.businessModel,
+          locale: filters.locale,
+          profile: filters.country ? { is: { country: filters.country } } : undefined,
+        },
       },
       select: { amount: true, currency: true, status: true, createdAt: true, confirmedAt: true },
     });
@@ -182,6 +187,7 @@ export class AdminService {
         businessModel: idea.businessModel,
         country: idea.profile?.country ?? null,
         currency: idea.currency,
+        locale: idea.locale,
         holds: holds(toRow(idea)),
         paid: idea.paidAt !== null,
         hasContact: Boolean(idea.profile?.contactConsent && idea.profile.contact),
@@ -230,6 +236,7 @@ export class AdminService {
         businessModel: idea.businessModel,
         rawDescription: idea.rawDescription,
         currency: idea.currency,
+        locale: idea.locale,
         paidAt: idea.paidAt,
       },
       acquisition: {

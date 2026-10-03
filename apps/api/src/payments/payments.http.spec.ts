@@ -56,8 +56,8 @@ async function buildApp(gateway: PaymentGateway): Promise<{ app: INestApplicatio
   return { app, prisma: moduleRef.get(PrismaService) };
 }
 
-async function createIdea(app: INestApplication): Promise<{ id: string; auth: [string, string] }> {
-  const response = await request(app.getHttpServer()).post("/ideas").send(ideaPayload()).expect(201);
+async function createIdea(app: INestApplication, extra: object = {}): Promise<{ id: string; auth: [string, string] }> {
+  const response = await request(app.getHttpServer()).post("/ideas").send({ ...ideaPayload(), ...extra }).expect(201);
   return { id: response.body.ideaId, auth: ["Authorization", `Bearer ${response.body.accessToken}`] };
 }
 
@@ -407,5 +407,41 @@ describe("POST /ideas/:id/payments — rate limiting", () => {
 
     const { id, auth } = await createIdea(app);
     await request(app.getHttpServer()).post(`/ideas/${id}/payments`).set(...auth).expect(429);
+  });
+});
+
+// Own app instance: the payment routes are rate limited per instance.
+describe("Payment return page language", () => {
+  let app: INestApplication;
+  let prisma: PrismaService;
+  const gateway = new FakeFedaPayGateway();
+  const previousPrice = process.env.ANALYSIS_PRICE_XOF;
+
+  beforeAll(async () => {
+    ({ app, prisma } = await buildApp(gateway));
+  });
+
+  afterEach(async () => {
+    await prisma.idea.deleteMany();
+    if (previousPrice === undefined) delete process.env.ANALYSIS_PRICE_XOF;
+    else process.env.ANALYSIS_PRICE_XOF = previousPrice;
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  it("sends the person back to the analysis in the idea's language", async () => {
+    process.env.ANALYSIS_PRICE_XOF = "1000";
+    const { id, auth } = await createIdea(app, { locale: "en" });
+    await request(app.getHttpServer()).post(`/ideas/${id}/payments`).set(...auth).expect(201);
+    expect(gateway.lastCheckout?.returnUrl).toMatch(new RegExp(`/en/analyse/${id}$`));
+  });
+
+  it("does the same when the analysis is free", async () => {
+    process.env.ANALYSIS_PRICE_XOF = "0";
+    const { id, auth } = await createIdea(app, { locale: "en" });
+    const started = await request(app.getHttpServer()).post(`/ideas/${id}/payments`).set(...auth).expect(201);
+    expect(started.body.redirectUrl).toMatch(new RegExp(`/en/analyse/${id}$`));
   });
 });

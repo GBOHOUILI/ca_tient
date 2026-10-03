@@ -1,3 +1,4 @@
+import { DEFAULT_LOCALE, hasLocale, type Locale } from "@/i18n/locales";
 import { saveAccessToken } from "./access-token";
 import { API_BASE_URL, authHeaders } from "./http";
 
@@ -28,7 +29,7 @@ export async function issueRecoveryCode(ideaId: string): Promise<string> {
   return ((await response.json()) as { code: string }).code;
 }
 
-export async function redeemRecoveryCode(code: string): Promise<{ ideaId: string }> {
+export async function redeemRecoveryCode(code: string): Promise<{ ideaId: string; locale: Locale }> {
   const response = await fetch(`${API_BASE_URL}/recovery`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -45,7 +46,7 @@ export async function redeemRecoveryCode(code: string): Promise<{ ideaId: string
     throw new Error(`La récupération a échoué (${response.status}).`);
   }
 
-  const body = (await response.json()) as { ideaId: string; accessToken: string };
+  const body = (await response.json()) as { ideaId: string; accessToken: string; locale?: string };
   saveAccessToken(body.ideaId, body.accessToken);
-  return { ideaId: body.ideaId };
+  return { ideaId: body.ideaId, locale: body.locale && hasLocale(body.locale) ? body.locale : DEFAULT_LOCALE };
 }

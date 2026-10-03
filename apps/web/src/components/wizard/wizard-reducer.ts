@@ -1,6 +1,7 @@
 import type { BusinessModel } from "@/lib/business-models";
 import type { CanvasBlockKey, CanvasBlocks, HypothesesInput } from "@/lib/api/ideas";
 import { relabelCurrency, type CurrencyCode } from "financial-engine";
+import type { Locale } from "@/i18n/locales";
 
 export type WizardStep =
   | "business-type"
@@ -49,16 +50,19 @@ export type WizardAction =
   | { type: "SET_CANVAS_BLOCK"; key: CanvasBlockKey; value: string }
   | { type: "GO_TO_STEP"; step: WizardStep };
 
-export const initialWizardState: WizardState = {
-  step: "business-type",
-  businessModel: null,
-  rawDescription: "",
-  currency: "XOF",
-  hypotheses: { price: 0, volume: 0, variableCostPerUnit: 0, fixedCosts: 0 },
-  wasSuggested: false,
-  canvasBlocks: EMPTY_CANVAS_BLOCKS,
-  canvasWasSuggested: false,
-};
+// Diaspora visitors reading in English think in euros; French keeps the CFA franc.
+export function initialWizardState(locale: Locale): WizardState {
+  return {
+    step: "business-type",
+    businessModel: null,
+    rawDescription: "",
+    currency: locale === "en" ? "EUR" : "XOF",
+    hypotheses: { price: 0, volume: 0, variableCostPerUnit: 0, fixedCosts: 0 },
+    wasSuggested: false,
+    canvasBlocks: EMPTY_CANVAS_BLOCKS,
+    canvasWasSuggested: false,
+  };
+}
 
 export function wizardReducer(state: WizardState, action: WizardAction): WizardState {
   switch (action.type) {

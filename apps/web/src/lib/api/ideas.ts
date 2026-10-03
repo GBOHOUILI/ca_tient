@@ -1,5 +1,6 @@
 import type { BreakEvenResult, CurrencyCode, FinancialResult } from "financial-engine";
 import { readAcquisition } from "../acquisition";
+import type { Locale } from "@/i18n/locales";
 import type { BusinessModel } from "../business-models";
 import { forgetAccessToken, saveAccessToken } from "./access-token";
 import { AccessDeniedError, API_BASE_URL, authHeaders } from "./http";
@@ -25,11 +26,11 @@ export interface CreateIdeaResponse {
   accessToken?: string;
 }
 
-export async function createIdea(input: CreateIdeaInput): Promise<CreateIdeaResponse> {
+export async function createIdea(input: CreateIdeaInput, locale: Locale): Promise<CreateIdeaResponse> {
   const response = await fetch(`${API_BASE_URL}/ideas`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ ...input, acquisition: readAcquisition() }),
+    body: JSON.stringify({ ...input, ...localeField(locale), acquisition: readAcquisition() }),
   });
 
   if (!response.ok) {
@@ -61,6 +62,13 @@ export interface SuggestHypothesesInput {
   businessModel: BusinessModel;
   rawDescription: string;
   currency: CurrencyCode;
+  locale: Locale;
+}
+
+// French is the API default: only English is sent, so a web deployed before the API keeps working
+// for French (the API rejects unknown fields).
+function localeField(locale: Locale): { locale?: Locale } {
+  return locale === "en" ? { locale } : {};
 }
 
 export type SuggestHypothesesResponse =
@@ -69,10 +77,11 @@ export type SuggestHypothesesResponse =
 
 export async function suggestHypotheses(input: SuggestHypothesesInput): Promise<SuggestHypothesesResponse> {
   try {
+    const { locale, ...rest } = input;
     const response = await fetch(`${API_BASE_URL}/ideas/suggest-hypotheses`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(input),
+      body: JSON.stringify({ ...rest, ...localeField(locale) }),
     });
 
     if (!response.ok) {
@@ -102,16 +111,18 @@ export interface SuggestCanvasBlocksInput {
   businessModel: BusinessModel;
   rawDescription: string;
   currency: CurrencyCode;
+  locale: Locale;
 }
 
 export type SuggestCanvasBlocksResponse = { available: true; blocks: CanvasBlocks } | { available: false };
 
 export async function suggestCanvasBlocks(input: SuggestCanvasBlocksInput): Promise<SuggestCanvasBlocksResponse> {
   try {
+    const { locale, ...rest } = input;
     const response = await fetch(`${API_BASE_URL}/ideas/suggest-canvas-blocks`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(input),
+      body: JSON.stringify({ ...rest, ...localeField(locale) }),
     });
 
     if (!response.ok) {
