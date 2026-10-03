@@ -36,6 +36,7 @@ model Idea {
   utmCampaign      String?
   referrerHost     String?
   profile          IdeaProfile?
+  review           Review?
 }
 
 model Hypothesis {
@@ -193,4 +194,27 @@ model IdeaProfile {
   contactConsent Boolean          @default(false)
   consentAt      DateTime?
   updatedAt      DateTime         @updatedAt
+}
+
+enum ReviewStatus {
+  pending
+  published
+  hidden
+}
+
+// One review per idea, written by the person who paid for it. Only shown on the site once the
+// admin publishes it, and only if the person agreed to publication.
+model Review {
+  id             String       @id @default(cuid())
+  ideaId         String       @unique
+  idea           Idea         @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  rating         Int
+  comment        String
+  displayName    String?
+  publishConsent Boolean      @default(false)
+  status         ReviewStatus @default(pending)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([status, createdAt])
 }
