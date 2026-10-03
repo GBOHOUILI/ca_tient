@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import type { Prisma } from "@prisma/client";
 import { computeBreakEven, computeCapitalNeed, computeResult } from "financial-engine";
 import { AnalyticsService } from "../analytics/analytics.service.js";
+import { deleteIdeaWithData } from "../ideas/delete-idea.js";
 import { hypothesesFromRows } from "../ideas/hypotheses-from-rows.js";
 import { PrismaService } from "../prisma/prisma.service.js";
 import {
@@ -149,8 +150,14 @@ export class AdminService {
   async ideas(query: AdminIdeasQueryDto, now = new Date()) {
     const where: Prisma.IdeaWhereInput = {
       ...this.ideaWhere(query, this.since(query.period ?? "all", now)),
-      // Prisma binds the search as a parameter and escapes % and _ itself.
-      rawDescription: query.search ? { contains: query.search, mode: "insensitive" } : undefined,
+      // Prisma binds the search as a parameter and escapes % and _ itself. The contact is searched
+      // too, to find a person who asks for their data to be deleted.
+      OR: query.search
+        ? [
+            { rawDescription: { contains: query.search, mode: "insensitive" } },
+            { profile: { is: { contact: { contains: query.search, mode: "insensitive" } } } },
+          ]
+        : undefined,
       paidAt: query.paid === "true" ? { not: null } : query.paid === "false" ? null : undefined,
     };
     const page = query.page ?? 1;
@@ -259,6 +266,11 @@ export class AdminService {
       events,
       recoveries: idea.accessTokens.length,
     };
+  }
+
+  // Deletion on request (data protection): the idea and everything attached to it.
+  async deleteIdea(id: string): Promise<void> {
+    if (!(await deleteIdeaWithData(this.prisma, id))) throw new NotFoundException(`Idee ${id} introuvable.`);
   }
 
   async contactsCsv(): Promise<string> {

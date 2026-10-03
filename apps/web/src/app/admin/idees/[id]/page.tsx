@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { useAdmin } from "@/components/admin/AdminContext";
 import { Card, PageTitle } from "@/components/admin/ui";
 import { EVENT_LABELS, PAYMENT_STATUS_LABELS, label, shortDate } from "@/components/admin/admin-labels";
 import { CANVAS_LABELS } from "@/components/analyse/report-copy";
-import { AdminKeyRejectedError, AdminNotFoundError, adminGet, type IdeaDetail } from "@/lib/api/admin";
+import { AdminKeyRejectedError, AdminNotFoundError, adminGet, deleteAdminIdea, type IdeaDetail } from "@/lib/api/admin";
 import { formatAmount } from "@/lib/format";
 
 function Row({ name, children }: { name: string; children: ReactNode }) {
@@ -25,6 +25,23 @@ export default function AdminIdeaPage() {
   const { id } = useParams<{ id: string }>();
   const { adminKey, logout } = useAdmin();
   const [state, setState] = useState<State>({ status: "loading" });
+  const router = useRouter();
+  const [confirmText, setConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  async function deleteIdea() {
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteAdminIdea(adminKey, id);
+      router.push("/admin/idees");
+    } catch (error) {
+      if (error instanceof AdminKeyRejectedError) logout("Clé incorrecte.");
+      setDeleting(false);
+      setDeleteError("La suppression a échoué.");
+    }
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -174,6 +191,30 @@ export default function AdminIdeaPage() {
           )}
         </Card>
       </div>
+      <Card title="Supprimer les données (demande de la personne)">
+        <p className="text-small text-text-secondary">
+          Supprime définitivement l&apos;idée et tout ce qui s&apos;y rattache : description, chiffres, canvas, capital,
+          profil et contact, paiements enregistrés ici, parcours. La transaction reste chez FedaPay.
+        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <input
+            value={confirmText}
+            onChange={(event) => setConfirmText(event.target.value)}
+            placeholder="Tape SUPPRIMER"
+            aria-label="Confirmation de suppression"
+            className="rounded-lg border border-border bg-bg px-3 py-2 text-small"
+          />
+          <button
+            type="button"
+            onClick={() => void deleteIdea()}
+            disabled={confirmText !== "SUPPRIMER" || deleting}
+            className="rounded-lg bg-error px-4 py-2 text-small font-semibold text-white disabled:opacity-40"
+          >
+            {deleting ? "Suppression..." : "Supprimer définitivement"}
+          </button>
+        </div>
+        {deleteError ? <p className="text-small text-error">{deleteError}</p> : null}
+      </Card>
     </div>
   );
 }

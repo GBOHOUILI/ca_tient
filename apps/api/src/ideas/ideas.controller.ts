@@ -1,4 +1,4 @@
-import { Body, Controller, Get, NotFoundException, Param, Patch, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Put, UseGuards } from "@nestjs/common";
 import { IdeasService } from "./ideas.service.js";
 import { CreateIdeaDto } from "./dto/create-idea.dto.js";
 import { UpdateCanvasBlocksDto } from "./dto/update-canvas-blocks.dto.js";
@@ -34,6 +34,14 @@ export class IdeasController {
       throw new NotFoundException(`Idee ${id} introuvable.`);
     }
     return idea;
+  }
+
+  // The user deletes their own analysis (and everything attached to it).
+  @Delete(":id")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(IdeaAccessGuard)
+  async remove(@Param("id") id: string) {
+    await this.ideasService.remove(id);
   }
 
   @Patch(":id/canvas-blocks")

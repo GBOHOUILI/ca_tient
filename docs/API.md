@@ -12,6 +12,7 @@ Toutes les routes `/ideas/:id…` (sauf `POST /ideas` et les deux routes `sugges
 - `POST /ideas/suggest-hypotheses` — l'IA propose les 4 hypothèses à partir de la description (sans persistance, `{ available: false }` si l'IA ne répond pas)
 - `POST /ideas/suggest-canvas-blocks` — l'IA propose les 7 blocs qualitatifs du canvas (même contrat)
 - `PUT /ideas/:id/profile` — protégée (jeton d'accès, pas besoin d'avoir payé) ; profil facultatif `{ country?, city?, profile?, stage?, heardFrom?, contact?, contactConsent? }` (valeurs dans des listes fermées, voir `IdeaProfileDto`). `contact` sans `contactConsent: true` → 400 ; retirer le consentement efface le contact. Upsert, `200 { ok: true }`.
+- `DELETE /ideas/:id` — protégée (jeton d'accès) ; l'utilisateur supprime son analyse et tout ce qui s'y rattache (cascade + événements analytics). `204`.
 - `PATCH /ideas/:id/canvas-blocks` — protégée ; enregistre les 7 blocs validés/édités par l'utilisateur
 
 ## Récupération d'une analyse payée
@@ -53,6 +54,7 @@ Toutes les routes : en-tête `x-admin-key` = `ADMIN_KEY` (404 si non configurée
 - `GET /admin/revenue` — paiements XOF : total, statuts, par jour et par semaine (lundi).
 - `GET /admin/ideas?page=&search=&paid=true|false` — liste paginée (20), recherche insensible à la casse dans la description.
 - `GET /admin/ideas/:id` — fiche complète (résultats recalculés par le moteur, canvas, capital, profil, contact seulement si consentement, paiements, parcours) ; 404 si inconnue.
+- `DELETE /admin/ideas/:id` — suppression sur demande d'une personne (même effacement complet), `204`, `404` si inconnue. La recherche de `GET /admin/ideas` porte aussi sur le contact (e-mail / numéro).
 - `GET /admin/contacts.csv` — CSV (`;`, UTF-8 avec BOM) des seuls contacts consentants, cellules protégées contre l'injection de formules.
 
 ## Historique
