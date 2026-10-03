@@ -31,8 +31,10 @@ export function PrivacyFr({ Section }: { Section: (props: { title: string; child
             prévue : pour te recontacter au sujet de Ça tient ?. Il n&apos;est jamais vendu ni partagé.
           </li>
           <li>
-            <strong className="text-text-primary">Des statistiques de visite</strong> (pages vues, étapes du parcours), sans
-            cookie publicitaire et sans enregistrer ton adresse IP.
+            <strong className="text-text-primary">Des statistiques de visite</strong> : les pages vues et les étapes du
+            parcours, avec un identifiant aléatoire gardé dans ton navigateur (il ne contient ni ton nom ni rien qui te
+            désigne), le type d&apos;appareil, la langue, le site d&apos;où tu arrives et le pays estimé à partir du fuseau
+            horaire. Ni cookie publicitaire, ni adresse IP.
           </li>
         </ul>
       </Section>
@@ -52,8 +54,8 @@ export function PrivacyFr({ Section }: { Section: (props: { title: string; child
 
       <Section title="Cookies et stockage">
         <p>
-          Un cookie retient ton thème (clair ou sombre), un autre ton choix si tu fermes la suggestion de langue. Le stockage de ton navigateur garde l&apos;accès à ton analyse et la
-          source de ta visite. Aucun cookie publicitaire.
+          Un cookie retient ton thème (clair ou sombre), un autre ton choix si tu fermes la suggestion de langue. Le stockage de ton navigateur garde l&apos;accès à ton analyse, la
+          source de ta visite et l&apos;identifiant aléatoire des statistiques de visite. Aucun cookie publicitaire.
         </p>
       </Section>
 

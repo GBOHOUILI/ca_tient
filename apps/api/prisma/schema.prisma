@@ -161,6 +161,23 @@ model AnalyticsEvent {
   @@index([type, createdAt])
 }
 
+// One row per public page viewed. No IP, user agent, time zone or full referrer: only what the
+// traffic tab shows. visitorId is a random id kept in the browser (localStorage).
+model PageView {
+  id        String   @id @default(cuid())
+  visitorId String
+  sessionId String
+  path      String
+  locale    String
+  device    String
+  country   String?
+  source    String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([visitorId])
+}
+
 enum UserProfileKind {
   etudiant
   salarie

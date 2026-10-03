@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## [Non versionné], suivi du trafic
+- Onglet « Trafic » dans le dashboard : visiteurs uniques, visites, pages vues, nouveaux visiteurs ; graphiques visiteurs et pages vues par jour, affluence par heure ; pages, sources, appareils, langues, pays estimé.
+- Chaque page publique vue est comptée (identifiant anonyme dans le navigateur, sans IP ni cookie) ; bouton pour ne pas compter ses propres visites.
+- Page Confidentialité mise à jour (FR et EN).
+
 ## [Non versionné], site en anglais
 - Tout le parcours existe en anglais sous `/en` : landing, FAQ, test, aperçu, paiement, analyse, rapport, récupération, confidentialité.
 - Bouton FR/EN dans le header et le menu ; bandeau qui propose la langue du navigateur, sans redirection.

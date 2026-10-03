@@ -31,8 +31,10 @@ export function PrivacyEn({ Section }: { Section: (props: { title: string; child
             for it: to get back to you about Ça tient ?. They are never sold or shared.
           </li>
           <li>
-            <strong className="text-text-primary">Visit statistics</strong> (pages viewed, steps of the journey), with no
-            advertising cookie and without recording your IP address.
+            <strong className="text-text-primary">Visit statistics</strong>: pages viewed and steps of the journey, with a
+            random id kept in your browser (it holds neither your name nor anything that identifies you), the type of
+            device, the language, the site you came from and the country estimated from the time zone. No advertising
+            cookie, no IP address.
           </li>
         </ul>
       </Section>
@@ -53,7 +55,8 @@ export function PrivacyEn({ Section }: { Section: (props: { title: string; child
       <Section title="Cookies and storage">
         <p>
           One cookie remembers your theme (light or dark), another your choice if you close the language suggestion. Your
-          browser&apos;s storage keeps access to your analysis and where your visit came from. No advertising cookies.
+          browser&apos;s storage keeps access to your analysis, where your visit came from and the random id of the visit
+          statistics. No advertising cookies.
         </p>
       </Section>
 

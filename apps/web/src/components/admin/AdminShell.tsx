@@ -12,6 +12,7 @@ const KEY_STORAGE = "ca-tient:admin-key";
 
 const NAV = [
   { href: "/admin", label: "Vue d'ensemble" },
+  { href: "/admin/trafic", label: "Trafic" },
   { href: "/admin/marche", label: "Marché" },
   { href: "/admin/conversion", label: "Conversion" },
   { href: "/admin/revenus", label: "Revenus" },

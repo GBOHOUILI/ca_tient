@@ -43,3 +43,26 @@ export function percent(ratio: number | null | undefined): string {
 export function shortDate(iso: string): string {
   return new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" });
 }
+
+const TRAFFIC_LABELS: Record<string, string> = {
+  direct: "Direct (lien tapé, favori, WhatsApp mobile)",
+  google: "Google",
+  facebook: "Facebook",
+  instagram: "Instagram",
+  whatsapp: "WhatsApp",
+  tiktok: "TikTok",
+  linkedin: "LinkedIn",
+  x: "X (Twitter)",
+  bing: "Bing",
+  youtube: "YouTube",
+  mobile: "Mobile",
+  tablet: "Tablette",
+  desktop: "Ordinateur",
+  fr: "Français",
+  en: "Anglais",
+  unknown: "Inconnu",
+};
+
+export function trafficLabel(value: string): string {
+  return TRAFFIC_LABELS[value] ?? label(value);
+}

@@ -205,3 +205,15 @@ export async function moderateReview(adminKey: string, id: string, status: Admin
   if (response.status === 401) throw new AdminKeyRejectedError();
   if (!response.ok) throw new Error(`Modération impossible (${response.status}).`);
 }
+
+export interface Traffic {
+  period: AdminPeriod;
+  kpis: { visitors: number; visits: number; pageViews: number; pagesPerVisit: number; newVisitors: number };
+  daily: { date: string; visitors: number; pageViews: number }[];
+  hours: { hour: number; pageViews: number }[];
+  pages: { key: string; views: number; visitors: number }[];
+  sources: Count[];
+  devices: Count[];
+  locales: Count[];
+  countries: Count[];
+}
