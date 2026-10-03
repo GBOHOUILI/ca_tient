@@ -8,6 +8,7 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Offer } from "@/components/landing/Offer";
 import { Problem } from "@/components/landing/Problem";
 import { ProductPreview } from "@/components/landing/ProductPreview";
+import { ReportExtract } from "@/components/landing/ReportExtract";
 import { Trust } from "@/components/landing/Trust";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { getAnalysisPrice } from "@/lib/api/pricing";
@@ -24,6 +25,7 @@ export default async function Home() {
       <BusinessTypes />
       <Problem />
       <ProductPreview />
+      <ReportExtract />
       <HowItWorks price={price} />
       <Testimonials data={reviews} />
       <Offer price={price} />

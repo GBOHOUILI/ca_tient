@@ -64,10 +64,10 @@
 
 ## Retour externe sur la landing (2026-10-03)
 - [x] Avis réels (dépôt après paiement, modération, affichage)
-- [ ] Honnêteté du verdict : question sur le volume, « si tu vends 20 % de moins » dans l'aperçu, rémunération/pertes dans les questions, fonds de roulement signalé, ligne IA sous la description
-- [ ] Partage WhatsApp du verdict
-- [ ] Catégories restauration, agriculture, transformation alimentaire
-- [ ] Extrait réel du rapport sur la landing
+- [x] Honnêteté du verdict : question sur le volume, « si tu vends 20 % de moins » dans l'aperçu, rémunération/pertes dans les questions, fonds de roulement signalé, ligne IA sous la description
+- [x] Partage WhatsApp du verdict (lien `wa.me`, verdict et seuil seulement, jamais les chiffres de la personne)
+- [x] Catégories restauration, agriculture, transformation alimentaire
+- [x] Extrait réel du rapport sur la landing (capital, ce qui pèse le plus, points à surveiller, calculés sur l'exemple)
 - [ ] WhatsApp support et mentions légales (en attente : numéro, forme juridique, adresse, RCCM/IFU de ZeroToOne)
 
 ## Phase 8 — Bêta

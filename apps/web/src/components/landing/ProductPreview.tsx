@@ -1,9 +1,10 @@
-import { applyDelta, computeBreakEven, computeResult, type Hypotheses } from "financial-engine";
+import { applyDelta, computeBreakEven, computeResult } from "financial-engine";
 import { StepResults } from "@/components/wizard/StepResults";
 import { formatAmount } from "@/lib/format";
+import { EXAMPLE_HYPOTHESES } from "./example";
 
 // A real preview screen, computed by the engine on an example clearly labelled as such.
-const EXAMPLE: Hypotheses = { currency: "XOF", price: 15000, volume: 40, variableCostPerUnit: 9000, fixedCosts: 120000 };
+const EXAMPLE = EXAMPLE_HYPOTHESES;
 
 export function ProductPreview() {
   const result = computeResult(EXAMPLE);
