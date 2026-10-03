@@ -1,4 +1,4 @@
-import { computeBreakEven, computeResult, type Hypotheses } from "financial-engine";
+import { applyDelta, computeBreakEven, computeResult, type Hypotheses } from "financial-engine";
 import { StepResults } from "@/components/wizard/StepResults";
 import { formatAmount } from "@/lib/format";
 
@@ -20,7 +20,12 @@ export function ProductPreview() {
         </p>
       </div>
       <div className="mt-12">
-        <StepResults result={result} breakEven={breakEven} headingAs="h3" />
+        <StepResults
+          result={result}
+          breakEven={breakEven}
+          headingAs="h3"
+          downside={computeResult(applyDelta(EXAMPLE, { volume: -20 }))}
+        />
       </div>
       <p className="mt-6 text-center text-micro text-text-secondary">Écran réel de l&apos;aperçu, calculé sur cet exemple.</p>
     </section>
