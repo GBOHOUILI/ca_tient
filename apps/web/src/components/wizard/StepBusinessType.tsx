@@ -1,18 +1,22 @@
-import { BUSINESS_MODEL_OPTIONS, type BusinessModel } from "@/lib/business-models";
+"use client";
+
+import { useI18n } from "@/i18n/I18nProvider";
+import { BUSINESS_MODELS, type BusinessModel } from "@/lib/business-models";
 
 export function StepBusinessType({ onSelect }: { onSelect: (model: BusinessModel) => void }) {
+  const { t } = useI18n();
   return (
     <div className="mx-auto flex max-w-2xl flex-col items-center gap-6 text-center">
-      <h1 className="text-h2-mobile font-semibold md:text-h2">Quel type de business ?</h1>
+      <h1 className="text-h2-mobile font-semibold md:text-h2">{t.wizard.businessTypeTitle}</h1>
       <div className="grid w-full gap-3 sm:grid-cols-3">
-        {BUSINESS_MODEL_OPTIONS.map((option) => (
+        {BUSINESS_MODELS.map((value) => (
           <button
-            key={option.value}
+            key={value}
             type="button"
-            onClick={() => onSelect(option.value)}
+            onClick={() => onSelect(value)}
             className="rounded-2xl border border-border bg-surface p-6 text-left text-h4 font-semibold transition-colors hover:border-accent-emerald"
           >
-            {option.label}
+            {t.labels.businessModels[value]}
           </button>
         ))}
       </div>

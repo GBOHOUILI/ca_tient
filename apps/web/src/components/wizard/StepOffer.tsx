@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useI18n } from "@/i18n/I18nProvider";
 import { fetchAnalysisPrice } from "@/lib/api/pricing";
 import { priceLabel } from "@/lib/price";
 
@@ -17,6 +18,7 @@ export function StepOffer({
   error: string | null;
   persistenceWarning?: boolean;
 }) {
+  const { t, locale } = useI18n();
   // The price shown here is read from the server right before paying: it is the amount charged.
   const [price, setPrice] = useState<number | null>(null);
   const [priceError, setPriceError] = useState(false);
@@ -35,44 +37,43 @@ export function StepOffer({
     };
   }, []);
 
-  const label = price === null ? null : priceLabel(price);
+  const label = price === null ? null : priceLabel(price, locale);
   const free = price === 0;
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-6 text-center">
       <div>
-        <p className="text-micro font-medium tracking-micro text-text-secondary">Analyse complète</p>
-        <h1 className="text-h2-mobile font-semibold md:text-h2">Va plus loin que l&apos;aperçu</h1>
+        <p className="text-micro font-medium tracking-micro text-text-secondary">{t.offer.eyebrow}</p>
+        <h1 className="text-h2-mobile font-semibold md:text-h2">{t.offer.title}</h1>
       </div>
       <ul className="flex flex-col gap-3 rounded-2xl border border-border bg-surface p-6 text-left text-body">
-        <li>&quot;Et si ?&quot; : change ton prix, tes ventes ou tes coûts et vois l&apos;effet en direct, mois par mois selon ta saisonnalité.</li>
-        <li>Les scénarios prudent, réaliste, ambitieux et crise, comparés côte à côte.</li>
-        <li>Ton rapport complet à imprimer : synthèse, capital et besoin financier, variables sensibles, points à surveiller et business model.</li>
+        {t.offer.items.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
       </ul>
       <p className="text-h1-mobile font-bold tabular-nums md:text-h1">
-        {price === null ? (priceError ? "—" : "…") : (label ?? "Gratuit")}
+        {price === null ? (priceError ? "—" : "…") : (label ?? t.offer.free)}
       </p>
       <p className="text-small text-text-secondary">
         {free
-          ? "En ce moment, l'analyse complète est gratuite : rien à payer."
-          : "Paiement unique, sans abonnement, sur la page sécurisée FedaPay (mobile money ou carte)."}
+          ? t.offer.freeNow
+          : t.offer.paidOnce}
       </p>
       {priceError ? (
-        <p className="text-small text-error">Le prix n&apos;a pas pu être chargé. Recharge la page pour réessayer.</p>
+        <p className="text-small text-error">{t.offer.priceFailed}</p>
       ) : null}
       <p className="text-small text-text-secondary">
-        Ça tient ? est une aide à la décision, pas une garantie de rentabilité : les résultats dépendent des hypothèses que tu fournis.
+        {t.offer.disclaimer}
       </p>
       {persistenceWarning ? (
         <p className="rounded-lg border border-warning p-4 text-left text-small text-warning">
-          Ton navigateur bloque l&apos;enregistrement local (navigation privée ?). Après le paiement, tu risques de ne
-          pas pouvoir revenir à ton analyse. Ouvre Ça tient ? dans une fenêtre normale avant de payer.
+          {t.offer.storageWarning}
         </p>
       ) : null}
       {error ? <p className="text-small text-error">{error}</p> : null}
       <div className="flex justify-between">
         <button type="button" onClick={onBack} className="text-body font-medium text-text-secondary">
-          Retour
+          {t.common.back}
         </button>
         <button
           type="button"
@@ -80,7 +81,7 @@ export function StepOffer({
           disabled={paying || price === null}
           className="rounded-lg bg-gradient-to-r from-accent-emerald to-accent-cyan px-6 py-3 text-body font-semibold text-white disabled:opacity-40"
         >
-          {paying ? "Redirection..." : free ? "Voir l'analyse complète" : label ? `Payer ${label}` : "Payer"}
+          {paying ? t.offer.redirecting : free ? t.wizard.seeFullAnalysis : label ? t.offer.pay(label) : t.offer.payPlain}
         </button>
       </div>
     </div>

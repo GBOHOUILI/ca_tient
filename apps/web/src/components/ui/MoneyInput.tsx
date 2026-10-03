@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { fromMinorUnits, minorUnitDigits, toMinorUnits, type CurrencyCode } from "financial-engine";
+import { useI18n } from "@/i18n/I18nProvider";
+import type { Locale } from "@/i18n/locales";
 import { NUMBER_INPUT_CLASS } from "./NumberInput";
 
 // The person types in units ("2,50" €); the value stays in the smallest unit (250 cents).
@@ -14,10 +16,11 @@ export function MoneyInput({
   currency: CurrencyCode;
   onChange: (value: number) => void;
 }) {
+  const { locale } = useI18n();
   const decimals = minorUnitDigits(currency) > 0;
   // Local text keeps an in-progress entry like "2," or "2.0" that a number would lose.
   const [text, setText] = useState<string | null>(null);
-  const shown = text ?? displayValue(value, currency);
+  const shown = text ?? displayValue(value, currency, locale);
 
   return (
     <input
@@ -38,9 +41,10 @@ export function MoneyInput({
   );
 }
 
-// 250 EUR-cents -> "2,50"; 300 000 EUR-cents -> "3000"; 0 -> "" (placeholder).
-function displayValue(value: number, currency: CurrencyCode): string {
+// 250 EUR-cents -> "2,50" ("2.50" in English); 300 000 EUR-cents -> "3000"; 0 -> "" (placeholder).
+function displayValue(value: number, currency: CurrencyCode, locale: Locale): string {
   if (value === 0) return "";
   const units = fromMinorUnits(value, currency);
-  return (Number.isInteger(units) ? String(units) : units.toFixed(minorUnitDigits(currency))).replace(".", ",");
+  const text = Number.isInteger(units) ? String(units) : units.toFixed(minorUnitDigits(currency));
+  return locale === "fr" ? text.replace(".", ",") : text;
 }

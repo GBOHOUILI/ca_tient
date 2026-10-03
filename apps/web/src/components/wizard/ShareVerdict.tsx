@@ -1,17 +1,17 @@
 "use client";
 
 import type { BreakEvenResult, FinancialResult } from "financial-engine";
+import { useI18n } from "@/i18n/I18nProvider";
 
 // A ready-made WhatsApp message: the verdict is the product's best word of mouth. Only the
 // verdict and the break-even point are shared, never the person's own figures. A plain link
 // (not window.open) so mobile and in-app browsers never block it.
 export function ShareVerdict({ result, breakEven }: { result: FinancialResult; breakEven: BreakEvenResult }) {
-  const site = window.location.origin;
+  const { t, href } = useI18n();
+  const site = `${window.location.origin}${href("/")}`;
   const verdict =
-    result.estimatedResult >= 0 && breakEven.reachable
-      ? `Mon idée de business tient : il me faut ${breakEven.volumeUnits} ventes par mois pour couvrir mes coûts.`
-      : "J'ai testé les chiffres de mon idée de business avant de me lancer.";
-  const text = `${verdict} Teste la tienne sur Ça tient ? : ${site}`;
+    result.estimatedResult >= 0 && breakEven.reachable ? t.results.shareHolds(breakEven.volumeUnits) : t.results.shareTested;
+  const text = `${verdict} ${t.results.shareInvite(site)}`;
 
   return (
     <a
@@ -20,7 +20,7 @@ export function ShareVerdict({ result, breakEven }: { result: FinancialResult; b
       rel="noopener noreferrer"
       className="rounded-lg border border-border px-5 py-3 text-body font-medium text-text-primary"
     >
-      Partager mon verdict sur WhatsApp
+      {t.results.share}
     </a>
   );
 }
