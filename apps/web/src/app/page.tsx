@@ -9,11 +9,13 @@ import { Offer } from "@/components/landing/Offer";
 import { Problem } from "@/components/landing/Problem";
 import { ProductPreview } from "@/components/landing/ProductPreview";
 import { Trust } from "@/components/landing/Trust";
+import { Testimonials } from "@/components/landing/Testimonials";
 import { getAnalysisPrice } from "@/lib/api/pricing";
+import { getPublishedReviews } from "@/lib/api/reviews";
 
 // Conversion order: problem -> promise -> proof -> how -> offer -> benefits -> trust -> objections -> action.
 export default async function Home() {
-  const price = await getAnalysisPrice();
+  const [price, reviews] = await Promise.all([getAnalysisPrice(), getPublishedReviews()]);
 
   return (
     <>
@@ -23,6 +25,7 @@ export default async function Home() {
       <Problem />
       <ProductPreview />
       <HowItWorks price={price} />
+      <Testimonials data={reviews} />
       <Offer price={price} />
       <Benefits />
       <Trust />

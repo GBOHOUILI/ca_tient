@@ -1,5 +1,11 @@
 # CHANGELOG.md
 
+## [Non versionné], avis des utilisateurs
+- Encart « Ton avis sur Ça tient ? » sous le rapport (note, commentaire, prénom et ville facultatifs, accord de publication).
+- Onglet « Avis » du dashboard : publier ou masquer ; impossible de publier sans l'accord de l'auteur.
+- Section « Ce qu'en disent les utilisateurs » sur la landing, affichée seulement s'il existe au moins un avis publié.
+- 7 tests API ; circuit complet vérifié dans Chrome.
+
 ## [Non versionné], suppression des données, confidentialité, header
 - Suppression complète d'une analyse par l'utilisateur (« Supprimer mon analyse ») ou par l'admin sur demande (fiche idée, confirmation `SUPPRIMER`) ; recherche admin par e-mail ou numéro.
 - Page `/confidentialite` (ZeroToOne, contact@zerotoone.bj), liens dans le pied de page et à côté du consentement de contact.
