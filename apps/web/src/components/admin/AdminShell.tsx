@@ -16,6 +16,7 @@ const NAV = [
   { href: "/admin/conversion", label: "Conversion" },
   { href: "/admin/revenus", label: "Revenus" },
   { href: "/admin/idees", label: "Idées" },
+  { href: "/admin/avis", label: "Avis" },
 ];
 
 const PERIODS: { value: AdminPeriod; label: string }[] = [

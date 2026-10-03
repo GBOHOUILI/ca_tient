@@ -11,6 +11,7 @@ import { hypothesesFromDetail, type IdeaDetail } from "@/lib/api/ideas";
 import { issueRecoveryCode } from "@/lib/api/recovery";
 import { DeleteAnalysis } from "./DeleteAnalysis";
 import { RecoveryCodeBox } from "./RecoveryCodeBox";
+import { ReviewBox } from "./ReviewBox";
 import { ReportView } from "./ReportView";
 import { StepCapital } from "./StepCapital";
 import { useReport } from "./use-report";
@@ -113,6 +114,7 @@ export function PaidAnalysis({ ideaId, idea }: { ideaId: string; idea: IdeaDetai
               onEditCapital={openCapital}
               onBackToAnalysis={() => setScreen("et-si")}
             />
+            <ReviewBox ideaId={ideaId} />
           </>
         ) : reportState.loading ? (
           <p className={loadingClass}>Chargement de ton rapport...</p>

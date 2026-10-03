@@ -4,7 +4,7 @@ export function StepBusinessType({ onSelect }: { onSelect: (model: BusinessModel
   return (
     <div className="mx-auto flex max-w-2xl flex-col items-center gap-6 text-center">
       <h1 className="text-h2-mobile font-semibold md:text-h2">Quel type de business ?</h1>
-      <div className="grid w-full gap-3 sm:grid-cols-2">
+      <div className="grid w-full gap-3 sm:grid-cols-3">
         {BUSINESS_MODEL_OPTIONS.map((option) => (
           <button
             key={option.value}

@@ -57,6 +57,12 @@ Toutes les routes : en-tête `x-admin-key` = `ADMIN_KEY` (404 si non configurée
 - `DELETE /admin/ideas/:id` — suppression sur demande d'une personne (même effacement complet), `204`, `404` si inconnue. La recherche de `GET /admin/ideas` porte aussi sur le contact (e-mail / numéro).
 - `GET /admin/contacts.csv` — CSV (`;`, UTF-8 avec BOM) des seuls contacts consentants, cellules protégées contre l'injection de formules.
 
+## Avis
+
+- `GET /ideas/:id/review` / `PUT /ideas/:id/review` — jeton d'accès + idée payée (403 sinon). Corps `{ rating (1-5), comment (≤ 500), displayName? (≤ 40), publishConsent }`. Un avis par idée ; toute modification le renvoie en modération.
+- `GET /reviews` — publique. `{ count, average, reviews }` : seulement les avis publiés par l'admin **et** dont l'auteur a accepté la publication (6 plus récents).
+- `GET /admin/reviews`, `PATCH /admin/reviews/:id { status: pending | published | hidden }` — clé admin ; publier un avis sans accord de publication → 400.
+
 ## Historique
 
 - `GET /ideas` — liste des idées/analyses de l'utilisateur (si compte/session persistante)

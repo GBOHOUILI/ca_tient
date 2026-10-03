@@ -174,3 +174,24 @@ export async function deleteAdminIdea(adminKey: string, id: string): Promise<voi
   if (response.status === 401) throw new AdminKeyRejectedError();
   if (!response.ok && response.status !== 404) throw new Error(`Suppression impossible (${response.status}).`);
 }
+
+export interface AdminReview {
+  id: string;
+  ideaId: string;
+  rating: number;
+  comment: string;
+  displayName: string | null;
+  publishConsent: boolean;
+  status: "pending" | "published" | "hidden";
+  createdAt: string;
+}
+
+export async function moderateReview(adminKey: string, id: string, status: AdminReview["status"]): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/admin/reviews/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", "x-admin-key": adminKey },
+    body: JSON.stringify({ status }),
+  });
+  if (response.status === 401) throw new AdminKeyRejectedError();
+  if (!response.ok) throw new Error(`Modération impossible (${response.status}).`);
+}

@@ -5,11 +5,14 @@ export function StepResults({
   result,
   breakEven,
   headingAs: Heading = "h1",
+  downside,
 }: {
   result: FinancialResult;
   breakEven: BreakEvenResult;
   // The landing page embeds this screen as an example under its own h1.
   headingAs?: "h1" | "h3";
+  // Result if sales are 20 % lower: keeps a free "it holds" verdict honest about its main assumption.
+  downside?: FinancialResult;
 }) {
   const positive = result.estimatedResult >= 0;
 
@@ -53,6 +56,15 @@ export function StepResults({
           </p>
         )}
       </div>
+      {downside ? (
+        <p className="text-body text-text-secondary">
+          Si tu vends 20 % de moins :{" "}
+          <span className={`font-semibold tabular-nums ${downside.estimatedResult >= 0 ? "text-text-primary" : "text-error"}`}>
+            {formatAmount(downside.estimatedResult, downside.currency)}
+          </span>{" "}
+          par mois.
+        </p>
+      ) : null}
     </div>
   );
 }

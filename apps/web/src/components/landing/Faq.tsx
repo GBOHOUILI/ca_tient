@@ -18,6 +18,16 @@ function faqs(price: string | null) {
       "Non. L'IA propose des hypothèses que tu vérifies et corriges. Tous les résultats sont calculés par des formules fixes, et la synthèse rédigée par l'IA ne contient aucun chiffre.",
   },
   {
+    question: "Le résultat compte-t-il ma propre rémunération ?",
+    answer:
+      "Seulement si tu l'ajoutes à tes charges fixes, et c'est ce qu'on te conseille : sinon, un résultat positif peut cacher le fait que tu travailles gratuitement. Pense aussi à compter les pertes, les retours et la publicité dans ton coût par unité.",
+  },
+  {
+    question: "Le capital calculé suffit-il pour démarrer ?",
+    answer:
+      "C'est un minimum : tes dépenses de départ plus trois mois de charges. Il ne compte pas le fonds de roulement (le stock à racheter, l'argent que tes clients te doivent encore). Garde une marge en plus.",
+  },
+  {
     question: "Combien de temps ça prend ?",
     answer: "Quelques minutes pour décrire ton idée et vérifier tes chiffres. L'aperçu s'affiche aussitôt.",
   },

@@ -8,14 +8,28 @@ const HINTS: Record<BusinessModel, string> = {
   EBOOK: "Inclut commissions et coût de création.",
   SERVICE: "Inclut sous-traitance et outils.",
   PRODUIT_PHYSIQUE: "Inclut matières, production et logistique.",
+  RESTAURATION: "Inclut ingrédients, gaz ou charbon, emballages et livraison par plat.",
+  AGRICULTURE: "Inclut semences, engrais, aliments du bétail, main-d'œuvre et transport par unité vendue.",
+  TRANSFORMATION_ALIMENTAIRE: "Inclut matière première, énergie, emballages et transport par unité.",
   AUTRE: "Regroupe tous tes coûts qui varient avec le volume vendu.",
 };
 
-const FIELDS: { key: keyof HypothesesInput; label: string }[] = [
+const LOSSES_HINT = "Pense aussi aux pertes, aux retours et à la publicité par vente.";
+
+const FIELDS: { key: keyof HypothesesInput; label: string; hint?: string }[] = [
   { key: "price", label: "À combien tu vends une unité ?" },
-  { key: "volume", label: "Combien tu penses en vendre par mois ?" },
+  {
+    key: "volume",
+    label: "Combien tu penses en vendre par mois ?",
+    // The verdict depends on this number above all, and the AI can only guess it.
+    hint: "C'est le chiffre qui pèse le plus. Comment sais-tu que tu en vendras autant ? Vérifie-le en premier.",
+  },
   { key: "variableCostPerUnit", label: "Combien ça te coûte de produire ou fournir une unité ?" },
-  { key: "fixedCosts", label: "Tes charges fixes chaque mois (loyer, salaires, abonnements...)" },
+  {
+    key: "fixedCosts",
+    label: "Tes charges fixes chaque mois (loyer, salaires, abonnements...)",
+    hint: "Compte aussi ce que tu veux te verser chaque mois : sans ça, le résultat est trop flatteur.",
+  },
 ];
 
 export function StepHypotheses({
@@ -70,8 +84,11 @@ export function StepHypotheses({
         <label key={field.key} className="flex flex-col gap-2 text-small text-text-secondary">
           {field.label}
           {field.key === "variableCostPerUnit" && (
-            <span className="text-micro">{HINTS[businessModel]}</span>
+            <span className="text-micro">
+              {HINTS[businessModel]} {LOSSES_HINT}
+            </span>
           )}
+          {field.hint ? <span className="text-micro">{field.hint}</span> : null}
           <input
             type="number"
             min={0}

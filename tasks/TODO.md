@@ -62,5 +62,13 @@
 - [x] Vulnérabilités de dépendances corrigées (2026-10-03), `pnpm audit` à zéro
 - [ ] Alerte `braces` ≤ 3.0.3 (haute) : aucun correctif publié ; dépendance d'outillage du web uniquement (pas en production). Mettre à jour dès qu'une version corrigée sort.
 
+## Retour externe sur la landing (2026-10-03)
+- [x] Avis réels (dépôt après paiement, modération, affichage)
+- [x] Honnêteté du verdict : question sur le volume, « si tu vends 20 % de moins » dans l'aperçu, rémunération/pertes dans les questions, fonds de roulement signalé, ligne IA sous la description
+- [x] Partage WhatsApp du verdict (lien `wa.me`, verdict et seuil seulement, jamais les chiffres de la personne)
+- [x] Catégories restauration, agriculture, transformation alimentaire
+- [x] Extrait réel du rapport sur la landing (capital, ce qui pèse le plus, points à surveiller, calculés sur l'exemple)
+- [ ] WhatsApp support et mentions légales (en attente : numéro, forme juridique, adresse, RCCM/IFU de ZeroToOne)
+
 ## Phase 8 — Bêta
 - [ ] Recruter 10–20 utilisateurs réels

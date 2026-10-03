@@ -1,10 +1,12 @@
 "use client";
 
 import { useReducer, useState } from "react";
+import { applyDelta, computeResult } from "financial-engine";
 import { WizardProgress } from "@/components/wizard/WizardProgress";
 import { StepBusinessType } from "@/components/wizard/StepBusinessType";
 import { StepDescription } from "@/components/wizard/StepDescription";
 import { StepHypotheses } from "@/components/wizard/StepHypotheses";
+import { ShareVerdict } from "@/components/wizard/ShareVerdict";
 import { StepResults } from "@/components/wizard/StepResults";
 import { StepOffer } from "@/components/wizard/StepOffer";
 import { StepCanvas } from "@/components/wizard/StepCanvas";
@@ -187,7 +189,12 @@ export default function CommencerPage() {
 
       {state.step === "results" && response && (
         <div className="flex flex-col items-center gap-8">
-          <StepResults result={response.result} breakEven={response.breakEven} />
+          <StepResults
+            result={response.result}
+            breakEven={response.breakEven}
+            downside={computeResult(applyDelta({ currency: state.currency, ...state.hypotheses }, { volume: -20 }))}
+          />
+          <ShareVerdict result={response.result} breakEven={response.breakEven} />
           <button
             type="button"
             onClick={() => dispatch({ type: "GO_TO_STEP", step: "offer" })}

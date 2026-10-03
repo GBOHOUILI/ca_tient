@@ -137,6 +137,10 @@ export function ReportView({
             ) : (
               <p className="mt-2 font-semibold text-accent-emerald">Tu as {amount(report.capital.need.surplus)} de marge</p>
             )}
+            <p className="mt-2 text-small text-text-secondary">
+              Ce calcul ne compte pas le fonds de roulement : le stock à racheter et l&apos;argent que tes clients te doivent
+              encore. Garde une marge en plus.
+            </p>
           </dl>
         ) : (
           <div className="flex flex-col items-start gap-3">

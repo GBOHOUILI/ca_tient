@@ -1,5 +1,17 @@
 # CHANGELOG.md
 
+## [Non versionné], retours externes sur la landing et le verdict
+- Verdict plus honnête : aide sous « ventes par mois » (le chiffre qui pèse le plus, à vérifier), rémunération du fondateur à inclure dans les charges fixes, pertes / retours / publicité dans le coût par unité, ligne « Si tu vends 20 % de moins » dans l'aperçu (moteur), fonds de roulement signalé dans le rapport et la FAQ, ligne « Ta description est analysée par une IA » sous la description.
+- Partage du verdict sur WhatsApp depuis l'aperçu (lien `wa.me`, verdict et seuil uniquement).
+- Types de business restauration, agriculture, transformation alimentaire (enum, consignes IA, aides).
+- Landing : section « Et dans l'analyse complète », extrait réel du rapport calculé sur l'exemple ; exemple partagé entre l'aperçu et l'extrait.
+
+## [Non versionné], avis des utilisateurs
+- Encart « Ton avis sur Ça tient ? » sous le rapport (note, commentaire, prénom et ville facultatifs, accord de publication).
+- Onglet « Avis » du dashboard : publier ou masquer ; impossible de publier sans l'accord de l'auteur.
+- Section « Ce qu'en disent les utilisateurs » sur la landing, affichée seulement s'il existe au moins un avis publié.
+- 7 tests API ; circuit complet vérifié dans Chrome.
+
 ## [Non versionné], suppression des données, confidentialité, header
 - Suppression complète d'une analyse par l'utilisateur (« Supprimer mon analyse ») ou par l'admin sur demande (fiche idée, confirmation `SUPPRIMER`) ; recherche admin par e-mail ou numéro.
 - Page `/confidentialite` (ZeroToOne, contact@zerotoone.bj), liens dans le pied de page et à côté du consentement de contact.

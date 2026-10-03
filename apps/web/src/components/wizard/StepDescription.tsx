@@ -28,8 +28,11 @@ export function StepDescription({
         placeholder="Ex : je veux vendre des vêtements en ligne pour jeunes actifs, livraison à domicile..."
         className="rounded-lg border border-border bg-surface p-4 text-body text-text-primary focus:border-accent-emerald focus:outline-none"
       />
-      <p className="-mt-4 text-right text-micro text-text-secondary">
-        {value.length} / {MAX_DESCRIPTION_LENGTH}
+      <p className="-mt-4 flex justify-between gap-4 text-micro text-text-secondary">
+        <span>Ta description est analysée par une IA pour te proposer des chiffres de départ.</span>
+        <span className="shrink-0 tabular-nums">
+          {value.length} / {MAX_DESCRIPTION_LENGTH}
+        </span>
       </p>
       <div className="flex justify-between">
         <button type="button" onClick={onBack} className="text-body font-medium text-text-secondary">

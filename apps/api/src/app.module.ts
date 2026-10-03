@@ -7,9 +7,10 @@ import { PaymentsModule } from './payments/payments.module.js';
 import { RecoveryModule } from './recovery/recovery.module.js';
 import { AnalyticsModule } from './analytics/analytics.module.js';
 import { AdminModule } from './admin/admin.module.js';
+import { ReviewsModule } from './reviews/reviews.module.js';
 
 @Module({
-  imports: [FinancialEngineModule, IdeasModule, AiModule, PaymentsModule, RecoveryModule, AnalyticsModule, AdminModule],
+  imports: [FinancialEngineModule, IdeasModule, AiModule, PaymentsModule, RecoveryModule, AnalyticsModule, AdminModule, ReviewsModule],
   controllers: [HealthController],
 })
 export class AppModule {}

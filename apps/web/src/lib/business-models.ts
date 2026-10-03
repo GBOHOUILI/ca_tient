@@ -4,6 +4,9 @@ export const BUSINESS_MODEL_OPTIONS = [
   { value: "EBOOK", label: "E-book" },
   { value: "SERVICE", label: "Service" },
   { value: "PRODUIT_PHYSIQUE", label: "Produit physique" },
+  { value: "RESTAURATION", label: "Restauration" },
+  { value: "AGRICULTURE", label: "Agriculture" },
+  { value: "TRANSFORMATION_ALIMENTAIRE", label: "Transformation alimentaire" },
   { value: "AUTRE", label: "Autre" },
 ] as const;
 
