@@ -1,7 +1,7 @@
 # CHANGELOG.md
 
 ## [Non versionné], confort mobile
-- Menu mobile (Tester mon idée, Retrouver mon analyse, Tarif, Questions fréquentes, Confidentialité, thème), fermé par un lien ou Échap ; liste unique pour ajouter les prochaines fonctionnalités.
+- Menu mobile (Tester mon idée, Retrouver mon analyse, Tarif, Questions fréquentes, Confidentialité), fermé par un lien ou Échap ; bouton de thème dans la barre, à côté du menu ; liste unique pour ajouter les prochaines fonctionnalités.
 - Champs numériques (hypothèses, capital) : 0 affiché comme champ vide, plus de « 05 » quand on tape ; clavier numérique sur mobile.
 - Blocs du business model : la zone de texte s'agrandit selon son contenu, la suggestion de l'IA se lit sans défiler.
 

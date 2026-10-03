@@ -61,25 +61,28 @@ export function Header() {
           </Link>
           <ThemeToggle />
         </nav>
-        <button
-          type="button"
-          onClick={() => setMenuOpen((open) => !open)}
-          aria-expanded={menuOpen}
-          aria-controls="menu-mobile"
-          aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-secondary hover:text-text-primary sm:hidden"
-        >
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-            {menuOpen ? (
-              <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
-            ) : (
-              <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
-            )}
-          </svg>
-        </button>
+        <div className="flex items-center gap-2 sm:hidden">
+          <ThemeToggle />
+          <button
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-expanded={menuOpen}
+            aria-controls="menu-mobile"
+            aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-secondary hover:text-text-primary"
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+              {menuOpen ? (
+                <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+              ) : (
+                <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
       {menuOpen ? (
-        <nav id="menu-mobile" aria-label="Menu" className="border-t border-border bg-bg px-4 pb-6 sm:hidden">
+        <nav id="menu-mobile" aria-label="Menu" className="border-t border-border bg-bg px-4 pb-4 sm:hidden">
           <ul className="flex flex-col">
             {MENU_LINKS.map((link) => (
               <li key={link.href}>
@@ -93,10 +96,6 @@ export function Header() {
               </li>
             ))}
           </ul>
-          <div className="mt-4 flex items-center justify-between text-small text-text-secondary">
-            Thème
-            <ThemeToggle />
-          </div>
         </nav>
       ) : null}
     </header>
