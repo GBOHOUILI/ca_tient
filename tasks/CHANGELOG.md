@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## [Non versionné], reprendre une idée non payée
+- Page « Retrouver mon analyse » : liste « Tes idées sur ce téléphone » (type, date, verdict, payée ou non) avec « Débloquer l'analyse complète » ou « Voir mon analyse ».
+- Une idée non payée rouverte affiche son aperçu et l'offre, au lieu de « Le paiement n'a pas abouti ».
+- `GET /ideas/:id` renvoie aussi `createdAt` et `locale`.
+
 ## [Non versionné], suivi du trafic
 - Onglet « Trafic » dans le dashboard : visiteurs uniques, visites, pages vues, nouveaux visiteurs ; graphiques visiteurs et pages vues par jour, affluence par heure ; pages, sources, appareils, langues, pays estimé.
 - Chaque page publique vue est comptée (identifiant anonyme dans le navigateur, sans IP ni cookie) ; bouton pour ne pas compter ses propres visites.

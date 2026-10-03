@@ -15,6 +15,8 @@ export interface IdeaDetail {
   businessModel: string;
   rawDescription: string;
   currency: string;
+  locale: string;
+  createdAt: Date;
   paid: boolean;
   hasCapitalPlan: boolean;
   hypotheses: { key: string; label: string; value: number; unit: string | null }[];
@@ -126,6 +128,8 @@ export class IdeasService {
       businessModel: idea.businessModel,
       rawDescription: idea.rawDescription,
       currency: idea.currency,
+      locale: idea.locale,
+      createdAt: idea.createdAt,
       paid: idea.paidAt !== null,
       hasCapitalPlan: idea.capitalPlan !== null,
       hypotheses: idea.hypotheses.map((h) => ({ key: h.key, label: h.label, value: h.value, unit: h.unit })),

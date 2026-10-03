@@ -158,6 +158,8 @@ export interface IdeaDetail {
   id: string;
   businessModel: BusinessModel;
   currency: CurrencyCode;
+  locale: string;
+  createdAt: string;
   hypotheses: { key: string; value: number }[];
   paid: boolean;
   hasCapitalPlan: boolean;
