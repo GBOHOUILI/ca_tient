@@ -1,5 +1,10 @@
 # CHANGELOG.md
 
+## [Non versionné], confort mobile
+- Menu mobile (Tester mon idée, Retrouver mon analyse, Tarif, Questions fréquentes, Confidentialité, thème), fermé par un lien ou Échap ; liste unique pour ajouter les prochaines fonctionnalités.
+- Champs numériques (hypothèses, capital) : 0 affiché comme champ vide, plus de « 05 » quand on tape ; clavier numérique sur mobile.
+- Blocs du business model : la zone de texte s'agrandit selon son contenu, la suggestion de l'IA se lit sans défiler.
+
 ## [Non versionné], SEO et pied de page
 - Métadonnées complètes (titre par page, description, Open Graph, Twitter, canonique), `robots.txt`, `sitemap.xml`, image de partage et icônes générées, données structurées (Organization, WebApplication, FAQPage) sur la landing.
 - Pages privées (`/analyse/*`, `/admin`, `/retrouver`) exclues de l'indexation.

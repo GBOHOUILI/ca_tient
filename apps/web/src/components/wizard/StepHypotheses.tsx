@@ -1,6 +1,7 @@
 import { SUPPORTED_CURRENCIES, type CurrencyCode } from "financial-engine";
 import type { BusinessModel } from "@/lib/business-models";
 import type { HypothesesInput } from "@/lib/api/ideas";
+import { NumberInput } from "@/components/ui/NumberInput";
 
 const HINTS: Record<BusinessModel, string> = {
   ECOMMERCE: "Inclut coût produit, livraison et commissions.",
@@ -89,13 +90,7 @@ export function StepHypotheses({
             </span>
           )}
           {field.hint ? <span className="text-micro">{field.hint}</span> : null}
-          <input
-            type="number"
-            min={0}
-            value={hypotheses[field.key]}
-            onChange={(e) => onHypothesisChange(field.key, Number(e.target.value))}
-            className="rounded-lg border border-border bg-surface p-3 text-right text-body tabular-nums text-text-primary focus:border-accent-emerald focus:outline-none"
-          />
+          <NumberInput value={hypotheses[field.key]} onChange={(value) => onHypothesisChange(field.key, value)} />
         </label>
       ))}
       {error ? <p className="text-small text-error">{error}</p> : null}

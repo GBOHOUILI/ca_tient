@@ -68,7 +68,8 @@
 - [x] Partage WhatsApp du verdict (lien `wa.me`, verdict et seuil seulement, jamais les chiffres de la personne)
 - [x] Catégories restauration, agriculture, transformation alimentaire
 - [x] Extrait réel du rapport sur la landing (capital, ce qui pèse le plus, points à surveiller, calculés sur l'exemple)
-- [ ] WhatsApp support et mentions légales (en attente : numéro, forme juridique, adresse, RCCM/IFU de ZeroToOne)
+- [ ] Mentions légales (en attente : forme juridique, adresse, RCCM/IFU de ZeroToOne) ; support WhatsApp abandonné (2026-10-03)
+- [x] Menu mobile, champs numériques sans zéro résiduel, blocs du canvas qui s'agrandissent
 
 ## Phase 8 — Bêta
 - [ ] Recruter 10–20 utilisateurs réels

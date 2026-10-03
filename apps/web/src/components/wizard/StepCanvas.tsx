@@ -1,6 +1,7 @@
 "use client";
 
 import type { CanvasBlockKey, CanvasBlocks } from "@/lib/api/ideas";
+import { AutoGrowTextarea } from "@/components/ui/AutoGrowTextarea";
 
 const FIELDS: { key: CanvasBlockKey; label: string; placeholder: string }[] = [
   {
@@ -71,7 +72,7 @@ export function StepCanvas({
       {FIELDS.map((field) => (
         <label key={field.key} className="flex flex-col gap-2 text-small text-text-secondary">
           {field.label}
-          <textarea
+          <AutoGrowTextarea
             value={canvasBlocks[field.key]}
             onChange={(e) => onBlockChange(field.key, e.target.value)}
             placeholder={field.placeholder}
