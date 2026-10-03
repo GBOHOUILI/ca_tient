@@ -44,11 +44,11 @@ export class AnalyticsService {
     });
   }
 
-  async traffic(period: StatsPeriod, now = new Date()) {
+  async traffic(period: StatsPeriod, filters: { locale?: string; country?: string } = {}, now = new Date()) {
     const firstView = period === "all" ? await this.prisma.pageView.findFirst({ orderBy: { createdAt: "asc" } }) : null;
     const from = period === "all" ? (firstView?.createdAt ?? now) : new Date(now.getTime() - PERIOD_DAYS[period] * DAY_MS);
     const views = await this.prisma.pageView.findMany({
-      where: { createdAt: { gte: from } },
+      where: { createdAt: { gte: from }, locale: filters.locale, country: filters.country },
       select: { visitorId: true, sessionId: true, path: true, locale: true, device: true, country: true, source: true, createdAt: true },
     });
     // A visitor is new when their very first view, ever, falls inside the period.

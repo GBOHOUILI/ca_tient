@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, UseGuards } f
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
 import { AdminKeyGuard } from "./admin-key.guard.js";
 import { AnalyticsService } from "./analytics.service.js";
+import { AdminFiltersDto } from "../admin/dto/admin-filters.dto.js";
 import { PageViewDto } from "./dto/page-view.dto.js";
 import { StatsQueryDto, TrackEventDto } from "./dto/track-event.dto.js";
 
@@ -29,8 +30,9 @@ export class AnalyticsController {
 
   @Get("admin/traffic")
   @UseGuards(AdminKeyGuard)
-  traffic(@Query() query: StatsQueryDto) {
-    return this.analytics.traffic(query.period ?? "30d");
+  traffic(@Query() filters: AdminFiltersDto) {
+    // Same filters as the other admin tabs: language and (estimated) country apply, business model does not.
+    return this.analytics.traffic(filters.period ?? "30d", { locale: filters.locale, country: filters.country });
   }
 
   @Get("admin/stats")

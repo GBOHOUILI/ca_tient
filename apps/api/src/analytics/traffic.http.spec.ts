@@ -78,4 +78,15 @@ describe("Traffic", () => {
     expect(response.body.daily).toHaveLength(8);
     expect(response.body.countries).toEqual([{ key: "BJ", count: 2 }]);
   });
+
+  it("applies the shared admin filters that make sense for traffic", async () => {
+    process.env.ADMIN_KEY = ADMIN_KEY;
+    await send(view()).expect(204);
+    await send(view({ visitorId: "visitor-cccc3333", sessionId: "session-cccc3333", locale: "en", timeZone: "Europe/Paris" })).expect(204);
+
+    const get = (query: string) => request(server()).get(`/admin/traffic?${query}`).set("x-admin-key", ADMIN_KEY).expect(200);
+    expect((await get("locale=en")).body.kpis.visitors).toBe(1);
+    expect((await get("country=FR")).body.kpis.visitors).toBe(1);
+    expect((await get("businessModel=SERVICE")).body.kpis.visitors).toBe(2);
+  });
 });

@@ -42,12 +42,14 @@ Toutes les routes `/ideas/:id…` (sauf `POST /ideas` et les deux routes `sugges
 ## Analytics
 
 - `POST /analytics/events` — publique, 60 requêtes/min/IP, `204`. Corps `{ type, sessionId, ideaId? }` ; `type` ∈ `landing_view | test_started | offer_viewed | what_if_used | report_viewed | report_printed` (les paiements ne sont jamais acceptés du navigateur) ; `sessionId` 8–64 caractères `[A-Za-z0-9-]` ; `400` sinon.
+- `POST /analytics/pageviews` — publique, 120 requêtes/min/IP, `204`. Corps `{ visitorId, sessionId, path, locale, device, timeZone?, referrerHost?, utmSource? }` ; `path` en minuscules `^/[a-z0-9/_-]*$`, `device` ∈ `mobile | tablet | desktop`, `locale` ∈ `fr | en` ; `400` sinon. Stocke le chemin normalisé, la source et le pays estimé (jamais le fuseau ni le référent complet).
 - `GET /admin/stats?period=7d|30d|all` (défaut `30d`) — en-tête `x-admin-key` = `ADMIN_KEY` (comparaison en temps constant). `404` si `ADMIN_KEY` n'est pas configurée, `401` si la clé est fausse, `400` période inconnue. Renvoie `{ period, from, steps: [{ key, count }], reportPrinted, recoveries }`, étapes dans l'ordre du funnel, comptes distincts.
 
 ## Dashboard admin
 
 Toutes les routes : en-tête `x-admin-key` = `ADMIN_KEY` (404 si non configurée, 401 si fausse), 60 requêtes/min/IP, lecture seule. Filtres communs : `period=7d|30d|90d|all` (défaut `30d`), `businessModel`, `country`, `locale` (`fr|en`) et `currency` (défaut `XOF`, montants du marché).
 
+- `GET /admin/traffic` — trafic du site public : indicateurs (visiteurs uniques, visites, pages vues, pages par visite, nouveaux visiteurs), série par jour, pages vues par heure (heure du Bénin), pages, sources, appareils, langues, pays estimé. Filtres `period`, `locale`, `country` (le type de business est ignoré).
 - `GET /admin/overview` — indicateurs clés (visites, idées, paiements confirmés, chiffre d'affaires, conversion aperçu → paiement, part des idées qui tiennent) et activité par jour.
 - `GET /admin/market` — répartitions (type, pays, profil, avancement, devises) et médianes par type de business dans la devise choisie.
 - `GET /admin/conversion` — funnel (période seulement) et taux de paiement par type, source déclarée, `utm_source`, pays.

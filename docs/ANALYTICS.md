@@ -24,3 +24,7 @@ Table d'événements maison (`AnalyticsEvent`), aucune dépendance, aucun cookie
 - **Consultation** : dashboard `/admin` (non indexé, clé `ADMIN_KEY`), onglet Conversion pour le funnel (7, 30, 90 jours ou depuis le début) ; `/admin/stats` y redirige. Le profil déclaré et la source UTM (collecte du 2026-10-02) permettent en plus les ventilations par type, pays et source.
 
 Correspondance avec la liste ci-dessus : « simulations terminées » = aperçus générés ; « scénarios explorés » = « Et si ? » utilisé ; « rapports téléchargés » = rapports imprimés / enregistrés en PDF.
+
+## Trafic (2026-10-03)
+
+`POST /analytics/pageviews` (envoyé par `PageViewTracker` à chaque changement de page publique, 120/min/IP) alimente la table `PageView` ; l'onglet **Trafic** du dashboard (`GET /admin/traffic`) affiche visiteurs uniques, visites, pages vues, nouveaux visiteurs, graphiques par jour et par heure, pages, sources, appareils, langues et pays estimé. Visiteur = identifiant aléatoire en `localStorage` ; visite = onglet. Pas d'IP ni de user-agent stocké ; pays déduit du fuseau horaire. L'admin, les navigateurs automatisés et un navigateur exclu (bouton de l'onglet) ne sont pas comptés. Spec : `docs/superpowers/specs/2026-10-03-trafic-design.md`.
