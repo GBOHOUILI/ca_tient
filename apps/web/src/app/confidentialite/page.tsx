@@ -3,7 +3,8 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 export const metadata: Metadata = {
-  title: "Confidentialité — Ça tient ?",
+  title: "Confidentialité",
+  alternates: { canonical: "/confidentialite" },
   description: "Comment Ça tient ? utilise tes informations et comment les supprimer.",
 };
 

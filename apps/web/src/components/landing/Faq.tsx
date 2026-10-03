@@ -1,6 +1,6 @@
 import { priceLabel } from "@/lib/price";
 
-function faqs(price: string | null) {
+export function faqs(price: string | null) {
   return [
   {
     question: "Qu'est-ce qui est gratuit ?",
@@ -64,7 +64,7 @@ function faqs(price: string | null) {
 
 export function Faq({ price }: { price: number }) {
   return (
-    <section className="mx-auto max-w-3xl px-4 py-24 sm:px-6">
+    <section id="faq" className="mx-auto max-w-3xl px-4 py-24 sm:px-6">
       <h2 className="text-center text-h2-mobile font-semibold md:text-h2">Questions fréquentes</h2>
       <dl className="mt-12 flex flex-col gap-6">
         {faqs(priceLabel(price)).map((faq) => (
