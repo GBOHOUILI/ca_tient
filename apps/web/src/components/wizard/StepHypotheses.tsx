@@ -8,6 +8,9 @@ const HINTS: Record<BusinessModel, string> = {
   EBOOK: "Inclut commissions et coût de création.",
   SERVICE: "Inclut sous-traitance et outils.",
   PRODUIT_PHYSIQUE: "Inclut matières, production et logistique.",
+  RESTAURATION: "Inclut ingrédients, gaz ou charbon, emballages et livraison par plat.",
+  AGRICULTURE: "Inclut semences, engrais, aliments du bétail, main-d'œuvre et transport par unité vendue.",
+  TRANSFORMATION_ALIMENTAIRE: "Inclut matière première, énergie, emballages et transport par unité.",
   AUTRE: "Regroupe tous tes coûts qui varient avec le volume vendu.",
 };
 

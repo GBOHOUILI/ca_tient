@@ -36,6 +36,9 @@ const BUSINESS_MODEL_LABELS: Record<BusinessModel, string> = {
   EBOOK: "e-book",
   SERVICE: "service",
   PRODUIT_PHYSIQUE: "produit physique",
+  RESTAURATION: "restauration (restaurant, maquis, fast-food, traiteur)",
+  AGRICULTURE: "agriculture ou élevage",
+  TRANSFORMATION_ALIMENTAIRE: "transformation alimentaire (jus, farines, conserves, produits locaux transformés)",
   AUTRE: "autre",
 };
 

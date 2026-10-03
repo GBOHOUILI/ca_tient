@@ -65,4 +65,11 @@ describe("CreateIdeaDto", () => {
       expect(await validate(at), key).toHaveLength(0);
     }
   });
+
+  it("accepts the restaurant, farming and food processing business models", async () => {
+    for (const businessModel of ["RESTAURATION", "AGRICULTURE", "TRANSFORMATION_ALIMENTAIRE"]) {
+      const dto = plainToInstance(CreateIdeaDto, { ...validPayload(), businessModel });
+      expect(await validate(dto), businessModel).toHaveLength(0);
+    }
+  });
 });

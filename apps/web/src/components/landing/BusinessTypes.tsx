@@ -4,7 +4,7 @@ export function BusinessTypes() {
   return (
     <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
       <p className="text-center text-small font-medium tracking-micro text-text-secondary">
-        Pour une boutique en ligne, une formation, un service ou un produit
+        Boutique en ligne, formation, service, restauration, agriculture ou transformation
       </p>
       <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
         {BUSINESS_MODEL_OPTIONS.map((option) => (
