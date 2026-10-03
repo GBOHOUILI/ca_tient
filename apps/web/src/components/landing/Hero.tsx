@@ -1,7 +1,9 @@
+import { getI18n } from "@/i18n/server";
 import { HeroSceneLoader } from "./HeroSceneLoader";
 import { CtaLink } from "./CtaLink";
 
-export function Hero({ price }: { price: number }) {
+export async function Hero({ price }: { price: number }) {
+  const { t } = await getI18n();
   return (
     <section className="relative isolate flex min-h-[90vh] items-center justify-center overflow-hidden px-4 text-center sm:px-6">
       <div
@@ -13,15 +15,12 @@ export function Hero({ price }: { price: number }) {
 
       <div className="flex max-w-2xl flex-col items-center gap-6">
         <h1 className="text-display-mobile md:text-display text-balance font-bold">
-          Ton idée de business,{" "}
+          {t.landing.heroTitle}{" "}
           <span className="bg-gradient-to-r from-accent-emerald to-accent-cyan bg-clip-text text-transparent">
-            tient-elle vraiment ?
+            {t.landing.heroHighlight}
           </span>
         </h1>
-        <p className="max-w-lg text-body-lg text-text-secondary">
-          Vérifie-le avant d&apos;y mettre ton argent. Décris ton idée : tu sais en quelques minutes ce qu&apos;elle
-          rapporte, ce qu&apos;elle coûte et combien tu dois vendre chaque mois.
-        </p>
+        <p className="max-w-lg text-body-lg text-text-secondary">{t.landing.heroText}</p>
         <CtaLink price={price} />
       </div>
     </section>

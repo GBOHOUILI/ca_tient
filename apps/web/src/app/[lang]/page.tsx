@@ -14,18 +14,23 @@ import { Trust } from "@/components/landing/Trust";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { landingStructuredData } from "@/components/seo/structured-data";
+import { alternatesFor } from "@/i18n/seo";
+import { getI18n } from "@/i18n/server";
 import { getAnalysisPrice } from "@/lib/api/pricing";
 import { getPublishedReviews } from "@/lib/api/reviews";
 
-export const metadata: Metadata = { alternates: { canonical: "/" } };
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale } = await getI18n();
+  return { alternates: alternatesFor("/", locale) };
+}
 
 // Conversion order: problem -> promise -> proof -> how -> offer -> benefits -> trust -> objections -> action.
 export default async function Home() {
-  const [price, reviews] = await Promise.all([getAnalysisPrice(), getPublishedReviews()]);
+  const [price, reviews, { locale, t }] = await Promise.all([getAnalysisPrice(), getPublishedReviews(), getI18n()]);
 
   return (
     <>
-      <JsonLd data={landingStructuredData(price)} />
+      <JsonLd data={landingStructuredData(price, locale, t)} />
       <TrackEvent type="landing_view" />
       <Hero price={price} />
       <BusinessTypes />
