@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, UseGuards } f
 import { Throttle, ThrottlerGuard } from "@nestjs/throttler";
 import { AdminKeyGuard } from "./admin-key.guard.js";
 import { AnalyticsService } from "./analytics.service.js";
+import { PageViewDto } from "./dto/page-view.dto.js";
 import { StatsQueryDto, TrackEventDto } from "./dto/track-event.dto.js";
 
 @Controller()
@@ -15,6 +16,21 @@ export class AnalyticsController {
   @Throttle({ default: { limit: 60, ttl: 60_000 } })
   async track(@Body() dto: TrackEventDto): Promise<void> {
     await this.analytics.track(dto);
+  }
+
+  // One request per page change: a fast reader stays well below 120/min.
+  @Post("analytics/pageviews")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(ThrottlerGuard)
+  @Throttle({ default: { limit: 120, ttl: 60_000 } })
+  async pageView(@Body() dto: PageViewDto): Promise<void> {
+    await this.analytics.recordPageView(dto);
+  }
+
+  @Get("admin/traffic")
+  @UseGuards(AdminKeyGuard)
+  traffic(@Query() query: StatsQueryDto) {
+    return this.analytics.traffic(query.period ?? "30d");
   }
 
   @Get("admin/stats")
