@@ -67,6 +67,7 @@ describe("Recovery code", () => {
 
     const redeemed = await request(server()).post("/recovery").send({ code }).expect(200);
     expect(redeemed.body.ideaId).toBe(id);
+    expect(redeemed.body.locale).toBe("fr");
     expect(redeemed.body.accessToken).not.toBe(token);
 
     await request(server()).get(`/ideas/${id}`).set(...bearer(redeemed.body.accessToken)).expect(200);

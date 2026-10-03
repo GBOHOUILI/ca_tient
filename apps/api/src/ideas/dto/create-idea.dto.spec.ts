@@ -19,6 +19,17 @@ describe("CreateIdeaDto", () => {
     expect(errors).toHaveLength(0);
   });
 
+  it("accepts a missing locale and the two supported ones", async () => {
+    for (const extra of [{}, { locale: "fr" }, { locale: "en" }]) {
+      expect(await validate(plainToInstance(CreateIdeaDto, { ...validPayload(), ...extra }))).toHaveLength(0);
+    }
+  });
+
+  it("rejects an unknown locale", async () => {
+    const errors = await validate(plainToInstance(CreateIdeaDto, { ...validPayload(), locale: "de" }));
+    expect(errors.some((e) => e.property === "locale")).toBe(true);
+  });
+
   it("rejects an unsupported currency", async () => {
     const dto = plainToInstance(CreateIdeaDto, { ...validPayload(), currency: "JPY" });
     const errors = await validate(dto);

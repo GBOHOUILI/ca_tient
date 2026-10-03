@@ -21,6 +21,7 @@ function input() {
     businessModel: "ECOMMERCE" as const,
     rawDescription: "Vente de vetements en ligne pour jeunes actifs.",
     currency: "XOF" as const,
+    locale: "fr" as const,
   };
 }
 
@@ -218,6 +219,7 @@ describe("FallbackAiProvider.writeReportSummary", () => {
     const groq = new FakeBackend("groq", pool("q1"), async () => '{"summary": "Ton idee tient."}');
 
     const summary = await new FallbackAiProvider([gemini, groq], now).writeReportSummary({
+      locale: "fr",
       businessModel: "SERVICE",
       holds: true,
       breakEvenReachable: true,

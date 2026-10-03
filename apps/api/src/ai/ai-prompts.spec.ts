@@ -14,6 +14,7 @@ function input() {
     businessModel: "ECOMMERCE" as const,
     rawDescription: "Vente de vetements en ligne pour jeunes actifs.",
     currency: "XOF" as const,
+    locale: "fr" as const,
   };
 }
 
@@ -131,6 +132,7 @@ describe("parseReportSummary", () => {
 describe("buildReportSummaryPrompt", () => {
   it("passes qualitative facts only and forbids numbers", () => {
     const prompt = buildReportSummaryPrompt({
+      locale: "fr",
       businessModel: "SERVICE",
       holds: false,
       breakEvenReachable: true,
@@ -146,9 +148,40 @@ describe("buildReportSummaryPrompt", () => {
   });
 });
 
-describe("French accents in prompts", () => {
-  const input = { businessModel: "SERVICE" as const, rawDescription: "Cours à domicile", currency: "XOF" as const };
+describe("output language", () => {
   const facts = {
+    locale: "en" as const,
+    businessModel: "SERVICE" as const,
+    holds: true,
+    breakEvenReachable: true,
+    watchPoints: [],
+    mostSensitive: ["price"],
+    financing: "unknown" as const,
+    valueProposition: null,
+    customerSegments: null,
+  };
+
+  it("asks for English text when the idea is in English", () => {
+    const prompt = buildCanvasPrompt({ ...input(), locale: "en" });
+    expect(prompt).toContain("en anglais correct");
+    expect(prompt).not.toContain("en français");
+  });
+
+  it("asks for French text for a French idea", () => {
+    expect(buildCanvasPrompt(input())).toContain("en français correct, avec les accents");
+  });
+
+  it("writes the report summary in the idea's language", () => {
+    const prompt = buildReportSummaryPrompt(facts);
+    expect(prompt).toContain("en anglais correct");
+    expect(prompt).not.toContain("en français");
+  });
+});
+
+describe("French accents in prompts", () => {
+  const input = { businessModel: "SERVICE" as const, rawDescription: "Cours à domicile", currency: "XOF" as const, locale: "fr" as const };
+  const facts = {
+    locale: "fr" as const,
     businessModel: "SERVICE" as const,
     holds: true,
     breakEvenReachable: true,

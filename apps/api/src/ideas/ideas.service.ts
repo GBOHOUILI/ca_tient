@@ -8,6 +8,7 @@ import { deleteIdeaWithData } from "./delete-idea.js";
 import type { IdeaProfileDto } from "./dto/idea-profile.dto.js";
 import type { UpdateCanvasBlocksDto } from "./dto/update-canvas-blocks.dto.js";
 import type { Hypotheses } from "financial-engine";
+import { DEFAULT_LOCALE } from "../i18n/locale.js";
 
 export interface IdeaDetail {
   id: string;
@@ -36,6 +37,7 @@ export class IdeasService {
         businessModel: dto.businessModel,
         rawDescription: dto.rawDescription,
         currency: dto.currency,
+        locale: dto.locale ?? DEFAULT_LOCALE,
         accessTokenHash: hash,
         utmSource: dto.acquisition?.utmSource,
         utmMedium: dto.acquisition?.utmMedium,

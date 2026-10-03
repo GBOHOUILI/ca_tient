@@ -5,6 +5,7 @@ import { PAYMENT_GATEWAY, type PaymentGateway } from "./payment-gateway.port.js"
 import { nextPaymentStatus } from "./payment-state.js";
 import { analysisPriceXof } from "./pricing.js";
 import { primaryWebAppUrl } from "../web-app-url.js";
+import { asLocale, localePrefix } from "../i18n/locale.js";
 
 @Injectable()
 export class PaymentService {
@@ -20,7 +21,8 @@ export class PaymentService {
     // FedaPay (webhook not arrived yet) — creating a second transaction would be a double charge.
     const { anyFailed } = await this.reReadPendingPayments(ideaId);
 
-    const idea = await this.prisma.idea.findUniqueOrThrow({ where: { id: ideaId }, select: { paidAt: true } });
+    const idea = await this.prisma.idea.findUniqueOrThrow({ where: { id: ideaId }, select: { paidAt: true, locale: true } });
+    const analysisUrl = `${primaryWebAppUrl()}${localePrefix(asLocale(idea.locale))}/analyse/${ideaId}`;
     if (idea.paidAt) {
       throw new ConflictException("Cette analyse est deja payee.");
     }
@@ -32,7 +34,7 @@ export class PaymentService {
     // Free analysis (ANALYSIS_PRICE_XOF=0, used for tests): unlocked at once, no provider involved.
     if (price === 0) {
       await this.prisma.idea.updateMany({ where: { id: ideaId, paidAt: null }, data: { paidAt: new Date() } });
-      return { paymentId: null, redirectUrl: `${primaryWebAppUrl()}/analyse/${ideaId}` };
+      return { paymentId: null, redirectUrl: analysisUrl };
     }
 
     const payment = await this.prisma.payment.create({
@@ -47,7 +49,7 @@ export class PaymentService {
         amount: price,
         currency: "XOF",
         description: "Analyse complete Ca tient ?",
-        returnUrl: `${primaryWebAppUrl()}/analyse/${ideaId}`,
+        returnUrl: analysisUrl,
       });
     } catch (error) {
       // A payment that never reached the provider must not look "pending" forever to the user.
